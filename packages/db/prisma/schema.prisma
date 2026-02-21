@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Developer {
+  id         String        @id @default(cuid())
+  email      String        @unique
+  name       String
+  type       DeveloperType
+  vatNumber  String? // For EU companies (GDPR/DMA)
+  country    String // ISO 3166-1 alpha-2
+  verified   Boolean       @default(false)
+  verifiedAt DateTime?
+  apps       App[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model App {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  name           String
+  bundleId       String    @unique
+  developerId    String
+  developer      Developer @relation(fields: [developerId], references: [id])
+  category       Category
+  description    String    @db.Text
+  shortDesc      String    @db.VarChar(200)
+  iconUrl        String
+  screenshots    String[]
+  status         AppStatus @default(PENDING_REVIEW)
+  platform       Platform  @default(ANDROID)
+  minAndroid     String?
+  minIos         String?
+  websiteUrl     String?
+  privacyUrl     String // Mandatory GDPR
+  sourceUrl      String?
+  versions       Version[]
+  tags           Tag[]
+  totalDownloads Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([category, status])
+  @@index([slug])
+}
+
+model Version {
+  id               String        @id @default(cuid())
+  appId            String
+  app              App           @relation(fields: [appId], references: [id])
+  versionName      String
+  versionCode      Int
+  platform         Platform
+  fileKey          String // R2 storage key
+  fileSize         BigInt // bytes
+  fileSha256       String // SHA-256 integrity hash
+  changelog        String        @db.Text
+  minOs            String
+  status           VersionStatus @default(SCANNING)
+  virusTotalId     String?
+  virusTotalReport Json?
+  scannedAt        DateTime?
+  publishedAt      DateTime?
+  downloadLogs     DownloadLog[]
+  createdAt        DateTime      @default(now())
+
+  @@unique([appId, versionName, platform])
+  @@index([appId, status])
+}
+
+model DownloadLog {
+  id        String   @id @default(cuid())
+  versionId String
+  version   Version  @relation(fields: [versionId], references: [id])
+  userId    String? // Null if unauthenticated
+  // GDPR: never store raw IPs — SHA-256 + monthly rotating salt
+  ipHash    String
+  userAgent String
+  country   String?
+  createdAt DateTime @default(now())
+
+  @@index([versionId, createdAt])
+}
+
+model SecurityLog {
+  id          String   @id @default(cuid())
+  entityType  String // "VERSION" | "APP" | "DEVELOPER"
+  entityId    String
+  action      String // "VIRUS_SCAN_STARTED" | "VIRUS_FOUND" | "APP_APPROVED" ...
+  severity    Severity @default(INFO)
+  metadata    Json?
+  performedBy String? // Admin user ID or "SYSTEM"
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt, severity])
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  apps App[]
+}
+
+// Rating model: to be implemented in Phase 3
+// model Rating { ... }
+
+enum DeveloperType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum AppStatus {
+  PENDING_REVIEW
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum VersionStatus {
+  SCANNING
+  CLEAN
+  INFECTED
+  APPROVED
+  REJECTED
+}
+
+enum Platform {
+  ANDROID
+  IOS
+  BOTH
+}
+
+enum Severity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum Category {
+  PRODUCTIVITY
+  SOCIAL
+  ENTERTAINMENT
+  TOOLS
+  EDUCATION
+  HEALTH
+  FINANCE
+  GAMES
+  PHOTOGRAPHY
+  NAVIGATION
+  OTHER
+}
