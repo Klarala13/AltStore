@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { AuthProvider } from "@/components/AuthProvider";
+import { HeaderAuth } from "@/components/HeaderAuth";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,50 +15,72 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-white">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+      <body className="min-h-screen" style={{ backgroundColor: "#000", color: "#f8f8f8" }}>
+        <AuthProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
 };
 
 const Header = () => (
-  <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md">
-    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
-      <a href="/" className="text-lg font-semibold tracking-tight text-gray-900">
+  <header
+    className="sticky top-0 z-50 backdrop-blur-md"
+    style={{ backgroundColor: "rgba(0,0,0,0.75)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+  >
+    <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
+      <a href="/" className="text-sm font-semibold tracking-tight" style={{ color: "#f8f8f8" }}>
         AltStore
       </a>
-      <nav className="hidden items-center gap-8 md:flex">
-        <a href="/category/productivity" className="text-sm text-gray-500 transition hover:text-gray-900">
-          Apps
-        </a>
-        <a href="/search" className="text-sm text-gray-500 transition hover:text-gray-900">
-          Search
-        </a>
-        <a href="/login" className="rounded-lg bg-gray-900 px-4 py-2 text-sm text-white transition hover:bg-gray-700">
-          Sign in
-        </a>
+      <nav className="hidden items-center gap-7 md:flex">
+        <NavLink href="/">Apps</NavLink>
+        <NavLink href="/search">Search</NavLink>
+        <HeaderAuth />
       </nav>
     </div>
   </header>
 );
 
+const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <a
+    href={href}
+    className="text-sm transition-colors duration-150 hover:text-[#f8f8f8]"
+    style={{ color: "#a0a0a0" }}
+  >
+    {children}
+  </a>
+);
+
 const Footer = () => (
-  <footer className="mt-24 border-t border-gray-200 bg-white">
-    <div className="mx-auto max-w-7xl px-6 py-12 md:px-12">
-      <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-        <p className="text-sm font-semibold text-gray-900">AltStore</p>
-        <p className="text-sm text-gray-400">
-          DMA-compliant marketplace &middot; EU &middot;{" "}
-          <a href="/privacy" className="underline hover:text-gray-600">
-            Privacy Policy
-          </a>
-        </p>
+  <footer className="mt-32" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+    <div className="mx-auto max-w-6xl px-6 py-10 md:px-8">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        <span className="text-sm font-semibold" style={{ color: "#f8f8f8" }}>
+          AltStore
+        </span>
+        <div className="flex items-center gap-6">
+          <FooterLink href="/privacy">Privacy Policy</FooterLink>
+          <FooterLink href="/terms">Terms</FooterLink>
+          <span className="text-xs" style={{ color: "#444" }}>
+            DMA-compliant &middot; EU
+          </span>
+        </div>
       </div>
     </div>
   </footer>
+);
+
+const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <a
+    href={href}
+    className="text-xs transition-colors duration-150 hover:text-[#a0a0a0]"
+    style={{ color: "#555" }}
+  >
+    {children}
+  </a>
 );
 
 export default RootLayout;

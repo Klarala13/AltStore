@@ -1,14 +1,92 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg: #000000;
+    --bg-raised: #0a0a0a;
+    --bg-card: #111111;
+    --bg-overlay: #1a1a1a;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --text-primary: #f8f8f8;
+    --text-secondary: #a0a0a0;
+    --text-muted: #666666;
+    --accent: #62ffb3;
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg);
+    color: var(--text-primary);
   }
 
   body {
-    @apply bg-white text-gray-900;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium text-black transition-all duration-150 ease-in-out;
+    background-color: var(--text-primary);
+  }
+  .btn-primary:hover {
+    background-color: rgba(248, 248, 248, 0.85);
+    transform: scale(1.01);
+  }
+  .btn-primary:active {
+    transform: scale(0.99);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-150 ease-in-out;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    background: transparent;
+  }
+  .btn-secondary:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  .badge-green {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+    background-color: rgba(98, 255, 179, 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(98, 255, 179, 0.18);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(180deg, var(--text-primary) 30%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .app-card {
+    background: linear-gradient(180deg, rgba(80,80,80,0.1) 0%, rgba(0,0,0,0) 70%);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: border-color 150ms ease;
+  }
+  .app-card:hover {
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .sign-out-btn {
+    color: var(--text-secondary);
+    transition: color 150ms ease;
+  }
+  .sign-out-btn:hover {
+    color: var(--text-primary);
   }
 }

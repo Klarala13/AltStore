@@ -71,6 +71,7 @@ pnpm build            # Build all packages (Turborepo)
 ## SOLID Principles — Applied
 
 ### S — Single Responsibility Principle
+
 Each module, service, and component has **one reason to change**.
 
 ```typescript
@@ -89,6 +90,7 @@ class AppService {
 ```
 
 ### O — Open/Closed Principle
+
 Open for extension, closed for modification. Use interfaces and strategy patterns.
 
 ```typescript
@@ -102,6 +104,7 @@ class MockScanner implements FileScannerStrategy { ... } // For tests
 ```
 
 ### L — Liskov Substitution Principle
+
 Subtypes must be substitutable for their base types.
 
 ```typescript
@@ -117,6 +120,7 @@ class LocalStorageProvider implements StorageProvider { ... } // Dev/test
 ```
 
 ### I — Interface Segregation Principle
+
 Clients should not depend on interfaces they don't use.
 
 ```typescript
@@ -143,6 +147,7 @@ interface AppRepository {
 ```
 
 ### D — Dependency Inversion Principle
+
 Depend on abstractions, not concretions. Use NestJS DI for injection.
 
 ```typescript
@@ -152,7 +157,7 @@ class VersionService {
   constructor(
     @Inject(STORAGE_PROVIDER) private readonly storage: StorageProvider,
     @Inject(SCANNER) private readonly scanner: FileScannerStrategy,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaService
   ) {}
 }
 ```
@@ -181,15 +186,15 @@ src/
 ### Next.js Component Rules
 
 - **Server Components by default** — only add `"use client"` when strictly necessary
-- Client components: only when using hooks, event handlers, or browser APIs
+- Add `"use client"` only when the component uses hooks, event handlers, or browser APIs
+- Use `memo` only when a client component receives props that are stable across parent re-renders and re-rendering it would be measurably expensive — not as a default
 - Arrow functions, named exports for components, default exports for pages
 
 ```typescript
 // ✅ GOOD — Server Component, async, direct data fetch
-import { getApp } from "@/lib/api";
-
-const AppDetailPage = async ({ params }: { params: { slug: string } }) => {
-  const app = await getApp(params.slug);
+const AppDetailPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params;
+  const app = await getApp(slug);
   return <AppDetail app={app} />;
 };
 
@@ -197,10 +202,8 @@ export default AppDetailPage;
 ```
 
 ```typescript
-// ✅ GOOD — Client Component, only when needed
+// ✅ GOOD — Client Component, only when interactivity is needed
 "use client";
-
-import { useState } from "react";
 
 const DownloadButton = ({ versionId }: { versionId: string }) => {
   const [loading, setLoading] = useState(false);
@@ -208,6 +211,18 @@ const DownloadButton = ({ versionId }: { versionId: string }) => {
 };
 
 export { DownloadButton };
+```
+
+```typescript
+// ✅ GOOD — memo only when the component is expensive and receives stable props
+"use client";
+
+const AppGrid = memo(({ apps }: { apps: AppCardDto[] }) => (
+  <ul>{apps.map((a) => <AppCard key={a.id} {...a} />)}</ul>
+));
+
+// ❌ BAD — memo on a no-prop component; nothing to compare, zero benefit
+const LoginButton = memo(() => <button>...</button>);
 ```
 
 ### Data Fetching (Next.js)
@@ -289,7 +304,10 @@ Components:
 ```tsx
 // ✅ GOOD — Minimal AppCard, Apple-style
 const AppCard = ({ icon, name, category, fileSize, slug }: AppCardProps) => (
-  <a href={`/apps/${slug}`} className="group block rounded-xl border border-gray-200 bg-white p-5 transition hover:border-gray-300">
+  <a
+    href={`/apps/${slug}`}
+    className="group block rounded-xl border border-gray-200 bg-white p-5 transition hover:border-gray-300"
+  >
     <img src={icon} alt={name} className="mb-4 h-14 w-14 rounded-xl" />
     <p className="text-sm font-medium text-gray-500">{category}</p>
     <h3 className="mt-1 text-base font-semibold text-gray-900">{name}</h3>
@@ -319,10 +337,13 @@ const AppCard = ({ icon, name, category, fileSize, slug }: AppCardProps) => (
 
 ### Comments
 
-Only when necessary:
+Only comment when the code cannot speak for itself:
+
 - Complex business logic (DMA/GDPR compliance rules)
 - Non-obvious performance decisions
-- Workarounds with ticket references
+- Workarounds with a ticket reference
+
+Never write comments that restate what the code already says — no structural labels (`{/* Hero */}`, `{/* Icon */}`), no redundant annotations (`// Google icon`). If a block needs a label to be understood, rename the component or extract it instead.
 
 ### Environment Variables
 
@@ -348,7 +369,7 @@ Only when necessary:
 
 - Follow SOLID principles — if a class has more than one reason to change, split it
 - Use NestJS DI for all service dependencies
-- Prefer Server Components in Next.js — add `"use client"` only when required
+- Prefer Server Components in Next.js — add `"use client"` only when required because of interactivity. Minimum JS Bundle.
 - Validate all inputs with class-validator DTOs in NestJS
 - Use Prisma transactions for multi-table writes
 - Hash IPs before storing (GDPR)

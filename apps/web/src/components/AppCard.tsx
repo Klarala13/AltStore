@@ -1,6 +1,6 @@
 import type { AppCardDto } from "@altstore/types";
 
-export const AppCard = ({
+const AppCard = ({
   slug,
   name,
   category,
@@ -12,33 +12,46 @@ export const AppCard = ({
 }: AppCardDto) => (
   <a
     href={`/apps/${slug}`}
-    className="group block rounded-xl border border-gray-200 bg-white p-5 transition hover:border-gray-300"
+    className="app-card group block rounded-2xl p-5"
   >
-    {/* Icon */}
-    <div className="mb-4 h-14 w-14 overflow-hidden rounded-xl bg-gray-100">
+    <div
+      className="mb-4 flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl"
+      style={{ backgroundColor: "rgba(255,255,255,0.06)" }}
+    >
       {iconUrl ? (
         <img src={iconUrl} alt={name} className="h-full w-full object-cover" />
       ) : (
-        <div className="h-full w-full bg-gray-200" />
+        <span className="text-base font-semibold" style={{ color: "#555" }}>
+          {name.charAt(0)}
+        </span>
       )}
     </div>
 
-    {/* Meta */}
-    <p className="text-xs font-medium uppercase tracking-wider text-gray-400">{category}</p>
-    <h3 className="mt-1 text-base font-semibold text-gray-900 group-hover:text-gray-700">
+    <p className="mb-1 text-xs font-medium uppercase tracking-wider" style={{ color: "#555" }}>
+      {category}
+    </p>
+
+    <h3
+      className="text-sm font-semibold transition-colors duration-150 group-hover:text-white"
+      style={{ color: "#d0d0d0" }}
+    >
       {name}
     </h3>
-    <p className="mt-1 line-clamp-2 text-sm text-gray-500">{shortDesc}</p>
 
-    {/* Footer */}
+    <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed" style={{ color: "#666" }}>
+      {shortDesc}
+    </p>
+
     <div className="mt-4 flex items-center justify-between">
-      <span className="text-xs text-gray-400">
+      <span className="text-xs" style={{ color: "#444" }}>
         {platform === "BOTH" ? "Android · iOS" : platform === "ANDROID" ? "Android" : "iOS"}
       </span>
-      <span className="text-xs text-gray-400">
+      <span className="text-xs" style={{ color: "#444" }}>
         {latestVersion && `v${latestVersion}`}
         {latestFileSize && ` · ${latestFileSize}`}
       </span>
     </div>
   </a>
 );
+
+export { AppCard };

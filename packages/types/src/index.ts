@@ -1,8 +1,6 @@
 // Shared TypeScript types between apps/web and apps/api
 // These extend or compose the Prisma-generated types with presentation-layer concerns
 
-export type { AppStatus, Category, Platform, VersionStatus } from "@altstore/db";
-
 // ─── App ────────────────────────────────────────────────────────────────────
 
 export interface AppCardDto {

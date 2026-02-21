@@ -2,34 +2,66 @@ import type { AppCardDto } from "@altstore/types";
 import { AppCard } from "@/components/AppCard";
 import { MOCK_APPS } from "@/lib/mock-data";
 
-// Server Component — will fetch from NestJS API once backend is ready
 const HomePage = async () => {
   const apps: AppCardDto[] = MOCK_APPS;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16 md:px-12 md:py-24">
-      {/* Hero */}
-      <section className="mb-16 md:mb-24">
-        <p className="mb-3 text-sm font-medium uppercase tracking-widest text-gray-400">
-          EU Alternative Marketplace
-        </p>
-        <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
+    <div className="mx-auto max-w-6xl px-6 md:px-8">
+      <section
+        className="py-24 md:py-32"
+        style={{
+          background:
+            "radial-gradient(70% 60% at center 0%, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0) 70%)",
+        }}
+      >
+        <div className="mb-8 flex justify-center">
+          <span className="badge-green">
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: "#62ffb3" }}
+            />
+            DMA-compliant &middot; EU
+          </span>
+        </div>
+
+        <h1
+          className="text-center text-5xl font-semibold tracking-tight md:text-6xl lg:text-7xl"
+          style={{ color: "#f8f8f8", lineHeight: 1.1 }}
+        >
           Apps you can trust.
           <br />
-          Downloaded safely.
+          <span style={{ color: "#555" }}>Downloaded safely.</span>
         </h1>
-        <p className="mt-6 max-w-xl text-base text-gray-500">
-          DMA-compliant. Every app scanned before publishing. Your privacy protected by design.
+
+        <p
+          className="mx-auto mt-6 max-w-lg text-center text-base leading-relaxed"
+          style={{ color: "#666" }}
+        >
+          Every app scanned before publishing. Your privacy protected by design.
+          Open source, zero tracking.
         </p>
+
+        <div className="mt-10 flex items-center justify-center gap-3">
+          <a href="/" className="btn-primary">
+            Browse apps
+          </a>
+          <a href="/login" className="btn-secondary">
+            For developers
+          </a>
+        </div>
       </section>
 
-      {/* Category filters */}
-      <CategoryBar />
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }} />
 
-      {/* App grid */}
-      <section>
-        <h2 className="mb-8 text-2xl font-semibold text-gray-900">All Apps</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <section className="py-16 md:py-20">
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-lg font-semibold" style={{ color: "#f8f8f8" }}>
+            All Apps
+          </h2>
+          <CategoryBar />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {apps.map((app) => (
             <AppCard key={app.id} {...app} />
           ))}
@@ -40,21 +72,26 @@ const HomePage = async () => {
 };
 
 const CATEGORIES = [
-  { label: "All", href: "/" },
-  { label: "Productivity", href: "/category/productivity" },
-  { label: "Tools", href: "/category/tools" },
-  { label: "Social", href: "/category/social" },
-  { label: "Entertainment", href: "/category/entertainment" },
-  { label: "Education", href: "/category/education" },
+  { label: "All", active: true },
+  { label: "Productivity", active: false },
+  { label: "Tools", active: false },
+  { label: "Social", active: false },
+  { label: "Entertainment", active: false },
 ];
 
 const CategoryBar = () => (
-  <div className="mb-10 flex flex-wrap gap-2">
-    {CATEGORIES.map(({ label, href }) => (
+  <div className="flex flex-wrap gap-2">
+    {CATEGORIES.map(({ label, active }) => (
       <a
         key={label}
-        href={href}
-        className="rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-600 transition hover:border-gray-400 hover:text-gray-900"
+        href={active ? "/" : `/category/${label.toLowerCase()}`}
+        className="rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150"
+        style={{
+          color: active ? "#f8f8f8" : "#777",
+          backgroundColor: active ? "rgba(255,255,255,0.08)" : "transparent",
+          border: "1px solid",
+          borderColor: active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.07)",
+        }}
       >
         {label}
       </a>
