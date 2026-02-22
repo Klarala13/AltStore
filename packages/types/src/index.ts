@@ -9,11 +9,13 @@ export interface AppCardDto {
   name: string;
   category: string;
   iconUrl: string;
+  coverUrl?: string; // hero/banner image for card display
   shortDesc: string;
   platform: "ANDROID" | "IOS" | "BOTH";
   latestVersion: string | null;
   latestFileSize: string | null; // formatted, e.g. "45.2 MB"
   totalDownloads: number;
+  rating?: number | null; // 0–5
 }
 
 export interface AppDetailDto extends AppCardDto {

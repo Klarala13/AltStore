@@ -7,11 +7,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "OpenTrack",
     category: "PRODUCTIVITY",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&auto=format&fit=crop",
     shortDesc: "Track your daily habits and build streaks with a clean, minimal interface.",
     platform: "ANDROID",
     latestVersion: "3.2.1",
     latestFileSize: "18.4 MB",
     totalDownloads: 84200,
+    rating: 4.7,
   },
   {
     id: "2",
@@ -19,11 +22,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "VaultPass",
     category: "TOOLS",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=600&auto=format&fit=crop",
     shortDesc: "Open source password manager with end-to-end encryption and offline mode.",
     platform: "ANDROID",
     latestVersion: "2.0.0",
     latestFileSize: "12.1 MB",
     totalDownloads: 210400,
+    rating: 4.9,
   },
   {
     id: "3",
@@ -31,11 +37,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "TuneFree",
     category: "ENTERTAINMENT",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop",
     shortDesc: "Stream ad-free music from libre sources. No account required.",
     platform: "ANDROID",
     latestVersion: "1.4.5",
     latestFileSize: "31.7 MB",
     totalDownloads: 63000,
+    rating: 4.3,
   },
   {
     id: "4",
@@ -43,11 +52,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "MapWise",
     category: "NAVIGATION",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop",
     shortDesc: "Offline maps powered by OpenStreetMap. Navigate without a data connection.",
     platform: "ANDROID",
     latestVersion: "5.1.0",
     latestFileSize: "54.9 MB",
     totalDownloads: 390000,
+    rating: 4.8,
   },
   {
     id: "5",
@@ -55,11 +67,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "NotePilot",
     category: "PRODUCTIVITY",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&auto=format&fit=crop",
     shortDesc: "Markdown-first note taking with sync across devices. Privacy-first.",
     platform: "BOTH",
     latestVersion: "4.0.2",
     latestFileSize: "22.6 MB",
     totalDownloads: 150000,
+    rating: 4.6,
   },
   {
     id: "6",
@@ -67,11 +82,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "Lexify",
     category: "EDUCATION",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=600&auto=format&fit=crop",
     shortDesc: "Learn new languages with spaced repetition and AI-generated sentences.",
     platform: "ANDROID",
     latestVersion: "2.3.0",
     latestFileSize: "27.3 MB",
     totalDownloads: 91000,
+    rating: 4.5,
   },
   {
     id: "7",
@@ -79,11 +97,14 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "PixelShift",
     category: "PHOTOGRAPHY",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=600&auto=format&fit=crop",
     shortDesc: "Non-destructive photo editing with RAW support. No subscription.",
     platform: "ANDROID",
     latestVersion: "1.9.1",
     latestFileSize: "41.0 MB",
     totalDownloads: 47000,
+    rating: 4.2,
   },
   {
     id: "8",
@@ -91,10 +112,13 @@ export const MOCK_APPS: AppCardDto[] = [
     name: "Budgetly",
     category: "FINANCE",
     iconUrl: "",
+    coverUrl:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&auto=format&fit=crop",
     shortDesc: "Personal finance tracker with zero cloud dependency. All data stays on device.",
     platform: "ANDROID",
     latestVersion: "3.5.0",
     latestFileSize: "9.8 MB",
     totalDownloads: 72000,
+    rating: 4.4,
   },
 ];

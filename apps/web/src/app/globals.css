@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -13,10 +13,11 @@
     --border: rgba(255, 255, 255, 0.08);
     --border-subtle: rgba(255, 255, 255, 0.05);
     --border-strong: rgba(255, 255, 255, 0.15);
-    --text-primary: #f8f8f8;
-    --text-secondary: #a0a0a0;
-    --text-muted: #666666;
-    --accent: #62ffb3;
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
+    --accent: #1eff00;
+    --accent-dim: #15b100;
   }
 
   html {
@@ -29,61 +30,96 @@
   body {
     background-color: var(--bg);
     color: var(--text-primary);
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-family:
+      "Geist",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
   }
 }
 
 @layer components {
+  /* Primary CTA — lime green fill, black text */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium text-black transition-all duration-150 ease-in-out;
-    background-color: var(--text-primary);
+    @apply inline-flex cursor-pointer items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out;
+    background-color: var(--accent);
+    color: #000;
   }
   .btn-primary:hover {
-    background-color: rgba(248, 248, 248, 0.85);
-    transform: scale(1.01);
-  }
-  .btn-primary:active {
-    transform: scale(0.99);
+    background-color: var(--accent-dim);
   }
 
+  /* Secondary ghost button */
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-150 ease-in-out;
+    @apply inline-flex cursor-pointer items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-300 ease-in-out;
     color: var(--text-secondary);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     background: transparent;
   }
   .btn-secondary:hover {
     color: var(--text-primary);
-    border-color: var(--border-strong);
+    border-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.05);
   }
 
-  .badge-green {
+  /* Accent badge pill */
+  .badge-accent {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider;
+    background-color: var(--accent);
+    color: #000;
+  }
+
+  /* Muted outline badge */
+  .badge-outline {
     @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
-    background-color: rgba(98, 255, 179, 0.08);
-    color: var(--accent);
-    border: 1px solid rgba(98, 255, 179, 0.18);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* App card surface */
+  .app-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition:
+      border-color 200ms ease,
+      background-color 200ms ease;
+  }
+  .app-card:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Section divider */
+  .section-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
 @layer utilities {
+  /* Urbanist display font for headings */
+  .font-display {
+    font-family: "Urbanist", sans-serif;
+  }
+
+  /* Gradient heading text — white to mid-gray */
   .text-gradient {
-    background: linear-gradient(180deg, var(--text-primary) 30%, var(--text-secondary) 100%);
+    background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.5) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .app-card {
-    background: linear-gradient(180deg, rgba(80,80,80,0.1) 0%, rgba(0,0,0,0) 70%);
-    border: 1px solid rgba(255,255,255,0.07);
-    transition: border-color 150ms ease;
-  }
-  .app-card:hover {
-    border-color: rgba(255,255,255,0.14);
+  /* Lime accent text */
+  .text-accent {
+    color: var(--accent);
   }
 
   .sign-out-btn {
-    color: var(--text-secondary);
+    color: var(--text-muted);
     transition: color 150ms ease;
   }
   .sign-out-btn:hover {

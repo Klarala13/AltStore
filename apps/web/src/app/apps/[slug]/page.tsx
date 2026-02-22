@@ -25,67 +25,190 @@ const AppDetailPage = async ({ params }: Props) => {
     app.platform === "BOTH" ? "Android · iOS" : app.platform === "ANDROID" ? "Android" : "iOS";
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16 md:px-12 md:py-24">
-      <div className="flex items-start gap-6">
-        <div
-          className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl"
-          style={{ background: "var(--bg-overlay)", border: "1px solid var(--border)" }}
-        >
-          {app.iconUrl ? (
-            <img src={app.iconUrl} alt={app.name} className="h-full w-full object-cover" />
-          ) : (
-            <div className="h-full w-full" style={{ background: "var(--bg-overlay)" }} />
-          )}
+    <div className="mx-4 py-16 md:mx-16 md:py-24 lg:mx-24 xl:mx-32">
+      <div className="mx-auto max-w-3xl">
+        {/* ── App header ── */}
+        <div className="flex items-start gap-6">
+          <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border border-gray-800 bg-white/5">
+            {app.iconUrl ? (
+              <img src={app.iconUrl} alt={app.name} className="h-full w-full object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <span className="font-display text-2xl font-bold text-zinc-600">
+                  {app.name.charAt(0)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600">
+              {app.category}
+            </p>
+            <h1 className="font-display text-gradient mt-1 text-3xl font-bold tracking-tight">
+              {app.name}
+            </h1>
+            <p className="mt-1 text-sm text-zinc-400">
+              {platformLabel}
+              {app.latestVersion && ` · v${app.latestVersion}`}
+              {app.latestFileSize && ` · ${app.latestFileSize}`}
+            </p>
+          </div>
         </div>
 
-        <div>
-          <p className="text-xs font-medium uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
-            {app.category}
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-gradient">{app.name}</h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
-            {platformLabel}
-            {app.latestVersion && ` · v${app.latestVersion}`}
-            {app.latestFileSize && ` · ${app.latestFileSize}`}
-          </p>
+        {/* ── CTAs ── */}
+        <div className="mt-8 flex flex-wrap gap-3">
+          <button className="btn-primary">Download APK</button>
+          <button className="btn-secondary">
+            <svg
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              className="mr-2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"
+              />
+            </svg>
+            QR Code
+          </button>
         </div>
-      </div>
 
-      <div className="mt-10 flex flex-wrap gap-3">
-        <button className="btn-primary">Download APK</button>
-        <button className="btn-secondary">QR Code</button>
-      </div>
+        <div className="section-divider my-10" />
 
-      <div className="my-10 h-px" style={{ background: "var(--border)" }} />
+        {/* ── About ── */}
+        <section>
+          <h2 className="font-display mb-4 text-lg font-semibold text-white">About</h2>
+          <p className="text-base leading-7 text-zinc-400">{app.shortDesc}</p>
+        </section>
 
-      <section>
-        <h2 className="mb-4 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-          About
-        </h2>
-        <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          {app.shortDesc}
-        </p>
-      </section>
+        <div className="section-divider my-10" />
 
-      <div className="my-10 h-px" style={{ background: "var(--border)" }} />
+        {/* ── Security badge ── */}
+        <div className="flex items-start gap-4 rounded-2xl border border-gray-800 bg-white/[0.02] p-6">
+          <div
+            className="flex-shrink-0 rounded-lg p-2"
+            style={{ background: "rgba(30,255,0,0.08)", color: "#1eff00" }}
+          >
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 6.627 5.373 12 12 12s12-5.373 12-12a12 12 0 00-.598-3.75M15 3.036A11.959 11.959 0 0120.402 6"
+              />
+            </svg>
+          </div>
+          <div>
+            <p className="font-display text-sm font-semibold text-white">Virus Scanned</p>
+            <p className="mt-1 text-sm text-zinc-500">
+              This APK was scanned by VirusTotal (70+ engines) and passed with no threats detected.
+            </p>
+          </div>
+        </div>
 
-      <section>
-        <h2 className="mb-4 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-          Version History
-        </h2>
+        <div className="section-divider my-10" />
+
+        {/* ── Version history ── */}
+        <section>
+          <h2 className="font-display mb-4 text-lg font-semibold text-white">Version History</h2>
+          <div className="overflow-hidden rounded-2xl border border-gray-800">
+            <VersionRow
+              version={app.latestVersion ?? "1.0.0"}
+              isLatest
+              changelog="Initial release available."
+              minOs="Android 8.0+"
+              fileSize={app.latestFileSize ?? "–"}
+            />
+          </div>
+        </section>
+
+        <div className="section-divider my-10" />
+
+        {/* ── CTA banner ── */}
         <div
-          className="overflow-hidden rounded-xl"
-          style={{ border: "1px solid var(--border)", background: "var(--bg-card)" }}
+          className="relative overflow-hidden rounded-2xl p-8 text-center md:p-12"
+          style={{
+            background: "linear-gradient(135deg, rgba(30,255,0,0.10) 0%, rgba(0,0,0,0) 60%)",
+            border: "1px solid rgba(30,255,0,0.2)",
+          }}
         >
-          <VersionRow
-            version={app.latestVersion ?? "1.0.0"}
-            isLatest
-            changelog="Initial release available."
-            minOs="Android 8.0+"
-            fileSize={app.latestFileSize ?? "–"}
+          {/* Glow dot */}
+          <div
+            className="pointer-events-none absolute -top-10 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full blur-3xl"
+            style={{ background: "rgba(30,255,0,0.15)" }}
           />
+          <p className="font-display relative text-xs font-semibold uppercase tracking-widest text-zinc-500">
+            Ready to install?
+          </p>
+          <h2 className="font-display relative mt-2 text-3xl font-extrabold text-white md:text-4xl">
+            Get {app.name} today
+          </h2>
+          <p className="relative mx-auto mt-3 max-w-sm text-sm leading-6 text-zinc-400">
+            Free to download. Virus-scanned. No account required to install.
+          </p>
+          <div className="relative mt-8 flex flex-wrap items-center justify-center gap-4">
+            <button
+              className="inline-flex cursor-pointer items-center justify-center rounded-lg px-8 py-3 text-base font-semibold text-black transition-all duration-300"
+              style={{ backgroundColor: "#1eff00" }}
+            >
+              Download APK
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                className="ml-2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+            </button>
+            <button className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-8 py-3 text-base font-medium text-white transition-all duration-200 hover:border-zinc-500 hover:bg-white/5">
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"
+                />
+              </svg>
+              Generate QR Code
+            </button>
+          </div>
+          {/* Trust note */}
+          <p className="relative mt-6 text-xs text-zinc-600">
+            Scanned by VirusTotal (70+ engines) &middot; GDPR compliant &middot; No account needed
+          </p>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
@@ -102,16 +225,12 @@ const VersionRow = ({ version, isLatest, changelog, minOs, fileSize }: VersionRo
   <div className="flex items-start justify-between gap-4 p-5">
     <div className="flex-1">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-          v{version}
-        </span>
-        {isLatest && <span className="badge-green">Latest</span>}
+        <span className="font-display text-sm font-semibold text-white">v{version}</span>
+        {isLatest && <span className="badge-accent text-xs">Latest</span>}
       </div>
-      <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
-        {changelog}
-      </p>
-      <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
-        {minOs} · {fileSize}
+      <p className="mt-1 text-sm text-zinc-400">{changelog}</p>
+      <p className="mt-1 text-xs text-zinc-600">
+        {minOs} &middot; {fileSize}
       </p>
     </div>
     <button className="btn-secondary flex-shrink-0 px-4 py-2 text-sm">Download</button>

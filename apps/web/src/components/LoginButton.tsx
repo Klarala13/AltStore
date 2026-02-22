@@ -6,7 +6,7 @@ const LoginButton = () => {
   return (
     <button
       onClick={() => signIn("google", { callbackUrl: "/" })}
-      className="btn-secondary flex w-full items-center justify-center gap-3 py-3 text-sm"
+      className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-gray-800 bg-white/5 px-5 py-3 text-sm font-medium text-zinc-300 transition-all duration-200 hover:border-gray-600 hover:bg-white/[0.08] hover:text-white"
     >
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
         <path
