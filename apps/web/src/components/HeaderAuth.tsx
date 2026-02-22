@@ -7,7 +7,14 @@ const HeaderAuth = () => {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <div className="h-7 w-20 animate-pulse rounded-lg bg-white/5" />;
+    return (
+      <div
+        className="h-7 w-20 animate-pulse rounded-lg bg-white/5"
+        role="status"
+        aria-busy="true"
+        aria-label="Loading sign-in status"
+      />
+    );
   }
 
   if (session) {

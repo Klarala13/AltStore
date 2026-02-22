@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MOCK_APPS } from "@/lib/mock-data";
 
@@ -29,12 +30,18 @@ const AppDetailPage = async ({ params }: Props) => {
       <div className="mx-auto max-w-3xl">
         {/* ── App header ── */}
         <div className="flex items-start gap-6">
-          <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border border-gray-800 bg-white/5">
+          <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border border-zinc-800 bg-white/5">
             {app.iconUrl ? (
-              <img src={app.iconUrl} alt={app.name} className="h-full w-full object-cover" />
+              <Image
+                src={app.iconUrl}
+                alt={`${app.name} icon`}
+                fill
+                sizes="80px"
+                className="object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <span className="font-display text-2xl font-bold text-zinc-600">
+                <span className="font-display text-2xl font-bold text-zinc-600" aria-hidden="true">
                   {app.name.charAt(0)}
                 </span>
               </div>
@@ -58,8 +65,20 @@ const AppDetailPage = async ({ params }: Props) => {
 
         {/* ── CTAs ── */}
         <div className="mt-8 flex flex-wrap gap-3">
-          <button className="btn-primary">Download APK</button>
-          <button className="btn-secondary">
+          <button
+            type="button"
+            aria-disabled="true"
+            title="Download coming soon"
+            className="btn-primary cursor-not-allowed opacity-60"
+          >
+            Download APK
+          </button>
+          <button
+            type="button"
+            aria-disabled="true"
+            title="QR code coming soon"
+            className="btn-secondary cursor-not-allowed opacity-60"
+          >
             <svg
               width="16"
               height="16"
@@ -68,6 +87,7 @@ const AppDetailPage = async ({ params }: Props) => {
               stroke="currentColor"
               strokeWidth={1.5}
               className="mr-2"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -90,7 +110,7 @@ const AppDetailPage = async ({ params }: Props) => {
         <div className="section-divider my-10" />
 
         {/* ── Security badge ── */}
-        <div className="flex items-start gap-4 rounded-2xl border border-gray-800 bg-white/[0.02] p-6">
+        <div className="flex items-start gap-4 rounded-2xl border border-zinc-800 bg-white/[0.02] p-6">
           <div
             className="flex-shrink-0 rounded-lg p-2"
             style={{ background: "rgba(30,255,0,0.08)", color: "#1eff00" }}
@@ -102,6 +122,7 @@ const AppDetailPage = async ({ params }: Props) => {
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={1.5}
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -123,7 +144,7 @@ const AppDetailPage = async ({ params }: Props) => {
         {/* ── Version history ── */}
         <section>
           <h2 className="font-display mb-4 text-lg font-semibold text-white">Version History</h2>
-          <div className="overflow-hidden rounded-2xl border border-gray-800">
+          <div className="overflow-hidden rounded-2xl border border-zinc-800">
             <VersionRow
               version={app.latestVersion ?? "1.0.0"}
               isLatest
@@ -160,8 +181,10 @@ const AppDetailPage = async ({ params }: Props) => {
           </p>
           <div className="relative mt-8 flex flex-wrap items-center justify-center gap-4">
             <button
-              className="inline-flex cursor-pointer items-center justify-center rounded-lg px-8 py-3 text-base font-semibold text-black transition-all duration-300"
-              style={{ backgroundColor: "#1eff00" }}
+              type="button"
+              aria-disabled="true"
+              title="Download coming soon"
+              className="btn-primary cursor-not-allowed px-8 py-3 text-base opacity-60"
             >
               Download APK
               <svg
@@ -172,6 +195,7 @@ const AppDetailPage = async ({ params }: Props) => {
                 stroke="currentColor"
                 strokeWidth={2.5}
                 className="ml-2"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -180,7 +204,12 @@ const AppDetailPage = async ({ params }: Props) => {
                 />
               </svg>
             </button>
-            <button className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-8 py-3 text-base font-medium text-white transition-all duration-200 hover:border-zinc-500 hover:bg-white/5">
+            <button
+              type="button"
+              aria-disabled="true"
+              title="QR code coming soon"
+              className="btn-secondary cursor-not-allowed px-8 py-3 text-base opacity-60"
+            >
               <svg
                 width="16"
                 height="16"
@@ -188,6 +217,8 @@ const AppDetailPage = async ({ params }: Props) => {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 strokeWidth={2}
+                className="mr-2"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -233,7 +264,14 @@ const VersionRow = ({ version, isLatest, changelog, minOs, fileSize }: VersionRo
         {minOs} &middot; {fileSize}
       </p>
     </div>
-    <button className="btn-secondary flex-shrink-0 px-4 py-2 text-sm">Download</button>
+    <button
+      type="button"
+      aria-disabled="true"
+      title="Download coming soon"
+      className="btn-secondary flex-shrink-0 cursor-not-allowed px-4 py-2 text-sm opacity-60"
+    >
+      Download
+    </button>
   </div>
 );
 

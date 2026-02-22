@@ -5,6 +5,31 @@
 @tailwind utilities;
 
 @layer base {
+  /* Global focus-visible ring — lime accent on all interactive elements */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Suppress default :focus outline when :focus-visible is used */
+  a:focus:not(:focus-visible),
+  button:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Respect reduced-motion preference for all transitions */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   :root {
     --bg: #000000;
     --bg-raised: #0a0a0a;
@@ -50,6 +75,11 @@
   .btn-primary:hover {
     background-color: var(--accent-dim);
   }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(30, 255, 0, 0.2);
+  }
 
   /* Secondary ghost button */
   .btn-secondary {
@@ -62,6 +92,10 @@
     color: var(--text-primary);
     border-color: rgba(255, 255, 255, 0.3);
     background-color: rgba(255, 255, 255, 0.05);
+  }
+  .btn-secondary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 
   /* Accent badge pill */
@@ -99,6 +133,24 @@
   }
 }
 
+@layer components {
+  /* Legal prose lists — scoped so they don't bleed into nav/footer */
+  .legal-prose ul {
+    @apply list-disc space-y-2 pl-5;
+  }
+  .legal-prose li {
+    @apply text-zinc-400;
+  }
+  .legal-prose strong {
+    @apply font-semibold text-zinc-200;
+  }
+  .legal-prose code {
+    @apply rounded px-1 py-0.5 font-mono text-xs;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #a1a1aa;
+  }
+}
+
 @layer utilities {
   /* Urbanist display font for headings */
   .font-display {
@@ -124,5 +176,10 @@
   }
   .sign-out-btn:hover {
     color: var(--text-primary);
+  }
+  .sign-out-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 }

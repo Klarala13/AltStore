@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
+import Link from "next/link";
 import { AuthProvider } from "@/components/AuthProvider";
-import { HeaderAuth } from "@/components/HeaderAuth";
+import { SiteHeader } from "@/components/SiteNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,56 +19,56 @@ export const metadata: Metadata = {
   },
 };
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <html lang="en">
-      <body className="min-h-screen bg-black text-white antialiased">
-        <AuthProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </AuthProvider>
-      </body>
-    </html>
-  );
-};
+// ---------------------------------------------------------------------------
+// Skip link — visually hidden until focused by keyboard
+// ---------------------------------------------------------------------------
 
-const Header = () => (
-  <header className="sticky top-0 z-50 border-b border-gray-800 bg-black/50 backdrop-blur-sm">
-    <div className="mx-4 flex items-center justify-between py-4 md:mx-16 lg:mx-24 xl:mx-32">
-      <a href="/" className="font-display text-lg font-bold tracking-tight text-white">
-        AltStore
-      </a>
-      <nav className="hidden items-center gap-8 md:flex">
-        <NavLink href="/">Apps</NavLink>
-        <NavLink href="/search">Search</NavLink>
-        <NavLink href="/developers">Developers</NavLink>
-      </nav>
-      <div className="flex items-center gap-3">
-        <HeaderAuth />
-      </div>
-    </div>
-  </header>
-);
-
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+const SkipLink = () => (
   <a
-    href={href}
-    className="text-sm font-medium text-zinc-300 transition-colors duration-200 hover:text-white"
+    href="#content"
+    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-lg focus:bg-black focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:outline-none focus:ring-2 focus:ring-[#1eff00]"
   >
-    {children}
+    Skip to content
   </a>
 );
 
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+
+const FooterGroup = ({
+  title,
+  links,
+}: {
+  title: string;
+  links: { label: string; href: Route }[];
+}) => (
+  <div>
+    <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">{title}</p>
+    <ul className="space-y-2">
+      {links.map(({ label, href }) => (
+        <li key={label}>
+          <Link
+            href={href}
+            className="text-sm text-zinc-400 transition-colors duration-150 hover:text-white"
+          >
+            {label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 const Footer = () => (
-  <footer className="mt-32 border-t border-gray-800">
+  <footer className="mt-32 border-t border-zinc-800">
     <div className="mx-4 md:mx-16 lg:mx-24 xl:mx-32">
       {/* Top row */}
       <div className="flex flex-col gap-8 py-12 md:flex-row md:justify-between">
         <div className="max-w-xs">
-          <a href="/" className="font-display text-lg font-bold text-white">
+          <Link href="/" className="font-display text-lg font-bold text-white">
             AltStore
-          </a>
+          </Link>
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
             A DMA-compliant alternative app marketplace for the EU. Every app scanned. Zero
             tracking.
@@ -78,15 +80,15 @@ const Footer = () => (
             title="Marketplace"
             links={[
               { label: "Browse Apps", href: "/" },
-              { label: "Categories", href: "/categories" },
-              { label: "New Releases", href: "/new" },
+              { label: "Categories", href: "/categories" as Route },
+              { label: "New Releases", href: "/new" as Route },
             ]}
           />
           <FooterGroup
             title="Developers"
             links={[
               { label: "Submit App", href: "/developers" },
-              { label: "API Docs", href: "/docs" },
+              { label: "API Docs", href: "/docs" as Route },
               { label: "Sign In", href: "/login" },
             ]}
           />
@@ -102,7 +104,7 @@ const Footer = () => (
       </div>
 
       {/* Bottom row */}
-      <div className="flex flex-col items-start justify-between gap-3 border-t border-gray-800 py-6 md:flex-row md:items-center">
+      <div className="flex flex-col items-start justify-between gap-3 border-t border-zinc-800 py-6 md:flex-row md:items-center">
         <p className="text-xs text-zinc-500">
           &copy; {new Date().getFullYear()} AltStore. DMA-compliant &middot; EU.
         </p>
@@ -112,28 +114,23 @@ const Footer = () => (
   </footer>
 );
 
-const FooterGroup = ({
-  title,
-  links,
-}: {
-  title: string;
-  links: { label: string; href: string }[];
-}) => (
-  <div>
-    <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">{title}</p>
-    <ul className="space-y-2">
-      {links.map(({ label, href }) => (
-        <li key={label}>
-          <a
-            href={href}
-            className="text-sm text-zinc-400 transition-colors duration-150 hover:text-white"
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+// ---------------------------------------------------------------------------
+// Root layout
+// ---------------------------------------------------------------------------
+
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <html lang="en">
+      <body className="min-h-screen bg-black text-white antialiased">
+        <SkipLink />
+        <AuthProvider>
+          <SiteHeader />
+          <main id="content">{children}</main>
+          <Footer />
+        </AuthProvider>
+      </body>
+    </html>
+  );
+};
 
 export default RootLayout;

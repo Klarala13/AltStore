@@ -1,3 +1,5 @@
+import type { Route } from "next";
+import Link from "next/link";
 import type { AppCardDto } from "@altstore/types";
 import { AppCard } from "@/components/AppCard";
 import { MOCK_APPS } from "@/lib/mock-data";
@@ -83,11 +85,11 @@ const HeroSection = () => (
 
       {/* CTAs */}
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <a href="#apps" className="btn-primary px-7 py-3 text-base">
+        <Link href="/#apps" className="btn-primary px-7 py-3 text-base">
           Browse Apps
-        </a>
-        <a
-          href="/developers"
+        </Link>
+        <Link
+          href={"/developers#how-it-works" as Route}
           className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-7 py-3 text-base font-medium text-white transition-all duration-200 hover:border-zinc-500 hover:bg-white/5"
         >
           See How It Works
@@ -100,10 +102,11 @@ const HeroSection = () => (
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <path d="M7 17L17 7M17 7H7M17 7v10" />
           </svg>
-        </a>
+        </Link>
       </div>
 
       {/* Social proof */}
@@ -168,9 +171,9 @@ const CATEGORIES = [
 const CategoryBar = () => (
   <div className="flex flex-wrap gap-2">
     {CATEGORIES.map(({ label, active }) => (
-      <a
+      <Link
         key={label}
-        href={active ? "/" : `/category/${label.toLowerCase()}`}
+        href={(active ? "/" : `/category/${label.toLowerCase()}`) as Route}
         className="rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200"
         style={{
           color: active ? "#000" : "#71717a",
@@ -180,7 +183,7 @@ const CategoryBar = () => (
         }}
       >
         {label}
-      </a>
+      </Link>
     ))}
   </div>
 );
