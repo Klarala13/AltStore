@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 type Mode = "login" | "register";
@@ -57,18 +58,22 @@ const AppleIcon = () => (
   </svg>
 );
 
+const inputClass =
+  "w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 transition-colors duration-150 hover:border-zinc-700 focus:border-zinc-600 focus:outline-none";
+
 const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
-  const [mode, setMode] = useState<Mode>(defaultMode);
+  const router = useRouter();
+  const isLogin = defaultMode === "login";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-
-  const isLogin = mode === "login";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission wired up to NextAuth credentials provider when added
+    // Wire up to NextAuth credentials provider when added
   };
 
   return (
@@ -81,7 +86,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
       />
 
       {/* Card */}
-      <div className="relative rounded-2xl border border-zinc-800 bg-zinc-950/80 p-8 backdrop-blur-sm">
+      <div className="relative rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 backdrop-blur-sm">
         {/* Header */}
         <div className="mb-6 text-center">
           <span className="font-display text-2xl font-bold text-white">AltStore</span>
@@ -92,11 +97,11 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           </p>
         </div>
 
-        {/* Mode toggle tabs */}
+        {/* Mode toggle tabs — Register navigates, Sign In navigates */}
         <div className="mb-6 flex rounded-lg border border-zinc-800 bg-zinc-900/60 p-1">
           <button
             type="button"
-            onClick={() => setMode("login")}
+            onClick={() => router.push("/login")}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition-all duration-200 ${
               isLogin ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
             }`}
@@ -105,48 +110,13 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           </button>
           <button
             type="button"
-            onClick={() => setMode("register")}
+            onClick={() => router.push("/register")}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition-all duration-200 ${
               !isLogin ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
             }`}
           >
             Register
           </button>
-        </div>
-
-        {/* Social logins — secondary, below tabs */}
-        <div className="mb-5 flex flex-col gap-2.5">
-          <button
-            type="button"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
-            className="btn-secondary flex w-full items-center justify-center gap-2.5 py-2.5 text-sm"
-          >
-            <GoogleIcon />
-            Continue with Google
-          </button>
-          <div className="flex gap-2.5">
-            <button
-              type="button"
-              className="btn-secondary flex flex-1 items-center justify-center gap-2 py-2.5 text-sm"
-            >
-              <GitHubIcon />
-              GitHub
-            </button>
-            <button
-              type="button"
-              className="btn-secondary flex flex-1 items-center justify-center gap-2 py-2.5 text-sm"
-            >
-              <AppleIcon />
-              Apple
-            </button>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="mb-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-zinc-800" />
-          <span className="text-xs text-zinc-600">or with email</span>
-          <div className="h-px flex-1 bg-zinc-800" />
         </div>
 
         {/* Form */}
@@ -163,7 +133,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
                 placeholder="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-200 transition-colors duration-150 placeholder:text-zinc-600 hover:border-zinc-700 focus:border-zinc-600 focus:outline-none"
+                className={inputClass}
               />
             </div>
           )}
@@ -180,7 +150,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-200 transition-colors duration-150 placeholder:text-zinc-600 hover:border-zinc-700 focus:border-zinc-600 focus:outline-none"
+              className={inputClass}
             />
           </div>
 
@@ -206,20 +176,40 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-200 transition-colors duration-150 placeholder:text-zinc-600 hover:border-zinc-700 focus:border-zinc-600 focus:outline-none"
+              className={inputClass}
             />
           </div>
 
+          {!isLogin && (
+            <div>
+              <label
+                htmlFor="auth-confirm-password"
+                className="mb-1.5 block text-xs font-medium text-zinc-400"
+              >
+                Repeat Password
+              </label>
+              <input
+                id="auth-confirm-password"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className={inputClass}
+              />
+            </div>
+          )}
+
           {/* Remember me */}
           <label className="flex cursor-pointer items-center gap-2.5">
-            <span className="h-4.5 w-4.5 relative flex shrink-0">
+            <span className="relative flex h-[18px] w-[18px] shrink-0">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="peer h-[18px] w-[18px] cursor-pointer appearance-none rounded border border-zinc-700 bg-zinc-900 transition-colors duration-150 checked:border-[var(--accent)] checked:bg-[var(--accent)] hover:border-zinc-500"
               />
-              {/* Checkmark */}
               <svg
                 className="pointer-events-none absolute inset-0 m-auto h-3 w-3 opacity-0 transition-opacity peer-checked:opacity-100"
                 viewBox="0 0 12 12"
@@ -238,18 +228,50 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
             <span className="text-sm text-zinc-400">Remember me</span>
           </label>
 
-          {/* Submit */}
           <button type="submit" className="btn-primary mt-1 w-full py-2.5 text-sm">
             {isLogin ? "Sign In" : "Create Account"}
           </button>
         </form>
 
-        {/* Spacer / toggle hint */}
+        {/* Divider */}
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-zinc-800" />
+          <span className="text-xs text-zinc-600">or continue with</span>
+          <div className="h-px flex-1 bg-zinc-800" />
+        </div>
+
+        {/* Social logins — equal width and height */}
+        <div className="flex gap-2.5">
+          <button
+            type="button"
+            onClick={() => signIn("google", { callbackUrl: "/" })}
+            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm"
+          >
+            <GoogleIcon />
+            Google
+          </button>
+          <button
+            type="button"
+            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm"
+          >
+            <GitHubIcon />
+            GitHub
+          </button>
+          <button
+            type="button"
+            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm"
+          >
+            <AppleIcon />
+            Apple
+          </button>
+        </div>
+
+        {/* Toggle hint */}
         <p className="mt-5 text-center text-xs text-zinc-600">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
-            onClick={() => setMode(isLogin ? "register" : "login")}
+            onClick={() => router.push(isLogin ? "/register" : "/login")}
             className="font-medium text-zinc-400 underline-offset-2 transition-colors hover:text-white hover:underline"
           >
             {isLogin ? "Register" : "Sign in"}

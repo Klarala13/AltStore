@@ -42,8 +42,10 @@ export const MobileNav = () => {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
-  // Close on route change
+  // Close drawer on route change — setState in effect is intentional here
+  // (synchronising drawer state with external navigation events)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [pathname]);
 
