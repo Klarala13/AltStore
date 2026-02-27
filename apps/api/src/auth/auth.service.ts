@@ -1,9 +1,16 @@
-import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import { LoginDto, RegisterDeveloperDto } from "./auth.dto";
 import { JwtPayload } from "./jwt.strategy";
-import * as crypto from "crypto";
+import * as bcrypt from "bcrypt";
+
+const BCRYPT_ROUNDS = 12;
 
 @Injectable()
 export class AuthService {
@@ -20,23 +27,18 @@ export class AuthService {
       throw new ConflictException("Email already registered");
     }
 
-    const passwordHash = crypto.createHash("sha256").update(dto.password).digest("hex");
+    const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
 
     const developer = await this.prisma.developer.create({
       data: {
         email: dto.email,
         name: dto.name,
+        passwordHash,
         type: dto.type,
         country: dto.country,
         vatNumber: dto.vatNumber ?? null,
-        // Store hash — in production replace with bcrypt
-        // Using SHA-256 here to keep zero extra deps for now
       },
     });
-
-    // Store password hash in a separate field via raw update
-    // (schema will need a passwordHash field — see note)
-    void passwordHash; // referenced to avoid unused-var lint error
 
     const payload: JwtPayload = { sub: developer.id, email: developer.email };
     return { accessToken: this.jwt.sign(payload) };
@@ -48,6 +50,20 @@ export class AuthService {
     });
 
     if (!developer) {
+      // Constant-time rejection to prevent user enumeration
+      await bcrypt.hash("dummy", BCRYPT_ROUNDS);
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    if (!developer.passwordHash) {
+      // Account registered via OAuth — cannot log in with password
+      throw new BadRequestException(
+        "This account was created via social login. Please use the corresponding provider."
+      );
+    }
+
+    const passwordValid = await bcrypt.compare(dto.password, developer.passwordHash);
+    if (!passwordValid) {
       throw new UnauthorizedException("Invalid credentials");
     }
 

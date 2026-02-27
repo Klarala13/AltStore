@@ -125,6 +125,7 @@ exports.Prisma.DeveloperScalarFieldEnum = {
   id: 'id',
   email: 'email',
   name: 'name',
+  passwordHash: 'passwordHash',
   type: 'type',
   vatNumber: 'vatNumber',
   country: 'country',

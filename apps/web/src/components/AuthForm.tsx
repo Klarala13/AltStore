@@ -61,6 +61,8 @@ const AppleIcon = () => (
 const inputClass =
   "w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 transition-colors duration-150 hover:border-zinc-700 focus:border-zinc-600 focus:outline-none";
 
+const GENERIC_ERROR = "Something went wrong. Please try again.";
+
 const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
   const router = useRouter();
   const isLogin = defaultMode === "login";
@@ -70,10 +72,82 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Wire up to NextAuth credentials provider when added
+    setError(null);
+
+    if (!isLogin && password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (result?.error) {
+          setError("Invalid email or password.");
+          return;
+        }
+
+        router.push("/");
+        router.refresh();
+      } else {
+        // Register via Next.js API route → NestJS
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            name,
+            password,
+            // Default values required by NestJS DTO — developer type selection
+            // can be added to the form in a later iteration
+            type: "INDIVIDUAL",
+            country: "EU",
+          }),
+        });
+
+        if (res.status === 409) {
+          setError("An account with this email already exists.");
+          return;
+        }
+
+        if (!res.ok) {
+          setError(GENERIC_ERROR);
+          return;
+        }
+
+        // Auto sign-in after successful registration
+        const result = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (result?.error) {
+          // Registration succeeded but auto-login failed — redirect to login
+          router.push("/login");
+          return;
+        }
+
+        router.push("/");
+        router.refresh();
+      }
+    } catch {
+      setError(GENERIC_ERROR);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -119,6 +193,16 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           </button>
         </div>
 
+        {/* Error banner */}
+        {error && (
+          <div
+            role="alert"
+            className="mb-4 rounded-lg border border-red-900/60 bg-red-950/40 px-3.5 py-2.5 text-sm text-red-400"
+          >
+            {error}
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {!isLogin && (
@@ -133,6 +217,8 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
                 placeholder="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required
+                disabled={loading}
                 className={inputClass}
               />
             </div>
@@ -150,6 +236,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
               className={inputClass}
             />
           </div>
@@ -176,6 +263,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
               className={inputClass}
             />
           </div>
@@ -196,6 +284,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                disabled={loading}
                 className={inputClass}
               />
             </div>
@@ -208,6 +297,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={loading}
                 className="peer h-[18px] w-[18px] cursor-pointer appearance-none rounded border border-zinc-700 bg-zinc-900 transition-colors duration-150 checked:border-[var(--accent)] checked:bg-[var(--accent)] hover:border-zinc-500"
               />
               <svg
@@ -228,8 +318,18 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
             <span className="text-sm text-zinc-400">Remember me</span>
           </label>
 
-          <button type="submit" className="btn-primary mt-1 w-full py-2.5 text-sm">
-            {isLogin ? "Sign In" : "Create Account"}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary mt-1 w-full py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading
+              ? isLogin
+                ? "Signing in…"
+                : "Creating account…"
+              : isLogin
+                ? "Sign In"
+                : "Create Account"}
           </button>
         </form>
 
@@ -245,21 +345,24 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl: "/" })}
-            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm"
+            disabled={loading}
+            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm disabled:opacity-60"
           >
             <GoogleIcon />
             Google
           </button>
           <button
             type="button"
-            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm"
+            disabled={loading}
+            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm disabled:opacity-60"
           >
             <GitHubIcon />
             GitHub
           </button>
           <button
             type="button"
-            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm"
+            disabled={loading}
+            className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm disabled:opacity-60"
           >
             <AppleIcon />
             Apple

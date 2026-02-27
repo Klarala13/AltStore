@@ -1556,6 +1556,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     name: string | null
+    passwordHash: string | null
     type: $Enums.DeveloperType | null
     vatNumber: string | null
     country: string | null
@@ -1569,6 +1570,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     name: string | null
+    passwordHash: string | null
     type: $Enums.DeveloperType | null
     vatNumber: string | null
     country: string | null
@@ -1582,6 +1584,7 @@ export namespace Prisma {
     id: number
     email: number
     name: number
+    passwordHash: number
     type: number
     vatNumber: number
     country: number
@@ -1597,6 +1600,7 @@ export namespace Prisma {
     id?: true
     email?: true
     name?: true
+    passwordHash?: true
     type?: true
     vatNumber?: true
     country?: true
@@ -1610,6 +1614,7 @@ export namespace Prisma {
     id?: true
     email?: true
     name?: true
+    passwordHash?: true
     type?: true
     vatNumber?: true
     country?: true
@@ -1623,6 +1628,7 @@ export namespace Prisma {
     id?: true
     email?: true
     name?: true
+    passwordHash?: true
     type?: true
     vatNumber?: true
     country?: true
@@ -1709,6 +1715,7 @@ export namespace Prisma {
     id: string
     email: string
     name: string
+    passwordHash: string | null
     type: $Enums.DeveloperType
     vatNumber: string | null
     country: string
@@ -1739,6 +1746,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    passwordHash?: boolean
     type?: boolean
     vatNumber?: boolean
     country?: boolean
@@ -1754,6 +1762,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    passwordHash?: boolean
     type?: boolean
     vatNumber?: boolean
     country?: boolean
@@ -1767,6 +1776,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    passwordHash?: boolean
     type?: boolean
     vatNumber?: boolean
     country?: boolean
@@ -1780,6 +1790,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     name?: boolean
+    passwordHash?: boolean
     type?: boolean
     vatNumber?: boolean
     country?: boolean
@@ -1789,7 +1800,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "type" | "vatNumber" | "country" | "verified" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
+  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "type" | "vatNumber" | "country" | "verified" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
   export type DeveloperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apps?: boolean | Developer$appsArgs<ExtArgs>
     _count?: boolean | DeveloperCountOutputTypeDefaultArgs<ExtArgs>
@@ -1806,6 +1817,7 @@ export namespace Prisma {
       id: string
       email: string
       name: string
+      passwordHash: string | null
       type: $Enums.DeveloperType
       vatNumber: string | null
       country: string
@@ -2240,6 +2252,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Developer", 'String'>
     readonly email: FieldRef<"Developer", 'String'>
     readonly name: FieldRef<"Developer", 'String'>
+    readonly passwordHash: FieldRef<"Developer", 'String'>
     readonly type: FieldRef<"Developer", 'DeveloperType'>
     readonly vatNumber: FieldRef<"Developer", 'String'>
     readonly country: FieldRef<"Developer", 'String'>
@@ -8446,6 +8459,7 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     name: 'name',
+    passwordHash: 'passwordHash',
     type: 'type',
     vatNumber: 'vatNumber',
     country: 'country',
@@ -8772,6 +8786,7 @@ export namespace Prisma {
     id?: StringFilter<"Developer"> | string
     email?: StringFilter<"Developer"> | string
     name?: StringFilter<"Developer"> | string
+    passwordHash?: StringNullableFilter<"Developer"> | string | null
     type?: EnumDeveloperTypeFilter<"Developer"> | $Enums.DeveloperType
     vatNumber?: StringNullableFilter<"Developer"> | string | null
     country?: StringFilter<"Developer"> | string
@@ -8786,6 +8801,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     type?: SortOrder
     vatNumber?: SortOrderInput | SortOrder
     country?: SortOrder
@@ -8803,6 +8819,7 @@ export namespace Prisma {
     OR?: DeveloperWhereInput[]
     NOT?: DeveloperWhereInput | DeveloperWhereInput[]
     name?: StringFilter<"Developer"> | string
+    passwordHash?: StringNullableFilter<"Developer"> | string | null
     type?: EnumDeveloperTypeFilter<"Developer"> | $Enums.DeveloperType
     vatNumber?: StringNullableFilter<"Developer"> | string | null
     country?: StringFilter<"Developer"> | string
@@ -8817,6 +8834,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     type?: SortOrder
     vatNumber?: SortOrderInput | SortOrder
     country?: SortOrder
@@ -8836,6 +8854,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Developer"> | string
     email?: StringWithAggregatesFilter<"Developer"> | string
     name?: StringWithAggregatesFilter<"Developer"> | string
+    passwordHash?: StringNullableWithAggregatesFilter<"Developer"> | string | null
     type?: EnumDeveloperTypeWithAggregatesFilter<"Developer"> | $Enums.DeveloperType
     vatNumber?: StringNullableWithAggregatesFilter<"Developer"> | string | null
     country?: StringWithAggregatesFilter<"Developer"> | string
@@ -9275,6 +9294,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    passwordHash?: string | null
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
@@ -9289,6 +9309,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    passwordHash?: string | null
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
@@ -9303,6 +9324,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
@@ -9317,6 +9339,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
@@ -9331,6 +9354,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    passwordHash?: string | null
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
@@ -9344,6 +9368,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
@@ -9357,6 +9382,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
@@ -9870,13 +9896,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type EnumDeveloperTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeveloperTypeFilter<$PrismaModel> | $Enums.DeveloperType
-  }
-
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -9890,6 +9909,13 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type EnumDeveloperTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeveloperTypeFilter<$PrismaModel> | $Enums.DeveloperType
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -9938,6 +9964,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    passwordHash?: SortOrder
     type?: SortOrder
     vatNumber?: SortOrder
     country?: SortOrder
@@ -9951,6 +9978,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    passwordHash?: SortOrder
     type?: SortOrder
     vatNumber?: SortOrder
     country?: SortOrder
@@ -9964,6 +9992,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    passwordHash?: SortOrder
     type?: SortOrder
     vatNumber?: SortOrder
     country?: SortOrder
@@ -9991,16 +10020,6 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type EnumDeveloperTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeveloperTypeWithAggregatesFilter<$PrismaModel> | $Enums.DeveloperType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumDeveloperTypeFilter<$PrismaModel>
-    _max?: NestedEnumDeveloperTypeFilter<$PrismaModel>
-  }
-
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -10017,6 +10036,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumDeveloperTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeveloperTypeWithAggregatesFilter<$PrismaModel> | $Enums.DeveloperType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDeveloperTypeFilter<$PrismaModel>
+    _max?: NestedEnumDeveloperTypeFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -10536,12 +10565,12 @@ export namespace Prisma {
     set?: string
   }
 
-  export type EnumDeveloperTypeFieldUpdateOperationsInput = {
-    set?: $Enums.DeveloperType
-  }
-
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type EnumDeveloperTypeFieldUpdateOperationsInput = {
+    set?: $Enums.DeveloperType
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -10845,13 +10874,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedEnumDeveloperTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeveloperTypeFilter<$PrismaModel> | $Enums.DeveloperType
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -10864,6 +10886,13 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedEnumDeveloperTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeveloperTypeFilter<$PrismaModel> | $Enums.DeveloperType
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -10921,16 +10950,6 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type NestedEnumDeveloperTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeveloperTypeWithAggregatesFilter<$PrismaModel> | $Enums.DeveloperType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumDeveloperTypeFilter<$PrismaModel>
-    _max?: NestedEnumDeveloperTypeFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -10957,6 +10976,16 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumDeveloperTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DeveloperType | EnumDeveloperTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DeveloperType[] | ListEnumDeveloperTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumDeveloperTypeWithAggregatesFilter<$PrismaModel> | $Enums.DeveloperType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDeveloperTypeFilter<$PrismaModel>
+    _max?: NestedEnumDeveloperTypeFilter<$PrismaModel>
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -11261,6 +11290,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    passwordHash?: string | null
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
@@ -11274,6 +11304,7 @@ export namespace Prisma {
     id?: string
     email: string
     name: string
+    passwordHash?: string | null
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
@@ -11366,6 +11397,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
@@ -11379,6 +11411,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
