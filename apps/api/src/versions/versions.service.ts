@@ -102,6 +102,23 @@ export class VersionsService {
     };
   }
 
+  async getVersionStatus(appId: string, versionId: string, developerId: string) {
+    const version = await this.prisma.version.findUnique({
+      where: { id: versionId },
+      select: { id: true, appId: true, status: true },
+    });
+    if (!version || version.appId !== appId) throw new NotFoundException("Version not found");
+
+    // Confirm the requesting developer owns the app
+    const app = await this.prisma.app.findUnique({
+      where: { id: appId },
+      select: { developerId: true },
+    });
+    if (!app || app.developerId !== developerId) throw new ForbiddenException();
+
+    return { id: version.id, status: version.status };
+  }
+
   private validateApkFile(file: Express.Multer.File): void {
     if (!file) throw new BadRequestException("APK file is required");
 

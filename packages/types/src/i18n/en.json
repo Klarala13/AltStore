@@ -1,0 +1,241 @@
+{
+  "nav": {
+    "login": "Sign In",
+    "register": "Get Started",
+    "logout": "Sign Out",
+    "developer_portal": "Developer Portal",
+    "settings": "Settings"
+  },
+  "home": {
+    "hero": {
+      "title": "Apps. Free. Safe. Yours.",
+      "subtitle": "Europe's alternative app marketplace — DMA-compliant, GDPR-first, and always free.",
+      "cta_browse": "Browse Apps",
+      "cta_developer": "Publish Your App"
+    },
+    "featured": "Featured Apps",
+    "new_arrivals": "New Arrivals",
+    "top_downloads": "Most Downloaded",
+    "categories": "Categories",
+    "search_placeholder": "Search apps..."
+  },
+  "app": {
+    "download": "Download APK",
+    "qr": "Scan QR Code",
+    "qr_description": "Scan with your phone to download",
+    "by": "by",
+    "category": "Category",
+    "platform": "Platform",
+    "version": "Version",
+    "size": "Size",
+    "min_android": "Requires Android",
+    "min_ios": "Requires iOS",
+    "screenshots": "Screenshots",
+    "description": "Description",
+    "permissions": "Required Permissions",
+    "open_source": "Open Source",
+    "privacy_policy": "Privacy Policy",
+    "website": "Developer Website",
+    "versions": {
+      "title": "Version History",
+      "latest": "LATEST",
+      "download": "Download",
+      "changelog": "What's new",
+      "size_larger": "+{{size}} vs {{version}}",
+      "size_smaller": "-{{size}} vs {{version}}"
+    },
+    "meta": {
+      "download_title": "{{name}} - Download APK Free | AltStore",
+      "android": "Android",
+      "ios": "iOS"
+    }
+  },
+  "categories": {
+    "PRODUCTIVITY": "Productivity",
+    "SOCIAL": "Social",
+    "ENTERTAINMENT": "Entertainment",
+    "TOOLS": "Tools",
+    "EDUCATION": "Education",
+    "HEALTH": "Health",
+    "FINANCE": "Finance",
+    "GAMES": "Games",
+    "PHOTOGRAPHY": "Photography",
+    "NAVIGATION": "Navigation",
+    "OTHER": "Other"
+  },
+  "security": {
+    "scanning": "Scanning for threats...",
+    "clean": "Verified clean",
+    "infected": "Threat detected — app removed",
+    "badge": "Malware-scanned",
+    "badge_description": "Every app is scanned by VirusTotal before it reaches you"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your AltStore account",
+      "email": "Email address",
+      "password": "Password",
+      "forgot_password": "Forgot password?",
+      "submit": "Sign In",
+      "no_account": "Don't have an account?",
+      "register_link": "Get started",
+      "or": "or",
+      "google": "Continue with Google"
+    },
+    "register": {
+      "title": "Join AltStore",
+      "subtitle": "Create your account — it's free",
+      "name": "Full name",
+      "email": "Email address",
+      "password": "Password",
+      "confirm_password": "Confirm password",
+      "submit": "Create Account",
+      "have_account": "Already have an account?",
+      "login_link": "Sign in",
+      "or": "or",
+      "google": "Continue with Google",
+      "as_developer": "Registering as a developer?",
+      "developer_link": "Create a developer account"
+    },
+    "developer_register": {
+      "title": "Publish on AltStore",
+      "subtitle": "Reach European users — DMA-compliant from day one",
+      "type_individual": "Individual developer",
+      "type_company": "Company",
+      "company_name": "Company name",
+      "vat": "VAT number (EU companies)",
+      "country": "Country",
+      "submit": "Create Developer Account"
+    },
+    "errors": {
+      "invalid_credentials": "Incorrect email or password",
+      "email_taken": "An account with this email already exists",
+      "weak_password": "Password must be at least 8 characters",
+      "generic": "Something went wrong. Please try again."
+    },
+    "verification": {
+      "title": "Check your email",
+      "message": "We've sent a verification link to {{email}}. Click it to activate your account.",
+      "resend": "Resend email",
+      "resent": "Email resent"
+    }
+  },
+  "developer": {
+    "dashboard": {
+      "title": "Developer Dashboard",
+      "your_apps": "Your Apps",
+      "new_app": "Submit New App",
+      "total_downloads": "Total Downloads",
+      "active_apps": "Active Apps",
+      "pending_review": "Pending Review"
+    },
+    "app": {
+      "new_title": "Submit a New App",
+      "edit_title": "Manage App",
+      "new_version": "Submit New Version",
+      "fields": {
+        "name": "App name",
+        "bundle_id": "Bundle ID (e.g. com.example.myapp)",
+        "category": "Category",
+        "short_desc": "Short description",
+        "short_desc_hint": "Max 200 characters — shown on app cards",
+        "description": "Full description",
+        "icon": "App icon",
+        "screenshots": "Screenshots",
+        "website": "Website URL",
+        "privacy_url": "Privacy policy URL",
+        "privacy_url_hint": "Required — must link to your app's privacy policy",
+        "source_url": "Source code URL (optional)",
+        "platform": "Platform",
+        "min_android": "Minimum Android version",
+        "min_ios": "Minimum iOS version"
+      },
+      "submit": "Submit for Review",
+      "save_draft": "Save Draft",
+      "status": {
+        "PENDING_REVIEW": "Pending Review",
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspended",
+        "REMOVED": "Removed"
+      }
+    },
+    "version": {
+      "new_title": "Submit New Version",
+      "fields": {
+        "version_name": "Version number (e.g. 1.2.0)",
+        "changelog": "What's new in this version",
+        "apk_file": "APK file",
+        "apk_hint": "Max 500 MB · .apk files only"
+      },
+      "submit": "Upload & Scan",
+      "scanning_notice": "Your file is being scanned for malware. This usually takes a few minutes.",
+      "version_status": {
+        "SCANNING": "Scanning",
+        "CLEAN": "Clean",
+        "INFECTED": "Threat Detected",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected"
+      }
+    },
+    "notifications": {
+      "app_approved": "Your app \"{{name}}\" has been approved and is now live.",
+      "app_rejected": "Your app \"{{name}}\" was not approved. {{reason}}",
+      "version_approved": "Version {{version}} of \"{{name}}\" is now live.",
+      "version_infected": "Version {{version}} of \"{{name}}\" was removed: malware detected."
+    }
+  },
+  "search": {
+    "title": "Search Results",
+    "results_for": "Results for \"{{query}}\"",
+    "no_results": "No apps found for \"{{query}}\"",
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "platform": "Platform",
+      "sort": "Sort by",
+      "sort_downloads": "Most downloaded",
+      "sort_newest": "Newest first",
+      "sort_name": "Name A-Z",
+      "all_categories": "All categories",
+      "all_platforms": "All platforms",
+      "android": "Android",
+      "ios": "iOS"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "see_all": "See all",
+    "free": "Free",
+    "gdpr_badge": "GDPR Compliant",
+    "dma_badge": "DMA Compliant"
+  },
+  "footer": {
+    "about": "About AltStore",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "for_developers": "For Developers",
+    "contact": "Contact",
+    "gdpr_note": "AltStore is GDPR and DMA compliant. We never sell your data."
+  },
+  "error_pages": {
+    "not_found": {
+      "title": "App not found",
+      "message": "This app may have been removed or the link is incorrect.",
+      "cta": "Browse all apps"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "message": "We couldn't load this page. Please try again.",
+      "cta": "Go home"
+    }
+  }
+}

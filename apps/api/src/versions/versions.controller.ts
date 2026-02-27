@@ -24,6 +24,17 @@ interface AuthRequest extends Request {
 export class VersionsController {
   constructor(private readonly versionsService: VersionsService) {}
 
+  /** GET /apps/:appId/versions/:versionId/status — authenticated developer polls scan result */
+  @Get("apps/:appId/versions/:versionId/status")
+  @UseGuards(JwtAuthGuard)
+  getVersionStatus(
+    @Param("appId") appId: string,
+    @Param("versionId") versionId: string,
+    @Request() req: AuthRequest
+  ) {
+    return this.versionsService.getVersionStatus(appId, versionId, req.user.sub);
+  }
+
   /** GET /apps/:slug/versions — public, returns approved versions with diffs */
   @Get("apps/:slug/versions")
   getVersionHistory(@Param("slug") slug: string) {

@@ -1,0 +1,241 @@
+{
+  "nav": {
+    "login": "Iniciar sesión",
+    "register": "Empezar",
+    "logout": "Cerrar sesión",
+    "developer_portal": "Portal de desarrolladores",
+    "settings": "Ajustes"
+  },
+  "home": {
+    "hero": {
+      "title": "Apps. Gratis. Seguras. Tuyas.",
+      "subtitle": "El marketplace alternativo europeo — cumple la DMA, primero el RGPD, siempre gratis.",
+      "cta_browse": "Explorar apps",
+      "cta_developer": "Publica tu app"
+    },
+    "featured": "Apps destacadas",
+    "new_arrivals": "Novedades",
+    "top_downloads": "Más descargadas",
+    "categories": "Categorías",
+    "search_placeholder": "Buscar apps..."
+  },
+  "app": {
+    "download": "Descargar APK",
+    "qr": "Escanear código QR",
+    "qr_description": "Escanea con tu teléfono para descargar",
+    "by": "por",
+    "category": "Categoría",
+    "platform": "Plataforma",
+    "version": "Versión",
+    "size": "Tamaño",
+    "min_android": "Requiere Android",
+    "min_ios": "Requiere iOS",
+    "screenshots": "Capturas de pantalla",
+    "description": "Descripción",
+    "permissions": "Permisos requeridos",
+    "open_source": "Código abierto",
+    "privacy_policy": "Política de privacidad",
+    "website": "Web del desarrollador",
+    "versions": {
+      "title": "Historial de versiones",
+      "latest": "ÚLTIMA",
+      "download": "Descargar",
+      "changelog": "Novedades",
+      "size_larger": "+{{size}} respecto a {{version}}",
+      "size_smaller": "-{{size}} respecto a {{version}}"
+    },
+    "meta": {
+      "download_title": "{{name}} - Descargar APK gratis | AltStore",
+      "android": "Android",
+      "ios": "iOS"
+    }
+  },
+  "categories": {
+    "PRODUCTIVITY": "Productividad",
+    "SOCIAL": "Redes sociales",
+    "ENTERTAINMENT": "Entretenimiento",
+    "TOOLS": "Herramientas",
+    "EDUCATION": "Educación",
+    "HEALTH": "Salud",
+    "FINANCE": "Finanzas",
+    "GAMES": "Juegos",
+    "PHOTOGRAPHY": "Fotografía",
+    "NAVIGATION": "Navegación",
+    "OTHER": "Otros"
+  },
+  "security": {
+    "scanning": "Analizando en busca de amenazas...",
+    "clean": "Verificada, sin amenazas",
+    "infected": "Amenaza detectada — app eliminada",
+    "badge": "Analizada contra malware",
+    "badge_description": "Cada app es analizada por VirusTotal antes de llegar a ti"
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión en tu cuenta de AltStore",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "no_account": "¿No tienes cuenta?",
+      "register_link": "Empieza aquí",
+      "or": "o",
+      "google": "Continuar con Google"
+    },
+    "register": {
+      "title": "Únete a AltStore",
+      "subtitle": "Crea tu cuenta — es gratis",
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "have_account": "¿Ya tienes cuenta?",
+      "login_link": "Iniciar sesión",
+      "or": "o",
+      "google": "Continuar con Google",
+      "as_developer": "¿Registrándote como desarrollador?",
+      "developer_link": "Crear cuenta de desarrollador"
+    },
+    "developer_register": {
+      "title": "Publica en AltStore",
+      "subtitle": "Llega a usuarios europeos — cumple la DMA desde el primer día",
+      "type_individual": "Desarrollador individual",
+      "type_company": "Empresa",
+      "company_name": "Nombre de la empresa",
+      "vat": "Número de IVA (empresas de la UE)",
+      "country": "País",
+      "submit": "Crear cuenta de desarrollador"
+    },
+    "errors": {
+      "invalid_credentials": "Correo o contraseña incorrectos",
+      "email_taken": "Ya existe una cuenta con este correo",
+      "weak_password": "La contraseña debe tener al menos 8 caracteres",
+      "generic": "Algo ha salido mal. Por favor, inténtalo de nuevo."
+    },
+    "verification": {
+      "title": "Revisa tu correo",
+      "message": "Hemos enviado un enlace de verificación a {{email}}. Haz clic para activar tu cuenta.",
+      "resend": "Reenviar correo",
+      "resent": "Correo reenviado"
+    }
+  },
+  "developer": {
+    "dashboard": {
+      "title": "Panel de desarrollador",
+      "your_apps": "Tus apps",
+      "new_app": "Enviar nueva app",
+      "total_downloads": "Descargas totales",
+      "active_apps": "Apps activas",
+      "pending_review": "Pendientes de revisión"
+    },
+    "app": {
+      "new_title": "Enviar una nueva app",
+      "edit_title": "Gestionar app",
+      "new_version": "Enviar nueva versión",
+      "fields": {
+        "name": "Nombre de la app",
+        "bundle_id": "Bundle ID (p. ej. com.ejemplo.miapp)",
+        "category": "Categoría",
+        "short_desc": "Descripción corta",
+        "short_desc_hint": "Máx. 200 caracteres — aparece en las tarjetas de app",
+        "description": "Descripción completa",
+        "icon": "Icono de la app",
+        "screenshots": "Capturas de pantalla",
+        "website": "URL del sitio web",
+        "privacy_url": "URL de la política de privacidad",
+        "privacy_url_hint": "Obligatorio — debe enlazar a la política de privacidad de tu app",
+        "source_url": "URL del código fuente (opcional)",
+        "platform": "Plataforma",
+        "min_android": "Versión mínima de Android",
+        "min_ios": "Versión mínima de iOS"
+      },
+      "submit": "Enviar a revisión",
+      "save_draft": "Guardar borrador",
+      "status": {
+        "PENDING_REVIEW": "Pendiente de revisión",
+        "ACTIVE": "Activa",
+        "SUSPENDED": "Suspendida",
+        "REMOVED": "Eliminada"
+      }
+    },
+    "version": {
+      "new_title": "Enviar nueva versión",
+      "fields": {
+        "version_name": "Número de versión (p. ej. 1.2.0)",
+        "changelog": "Novedades de esta versión",
+        "apk_file": "Archivo APK",
+        "apk_hint": "Máx. 500 MB · solo archivos .apk"
+      },
+      "submit": "Subir y analizar",
+      "scanning_notice": "Tu archivo está siendo analizado en busca de malware. Normalmente tarda unos minutos.",
+      "version_status": {
+        "SCANNING": "Analizando",
+        "CLEAN": "Sin amenazas",
+        "INFECTED": "Amenaza detectada",
+        "APPROVED": "Aprobada",
+        "REJECTED": "Rechazada"
+      }
+    },
+    "notifications": {
+      "app_approved": "Tu app \"{{name}}\" ha sido aprobada y ya está disponible.",
+      "app_rejected": "Tu app \"{{name}}\" no ha sido aprobada. {{reason}}",
+      "version_approved": "La versión {{version}} de \"{{name}}\" ya está disponible.",
+      "version_infected": "La versión {{version}} de \"{{name}}\" ha sido eliminada: malware detectado."
+    }
+  },
+  "search": {
+    "title": "Resultados de búsqueda",
+    "results_for": "Resultados para \"{{query}}\"",
+    "no_results": "No se encontraron apps para \"{{query}}\"",
+    "filters": {
+      "title": "Filtros",
+      "category": "Categoría",
+      "platform": "Plataforma",
+      "sort": "Ordenar por",
+      "sort_downloads": "Más descargadas",
+      "sort_newest": "Más recientes",
+      "sort_name": "Nombre A-Z",
+      "all_categories": "Todas las categorías",
+      "all_platforms": "Todas las plataformas",
+      "android": "Android",
+      "ios": "iOS"
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo ha salido mal",
+    "retry": "Reintentar",
+    "back": "Volver",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "see_all": "Ver todo",
+    "free": "Gratis",
+    "gdpr_badge": "Cumple el RGPD",
+    "dma_badge": "Cumple la DMA"
+  },
+  "footer": {
+    "about": "Sobre AltStore",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de servicio",
+    "for_developers": "Para desarrolladores",
+    "contact": "Contacto",
+    "gdpr_note": "AltStore cumple el RGPD y la DMA. Nunca vendemos tus datos."
+  },
+  "error_pages": {
+    "not_found": {
+      "title": "App no encontrada",
+      "message": "Es posible que esta app haya sido eliminada o que el enlace sea incorrecto.",
+      "cta": "Explorar todas las apps"
+    },
+    "generic": {
+      "title": "Algo ha salido mal",
+      "message": "No hemos podido cargar esta página. Por favor, inténtalo de nuevo.",
+      "cta": "Ir al inicio"
+    }
+  }
+}
