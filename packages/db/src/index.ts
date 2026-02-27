@@ -1,4 +1,4 @@
-export { PrismaClient } from "@prisma/client";
+export { PrismaClient } from "../generated/client";
 export type {
   Developer,
   App,
@@ -12,4 +12,4 @@ export type {
   Platform,
   Severity,
   Category,
-} from "@prisma/client";
+} from "../generated/client";

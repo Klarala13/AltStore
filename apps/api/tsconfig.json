@@ -8,7 +8,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@altstore/db": ["../../packages/db/generated/client"],
+      "@altstore/types": ["../../packages/types/src/index.ts"]
     }
   },
   "include": ["src/**/*"],
