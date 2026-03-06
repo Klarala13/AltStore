@@ -43,6 +43,11 @@ export type SecurityLog = $Result.DefaultSelection<Prisma.$SecurityLogPayload>
  * 
  */
 export type Tag = $Result.DefaultSelection<Prisma.$TagPayload>
+/**
+ * Model Rating
+ * 
+ */
+export type Rating = $Result.DefaultSelection<Prisma.$RatingPayload>
 
 /**
  * Enums
@@ -315,6 +320,16 @@ export class PrismaClient<
     * ```
     */
   get tag(): Prisma.TagDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.rating`: Exposes CRUD operations for the **Rating** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Ratings
+    * const ratings = await prisma.rating.findMany()
+    * ```
+    */
+  get rating(): Prisma.RatingDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -761,7 +776,8 @@ export namespace Prisma {
     Version: 'Version',
     DownloadLog: 'DownloadLog',
     SecurityLog: 'SecurityLog',
-    Tag: 'Tag'
+    Tag: 'Tag',
+    Rating: 'Rating'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -780,7 +796,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "developer" | "app" | "version" | "downloadLog" | "securityLog" | "tag"
+      modelProps: "developer" | "app" | "version" | "downloadLog" | "securityLog" | "tag" | "rating"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1228,6 +1244,80 @@ export namespace Prisma {
           }
         }
       }
+      Rating: {
+        payload: Prisma.$RatingPayload<ExtArgs>
+        fields: Prisma.RatingFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RatingFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RatingFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>
+          }
+          findFirst: {
+            args: Prisma.RatingFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RatingFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>
+          }
+          findMany: {
+            args: Prisma.RatingFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>[]
+          }
+          create: {
+            args: Prisma.RatingCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>
+          }
+          createMany: {
+            args: Prisma.RatingCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RatingCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>[]
+          }
+          delete: {
+            args: Prisma.RatingDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>
+          }
+          update: {
+            args: Prisma.RatingUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>
+          }
+          deleteMany: {
+            args: Prisma.RatingDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RatingUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RatingUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>[]
+          }
+          upsert: {
+            args: Prisma.RatingUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RatingPayload>
+          }
+          aggregate: {
+            args: Prisma.RatingAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRating>
+          }
+          groupBy: {
+            args: Prisma.RatingGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RatingGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RatingCountArgs<ExtArgs>
+            result: $Utils.Optional<RatingCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1330,6 +1420,7 @@ export namespace Prisma {
     downloadLog?: DownloadLogOmit
     securityLog?: SecurityLogOmit
     tag?: TagOmit
+    rating?: RatingOmit
   }
 
   /* Types for Logging */
@@ -1443,11 +1534,13 @@ export namespace Prisma {
   export type AppCountOutputType = {
     versions: number
     tags: number
+    ratings: number
   }
 
   export type AppCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     versions?: boolean | AppCountOutputTypeCountVersionsArgs
     tags?: boolean | AppCountOutputTypeCountTagsArgs
+    ratings?: boolean | AppCountOutputTypeCountRatingsArgs
   }
 
   // Custom InputTypes
@@ -1473,6 +1566,13 @@ export namespace Prisma {
    */
   export type AppCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TagWhereInput
+  }
+
+  /**
+   * AppCountOutputType without action
+   */
+  export type AppCountOutputTypeCountRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RatingWhereInput
   }
 
 
@@ -2716,10 +2816,12 @@ export namespace Prisma {
   }
 
   export type AppAvgAggregateOutputType = {
+    avgRating: number | null
     totalDownloads: number | null
   }
 
   export type AppSumAggregateOutputType = {
+    avgRating: number | null
     totalDownloads: number | null
   }
 
@@ -2740,6 +2842,7 @@ export namespace Prisma {
     websiteUrl: string | null
     privacyUrl: string | null
     sourceUrl: string | null
+    avgRating: number | null
     totalDownloads: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2762,6 +2865,7 @@ export namespace Prisma {
     websiteUrl: string | null
     privacyUrl: string | null
     sourceUrl: string | null
+    avgRating: number | null
     totalDownloads: number | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2785,6 +2889,7 @@ export namespace Prisma {
     websiteUrl: number
     privacyUrl: number
     sourceUrl: number
+    avgRating: number
     totalDownloads: number
     createdAt: number
     updatedAt: number
@@ -2793,10 +2898,12 @@ export namespace Prisma {
 
 
   export type AppAvgAggregateInputType = {
+    avgRating?: true
     totalDownloads?: true
   }
 
   export type AppSumAggregateInputType = {
+    avgRating?: true
     totalDownloads?: true
   }
 
@@ -2817,6 +2924,7 @@ export namespace Prisma {
     websiteUrl?: true
     privacyUrl?: true
     sourceUrl?: true
+    avgRating?: true
     totalDownloads?: true
     createdAt?: true
     updatedAt?: true
@@ -2839,6 +2947,7 @@ export namespace Prisma {
     websiteUrl?: true
     privacyUrl?: true
     sourceUrl?: true
+    avgRating?: true
     totalDownloads?: true
     createdAt?: true
     updatedAt?: true
@@ -2862,6 +2971,7 @@ export namespace Prisma {
     websiteUrl?: true
     privacyUrl?: true
     sourceUrl?: true
+    avgRating?: true
     totalDownloads?: true
     createdAt?: true
     updatedAt?: true
@@ -2972,6 +3082,7 @@ export namespace Prisma {
     websiteUrl: string | null
     privacyUrl: string
     sourceUrl: string | null
+    avgRating: number | null
     totalDownloads: number
     createdAt: Date
     updatedAt: Date
@@ -3014,12 +3125,14 @@ export namespace Prisma {
     websiteUrl?: boolean
     privacyUrl?: boolean
     sourceUrl?: boolean
+    avgRating?: boolean
     totalDownloads?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     developer?: boolean | DeveloperDefaultArgs<ExtArgs>
     versions?: boolean | App$versionsArgs<ExtArgs>
     tags?: boolean | App$tagsArgs<ExtArgs>
+    ratings?: boolean | App$ratingsArgs<ExtArgs>
     _count?: boolean | AppCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["app"]>
 
@@ -3041,6 +3154,7 @@ export namespace Prisma {
     websiteUrl?: boolean
     privacyUrl?: boolean
     sourceUrl?: boolean
+    avgRating?: boolean
     totalDownloads?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3065,6 +3179,7 @@ export namespace Prisma {
     websiteUrl?: boolean
     privacyUrl?: boolean
     sourceUrl?: boolean
+    avgRating?: boolean
     totalDownloads?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3089,16 +3204,18 @@ export namespace Prisma {
     websiteUrl?: boolean
     privacyUrl?: boolean
     sourceUrl?: boolean
+    avgRating?: boolean
     totalDownloads?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AppOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "bundleId" | "developerId" | "category" | "description" | "shortDesc" | "iconUrl" | "screenshots" | "status" | "platform" | "minAndroid" | "minIos" | "websiteUrl" | "privacyUrl" | "sourceUrl" | "totalDownloads" | "createdAt" | "updatedAt", ExtArgs["result"]["app"]>
+  export type AppOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "bundleId" | "developerId" | "category" | "description" | "shortDesc" | "iconUrl" | "screenshots" | "status" | "platform" | "minAndroid" | "minIos" | "websiteUrl" | "privacyUrl" | "sourceUrl" | "avgRating" | "totalDownloads" | "createdAt" | "updatedAt", ExtArgs["result"]["app"]>
   export type AppInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     developer?: boolean | DeveloperDefaultArgs<ExtArgs>
     versions?: boolean | App$versionsArgs<ExtArgs>
     tags?: boolean | App$tagsArgs<ExtArgs>
+    ratings?: boolean | App$ratingsArgs<ExtArgs>
     _count?: boolean | AppCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AppIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3114,6 +3231,7 @@ export namespace Prisma {
       developer: Prisma.$DeveloperPayload<ExtArgs>
       versions: Prisma.$VersionPayload<ExtArgs>[]
       tags: Prisma.$TagPayload<ExtArgs>[]
+      ratings: Prisma.$RatingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3133,6 +3251,7 @@ export namespace Prisma {
       websiteUrl: string | null
       privacyUrl: string
       sourceUrl: string | null
+      avgRating: number | null
       totalDownloads: number
       createdAt: Date
       updatedAt: Date
@@ -3533,6 +3652,7 @@ export namespace Prisma {
     developer<T extends DeveloperDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DeveloperDefaultArgs<ExtArgs>>): Prisma__DeveloperClient<$Result.GetResult<Prisma.$DeveloperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     versions<T extends App$versionsArgs<ExtArgs> = {}>(args?: Subset<T, App$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     tags<T extends App$tagsArgs<ExtArgs> = {}>(args?: Subset<T, App$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ratings<T extends App$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, App$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3579,6 +3699,7 @@ export namespace Prisma {
     readonly websiteUrl: FieldRef<"App", 'String'>
     readonly privacyUrl: FieldRef<"App", 'String'>
     readonly sourceUrl: FieldRef<"App", 'String'>
+    readonly avgRating: FieldRef<"App", 'Float'>
     readonly totalDownloads: FieldRef<"App", 'Int'>
     readonly createdAt: FieldRef<"App", 'DateTime'>
     readonly updatedAt: FieldRef<"App", 'DateTime'>
@@ -4023,6 +4144,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * App.ratings
+   */
+  export type App$ratingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    where?: RatingWhereInput
+    orderBy?: RatingOrderByWithRelationInput | RatingOrderByWithRelationInput[]
+    cursor?: RatingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
   }
 
   /**
@@ -8455,6 +8600,1137 @@ export namespace Prisma {
 
 
   /**
+   * Model Rating
+   */
+
+  export type AggregateRating = {
+    _count: RatingCountAggregateOutputType | null
+    _avg: RatingAvgAggregateOutputType | null
+    _sum: RatingSumAggregateOutputType | null
+    _min: RatingMinAggregateOutputType | null
+    _max: RatingMaxAggregateOutputType | null
+  }
+
+  export type RatingAvgAggregateOutputType = {
+    score: number | null
+  }
+
+  export type RatingSumAggregateOutputType = {
+    score: number | null
+  }
+
+  export type RatingMinAggregateOutputType = {
+    id: string | null
+    appId: string | null
+    userId: string | null
+    score: number | null
+    title: string | null
+    body: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RatingMaxAggregateOutputType = {
+    id: string | null
+    appId: string | null
+    userId: string | null
+    score: number | null
+    title: string | null
+    body: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RatingCountAggregateOutputType = {
+    id: number
+    appId: number
+    userId: number
+    score: number
+    title: number
+    body: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RatingAvgAggregateInputType = {
+    score?: true
+  }
+
+  export type RatingSumAggregateInputType = {
+    score?: true
+  }
+
+  export type RatingMinAggregateInputType = {
+    id?: true
+    appId?: true
+    userId?: true
+    score?: true
+    title?: true
+    body?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RatingMaxAggregateInputType = {
+    id?: true
+    appId?: true
+    userId?: true
+    score?: true
+    title?: true
+    body?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RatingCountAggregateInputType = {
+    id?: true
+    appId?: true
+    userId?: true
+    score?: true
+    title?: true
+    body?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RatingAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Rating to aggregate.
+     */
+    where?: RatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ratings to fetch.
+     */
+    orderBy?: RatingOrderByWithRelationInput | RatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ratings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ratings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Ratings
+    **/
+    _count?: true | RatingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RatingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RatingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RatingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RatingMaxAggregateInputType
+  }
+
+  export type GetRatingAggregateType<T extends RatingAggregateArgs> = {
+        [P in keyof T & keyof AggregateRating]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRating[P]>
+      : GetScalarType<T[P], AggregateRating[P]>
+  }
+
+
+
+
+  export type RatingGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RatingWhereInput
+    orderBy?: RatingOrderByWithAggregationInput | RatingOrderByWithAggregationInput[]
+    by: RatingScalarFieldEnum[] | RatingScalarFieldEnum
+    having?: RatingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RatingCountAggregateInputType | true
+    _avg?: RatingAvgAggregateInputType
+    _sum?: RatingSumAggregateInputType
+    _min?: RatingMinAggregateInputType
+    _max?: RatingMaxAggregateInputType
+  }
+
+  export type RatingGroupByOutputType = {
+    id: string
+    appId: string
+    userId: string
+    score: number
+    title: string | null
+    body: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: RatingCountAggregateOutputType | null
+    _avg: RatingAvgAggregateOutputType | null
+    _sum: RatingSumAggregateOutputType | null
+    _min: RatingMinAggregateOutputType | null
+    _max: RatingMaxAggregateOutputType | null
+  }
+
+  type GetRatingGroupByPayload<T extends RatingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RatingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RatingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RatingGroupByOutputType[P]>
+            : GetScalarType<T[P], RatingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RatingSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    appId?: boolean
+    userId?: boolean
+    score?: boolean
+    title?: boolean
+    body?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    app?: boolean | AppDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rating"]>
+
+  export type RatingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    appId?: boolean
+    userId?: boolean
+    score?: boolean
+    title?: boolean
+    body?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    app?: boolean | AppDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rating"]>
+
+  export type RatingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    appId?: boolean
+    userId?: boolean
+    score?: boolean
+    title?: boolean
+    body?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    app?: boolean | AppDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["rating"]>
+
+  export type RatingSelectScalar = {
+    id?: boolean
+    appId?: boolean
+    userId?: boolean
+    score?: boolean
+    title?: boolean
+    body?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type RatingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "appId" | "userId" | "score" | "title" | "body" | "createdAt" | "updatedAt", ExtArgs["result"]["rating"]>
+  export type RatingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    app?: boolean | AppDefaultArgs<ExtArgs>
+  }
+  export type RatingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    app?: boolean | AppDefaultArgs<ExtArgs>
+  }
+  export type RatingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    app?: boolean | AppDefaultArgs<ExtArgs>
+  }
+
+  export type $RatingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Rating"
+    objects: {
+      app: Prisma.$AppPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      appId: string
+      userId: string
+      score: number
+      title: string | null
+      body: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["rating"]>
+    composites: {}
+  }
+
+  type RatingGetPayload<S extends boolean | null | undefined | RatingDefaultArgs> = $Result.GetResult<Prisma.$RatingPayload, S>
+
+  type RatingCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RatingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RatingCountAggregateInputType | true
+    }
+
+  export interface RatingDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Rating'], meta: { name: 'Rating' } }
+    /**
+     * Find zero or one Rating that matches the filter.
+     * @param {RatingFindUniqueArgs} args - Arguments to find a Rating
+     * @example
+     * // Get one Rating
+     * const rating = await prisma.rating.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RatingFindUniqueArgs>(args: SelectSubset<T, RatingFindUniqueArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Rating that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RatingFindUniqueOrThrowArgs} args - Arguments to find a Rating
+     * @example
+     * // Get one Rating
+     * const rating = await prisma.rating.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RatingFindUniqueOrThrowArgs>(args: SelectSubset<T, RatingFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Rating that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingFindFirstArgs} args - Arguments to find a Rating
+     * @example
+     * // Get one Rating
+     * const rating = await prisma.rating.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RatingFindFirstArgs>(args?: SelectSubset<T, RatingFindFirstArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Rating that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingFindFirstOrThrowArgs} args - Arguments to find a Rating
+     * @example
+     * // Get one Rating
+     * const rating = await prisma.rating.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RatingFindFirstOrThrowArgs>(args?: SelectSubset<T, RatingFindFirstOrThrowArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Ratings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Ratings
+     * const ratings = await prisma.rating.findMany()
+     * 
+     * // Get first 10 Ratings
+     * const ratings = await prisma.rating.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ratingWithIdOnly = await prisma.rating.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RatingFindManyArgs>(args?: SelectSubset<T, RatingFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Rating.
+     * @param {RatingCreateArgs} args - Arguments to create a Rating.
+     * @example
+     * // Create one Rating
+     * const Rating = await prisma.rating.create({
+     *   data: {
+     *     // ... data to create a Rating
+     *   }
+     * })
+     * 
+     */
+    create<T extends RatingCreateArgs>(args: SelectSubset<T, RatingCreateArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Ratings.
+     * @param {RatingCreateManyArgs} args - Arguments to create many Ratings.
+     * @example
+     * // Create many Ratings
+     * const rating = await prisma.rating.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RatingCreateManyArgs>(args?: SelectSubset<T, RatingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Ratings and returns the data saved in the database.
+     * @param {RatingCreateManyAndReturnArgs} args - Arguments to create many Ratings.
+     * @example
+     * // Create many Ratings
+     * const rating = await prisma.rating.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Ratings and only return the `id`
+     * const ratingWithIdOnly = await prisma.rating.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RatingCreateManyAndReturnArgs>(args?: SelectSubset<T, RatingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Rating.
+     * @param {RatingDeleteArgs} args - Arguments to delete one Rating.
+     * @example
+     * // Delete one Rating
+     * const Rating = await prisma.rating.delete({
+     *   where: {
+     *     // ... filter to delete one Rating
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RatingDeleteArgs>(args: SelectSubset<T, RatingDeleteArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Rating.
+     * @param {RatingUpdateArgs} args - Arguments to update one Rating.
+     * @example
+     * // Update one Rating
+     * const rating = await prisma.rating.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RatingUpdateArgs>(args: SelectSubset<T, RatingUpdateArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Ratings.
+     * @param {RatingDeleteManyArgs} args - Arguments to filter Ratings to delete.
+     * @example
+     * // Delete a few Ratings
+     * const { count } = await prisma.rating.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RatingDeleteManyArgs>(args?: SelectSubset<T, RatingDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ratings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Ratings
+     * const rating = await prisma.rating.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RatingUpdateManyArgs>(args: SelectSubset<T, RatingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Ratings and returns the data updated in the database.
+     * @param {RatingUpdateManyAndReturnArgs} args - Arguments to update many Ratings.
+     * @example
+     * // Update many Ratings
+     * const rating = await prisma.rating.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Ratings and only return the `id`
+     * const ratingWithIdOnly = await prisma.rating.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RatingUpdateManyAndReturnArgs>(args: SelectSubset<T, RatingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Rating.
+     * @param {RatingUpsertArgs} args - Arguments to update or create a Rating.
+     * @example
+     * // Update or create a Rating
+     * const rating = await prisma.rating.upsert({
+     *   create: {
+     *     // ... data to create a Rating
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Rating we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RatingUpsertArgs>(args: SelectSubset<T, RatingUpsertArgs<ExtArgs>>): Prisma__RatingClient<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Ratings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingCountArgs} args - Arguments to filter Ratings to count.
+     * @example
+     * // Count the number of Ratings
+     * const count = await prisma.rating.count({
+     *   where: {
+     *     // ... the filter for the Ratings we want to count
+     *   }
+     * })
+    **/
+    count<T extends RatingCountArgs>(
+      args?: Subset<T, RatingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RatingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Rating.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RatingAggregateArgs>(args: Subset<T, RatingAggregateArgs>): Prisma.PrismaPromise<GetRatingAggregateType<T>>
+
+    /**
+     * Group by Rating.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RatingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RatingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RatingGroupByArgs['orderBy'] }
+        : { orderBy?: RatingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RatingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRatingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Rating model
+   */
+  readonly fields: RatingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Rating.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RatingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    app<T extends AppDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AppDefaultArgs<ExtArgs>>): Prisma__AppClient<$Result.GetResult<Prisma.$AppPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Rating model
+   */
+  interface RatingFieldRefs {
+    readonly id: FieldRef<"Rating", 'String'>
+    readonly appId: FieldRef<"Rating", 'String'>
+    readonly userId: FieldRef<"Rating", 'String'>
+    readonly score: FieldRef<"Rating", 'Int'>
+    readonly title: FieldRef<"Rating", 'String'>
+    readonly body: FieldRef<"Rating", 'String'>
+    readonly createdAt: FieldRef<"Rating", 'DateTime'>
+    readonly updatedAt: FieldRef<"Rating", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Rating findUnique
+   */
+  export type RatingFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * Filter, which Rating to fetch.
+     */
+    where: RatingWhereUniqueInput
+  }
+
+  /**
+   * Rating findUniqueOrThrow
+   */
+  export type RatingFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * Filter, which Rating to fetch.
+     */
+    where: RatingWhereUniqueInput
+  }
+
+  /**
+   * Rating findFirst
+   */
+  export type RatingFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * Filter, which Rating to fetch.
+     */
+    where?: RatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ratings to fetch.
+     */
+    orderBy?: RatingOrderByWithRelationInput | RatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ratings.
+     */
+    cursor?: RatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ratings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ratings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ratings.
+     */
+    distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
+  }
+
+  /**
+   * Rating findFirstOrThrow
+   */
+  export type RatingFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * Filter, which Rating to fetch.
+     */
+    where?: RatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ratings to fetch.
+     */
+    orderBy?: RatingOrderByWithRelationInput | RatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Ratings.
+     */
+    cursor?: RatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ratings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ratings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ratings.
+     */
+    distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
+  }
+
+  /**
+   * Rating findMany
+   */
+  export type RatingFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * Filter, which Ratings to fetch.
+     */
+    where?: RatingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Ratings to fetch.
+     */
+    orderBy?: RatingOrderByWithRelationInput | RatingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Ratings.
+     */
+    cursor?: RatingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Ratings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Ratings.
+     */
+    skip?: number
+    distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
+  }
+
+  /**
+   * Rating create
+   */
+  export type RatingCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Rating.
+     */
+    data: XOR<RatingCreateInput, RatingUncheckedCreateInput>
+  }
+
+  /**
+   * Rating createMany
+   */
+  export type RatingCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Ratings.
+     */
+    data: RatingCreateManyInput | RatingCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Rating createManyAndReturn
+   */
+  export type RatingCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * The data used to create many Ratings.
+     */
+    data: RatingCreateManyInput | RatingCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Rating update
+   */
+  export type RatingUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Rating.
+     */
+    data: XOR<RatingUpdateInput, RatingUncheckedUpdateInput>
+    /**
+     * Choose, which Rating to update.
+     */
+    where: RatingWhereUniqueInput
+  }
+
+  /**
+   * Rating updateMany
+   */
+  export type RatingUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Ratings.
+     */
+    data: XOR<RatingUpdateManyMutationInput, RatingUncheckedUpdateManyInput>
+    /**
+     * Filter which Ratings to update
+     */
+    where?: RatingWhereInput
+    /**
+     * Limit how many Ratings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Rating updateManyAndReturn
+   */
+  export type RatingUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * The data used to update Ratings.
+     */
+    data: XOR<RatingUpdateManyMutationInput, RatingUncheckedUpdateManyInput>
+    /**
+     * Filter which Ratings to update
+     */
+    where?: RatingWhereInput
+    /**
+     * Limit how many Ratings to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Rating upsert
+   */
+  export type RatingUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Rating to update in case it exists.
+     */
+    where: RatingWhereUniqueInput
+    /**
+     * In case the Rating found by the `where` argument doesn't exist, create a new Rating with this data.
+     */
+    create: XOR<RatingCreateInput, RatingUncheckedCreateInput>
+    /**
+     * In case the Rating was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RatingUpdateInput, RatingUncheckedUpdateInput>
+  }
+
+  /**
+   * Rating delete
+   */
+  export type RatingDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+    /**
+     * Filter which Rating to delete.
+     */
+    where: RatingWhereUniqueInput
+  }
+
+  /**
+   * Rating deleteMany
+   */
+  export type RatingDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Ratings to delete
+     */
+    where?: RatingWhereInput
+    /**
+     * Limit how many Ratings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Rating without action
+   */
+  export type RatingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Rating
+     */
+    select?: RatingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Rating
+     */
+    omit?: RatingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RatingInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8504,6 +9780,7 @@ export namespace Prisma {
     websiteUrl: 'websiteUrl',
     privacyUrl: 'privacyUrl',
     sourceUrl: 'sourceUrl',
+    avgRating: 'avgRating',
     totalDownloads: 'totalDownloads',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -8567,6 +9844,20 @@ export namespace Prisma {
   };
 
   export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+  export const RatingScalarFieldEnum: {
+    id: 'id',
+    appId: 'appId',
+    userId: 'userId',
+    score: 'score',
+    title: 'title',
+    body: 'body',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RatingScalarFieldEnum = (typeof RatingScalarFieldEnum)[keyof typeof RatingScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8707,6 +9998,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -8773,20 +10078,6 @@ export namespace Prisma {
    * Reference to a field of type 'Severity[]'
    */
   export type ListEnumSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Severity[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -8904,12 +10195,14 @@ export namespace Prisma {
     websiteUrl?: StringNullableFilter<"App"> | string | null
     privacyUrl?: StringFilter<"App"> | string
     sourceUrl?: StringNullableFilter<"App"> | string | null
+    avgRating?: FloatNullableFilter<"App"> | number | null
     totalDownloads?: IntFilter<"App"> | number
     createdAt?: DateTimeFilter<"App"> | Date | string
     updatedAt?: DateTimeFilter<"App"> | Date | string
     developer?: XOR<DeveloperScalarRelationFilter, DeveloperWhereInput>
     versions?: VersionListRelationFilter
     tags?: TagListRelationFilter
+    ratings?: RatingListRelationFilter
   }
 
   export type AppOrderByWithRelationInput = {
@@ -8930,12 +10223,14 @@ export namespace Prisma {
     websiteUrl?: SortOrderInput | SortOrder
     privacyUrl?: SortOrder
     sourceUrl?: SortOrderInput | SortOrder
+    avgRating?: SortOrderInput | SortOrder
     totalDownloads?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     developer?: DeveloperOrderByWithRelationInput
     versions?: VersionOrderByRelationAggregateInput
     tags?: TagOrderByRelationAggregateInput
+    ratings?: RatingOrderByRelationAggregateInput
   }
 
   export type AppWhereUniqueInput = Prisma.AtLeast<{
@@ -8959,12 +10254,14 @@ export namespace Prisma {
     websiteUrl?: StringNullableFilter<"App"> | string | null
     privacyUrl?: StringFilter<"App"> | string
     sourceUrl?: StringNullableFilter<"App"> | string | null
+    avgRating?: FloatNullableFilter<"App"> | number | null
     totalDownloads?: IntFilter<"App"> | number
     createdAt?: DateTimeFilter<"App"> | Date | string
     updatedAt?: DateTimeFilter<"App"> | Date | string
     developer?: XOR<DeveloperScalarRelationFilter, DeveloperWhereInput>
     versions?: VersionListRelationFilter
     tags?: TagListRelationFilter
+    ratings?: RatingListRelationFilter
   }, "id" | "slug" | "bundleId">
 
   export type AppOrderByWithAggregationInput = {
@@ -8985,6 +10282,7 @@ export namespace Prisma {
     websiteUrl?: SortOrderInput | SortOrder
     privacyUrl?: SortOrder
     sourceUrl?: SortOrderInput | SortOrder
+    avgRating?: SortOrderInput | SortOrder
     totalDownloads?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9016,6 +10314,7 @@ export namespace Prisma {
     websiteUrl?: StringNullableWithAggregatesFilter<"App"> | string | null
     privacyUrl?: StringWithAggregatesFilter<"App"> | string
     sourceUrl?: StringNullableWithAggregatesFilter<"App"> | string | null
+    avgRating?: FloatNullableWithAggregatesFilter<"App"> | number | null
     totalDownloads?: IntWithAggregatesFilter<"App"> | number
     createdAt?: DateTimeWithAggregatesFilter<"App"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"App"> | Date | string
@@ -9309,6 +10608,79 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Tag"> | string
   }
 
+  export type RatingWhereInput = {
+    AND?: RatingWhereInput | RatingWhereInput[]
+    OR?: RatingWhereInput[]
+    NOT?: RatingWhereInput | RatingWhereInput[]
+    id?: StringFilter<"Rating"> | string
+    appId?: StringFilter<"Rating"> | string
+    userId?: StringFilter<"Rating"> | string
+    score?: IntFilter<"Rating"> | number
+    title?: StringNullableFilter<"Rating"> | string | null
+    body?: StringNullableFilter<"Rating"> | string | null
+    createdAt?: DateTimeFilter<"Rating"> | Date | string
+    updatedAt?: DateTimeFilter<"Rating"> | Date | string
+    app?: XOR<AppScalarRelationFilter, AppWhereInput>
+  }
+
+  export type RatingOrderByWithRelationInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    userId?: SortOrder
+    score?: SortOrder
+    title?: SortOrderInput | SortOrder
+    body?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    app?: AppOrderByWithRelationInput
+  }
+
+  export type RatingWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    appId_userId?: RatingAppIdUserIdCompoundUniqueInput
+    AND?: RatingWhereInput | RatingWhereInput[]
+    OR?: RatingWhereInput[]
+    NOT?: RatingWhereInput | RatingWhereInput[]
+    appId?: StringFilter<"Rating"> | string
+    userId?: StringFilter<"Rating"> | string
+    score?: IntFilter<"Rating"> | number
+    title?: StringNullableFilter<"Rating"> | string | null
+    body?: StringNullableFilter<"Rating"> | string | null
+    createdAt?: DateTimeFilter<"Rating"> | Date | string
+    updatedAt?: DateTimeFilter<"Rating"> | Date | string
+    app?: XOR<AppScalarRelationFilter, AppWhereInput>
+  }, "id" | "appId_userId">
+
+  export type RatingOrderByWithAggregationInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    userId?: SortOrder
+    score?: SortOrder
+    title?: SortOrderInput | SortOrder
+    body?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RatingCountOrderByAggregateInput
+    _avg?: RatingAvgOrderByAggregateInput
+    _max?: RatingMaxOrderByAggregateInput
+    _min?: RatingMinOrderByAggregateInput
+    _sum?: RatingSumOrderByAggregateInput
+  }
+
+  export type RatingScalarWhereWithAggregatesInput = {
+    AND?: RatingScalarWhereWithAggregatesInput | RatingScalarWhereWithAggregatesInput[]
+    OR?: RatingScalarWhereWithAggregatesInput[]
+    NOT?: RatingScalarWhereWithAggregatesInput | RatingScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Rating"> | string
+    appId?: StringWithAggregatesFilter<"Rating"> | string
+    userId?: StringWithAggregatesFilter<"Rating"> | string
+    score?: IntWithAggregatesFilter<"Rating"> | number
+    title?: StringNullableWithAggregatesFilter<"Rating"> | string | null
+    body?: StringNullableWithAggregatesFilter<"Rating"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Rating"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Rating"> | Date | string
+  }
+
   export type DeveloperCreateInput = {
     id?: string
     email: string
@@ -9435,12 +10807,14 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     developer: DeveloperCreateNestedOneWithoutAppsInput
     versions?: VersionCreateNestedManyWithoutAppInput
     tags?: TagCreateNestedManyWithoutAppsInput
+    ratings?: RatingCreateNestedManyWithoutAppInput
   }
 
   export type AppUncheckedCreateInput = {
@@ -9461,11 +10835,13 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     versions?: VersionUncheckedCreateNestedManyWithoutAppInput
     tags?: TagUncheckedCreateNestedManyWithoutAppsInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutAppInput
   }
 
   export type AppUpdateInput = {
@@ -9485,12 +10861,14 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     developer?: DeveloperUpdateOneRequiredWithoutAppsNestedInput
     versions?: VersionUpdateManyWithoutAppNestedInput
     tags?: TagUpdateManyWithoutAppsNestedInput
+    ratings?: RatingUpdateManyWithoutAppNestedInput
   }
 
   export type AppUncheckedUpdateInput = {
@@ -9511,11 +10889,13 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     versions?: VersionUncheckedUpdateManyWithoutAppNestedInput
     tags?: TagUncheckedUpdateManyWithoutAppsNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutAppNestedInput
   }
 
   export type AppCreateManyInput = {
@@ -9536,6 +10916,7 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9558,6 +10939,7 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9581,6 +10963,7 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9907,6 +11290,82 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
   }
 
+  export type RatingCreateInput = {
+    id?: string
+    userId: string
+    score: number
+    title?: string | null
+    body?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    app: AppCreateNestedOneWithoutRatingsInput
+  }
+
+  export type RatingUncheckedCreateInput = {
+    id?: string
+    appId: string
+    userId: string
+    score: number
+    title?: string | null
+    body?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RatingUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    app?: AppUpdateOneRequiredWithoutRatingsNestedInput
+  }
+
+  export type RatingUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RatingCreateManyInput = {
+    id?: string
+    appId: string
+    userId: string
+    score: number
+    title?: string | null
+    body?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RatingUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RatingUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10142,6 +11601,17 @@ export namespace Prisma {
     not?: NestedEnumPlatformFilter<$PrismaModel> | $Enums.Platform
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -10170,11 +11640,21 @@ export namespace Prisma {
     none?: TagWhereInput
   }
 
+  export type RatingListRelationFilter = {
+    every?: RatingWhereInput
+    some?: RatingWhereInput
+    none?: RatingWhereInput
+  }
+
   export type VersionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type TagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RatingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -10196,12 +11676,14 @@ export namespace Prisma {
     websiteUrl?: SortOrder
     privacyUrl?: SortOrder
     sourceUrl?: SortOrder
+    avgRating?: SortOrder
     totalDownloads?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type AppAvgOrderByAggregateInput = {
+    avgRating?: SortOrder
     totalDownloads?: SortOrder
   }
 
@@ -10222,6 +11704,7 @@ export namespace Prisma {
     websiteUrl?: SortOrder
     privacyUrl?: SortOrder
     sourceUrl?: SortOrder
+    avgRating?: SortOrder
     totalDownloads?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10244,12 +11727,14 @@ export namespace Prisma {
     websiteUrl?: SortOrder
     privacyUrl?: SortOrder
     sourceUrl?: SortOrder
+    avgRating?: SortOrder
     totalDownloads?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type AppSumOrderByAggregateInput = {
+    avgRating?: SortOrder
     totalDownloads?: SortOrder
   }
 
@@ -10281,6 +11766,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPlatformFilter<$PrismaModel>
     _max?: NestedEnumPlatformFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -10576,6 +12077,52 @@ export namespace Prisma {
     name?: SortOrder
   }
 
+  export type RatingAppIdUserIdCompoundUniqueInput = {
+    appId: string
+    userId: string
+  }
+
+  export type RatingCountOrderByAggregateInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    userId?: SortOrder
+    score?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RatingAvgOrderByAggregateInput = {
+    score?: SortOrder
+  }
+
+  export type RatingMaxOrderByAggregateInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    userId?: SortOrder
+    score?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RatingMinOrderByAggregateInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    userId?: SortOrder
+    score?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RatingSumOrderByAggregateInput = {
+    score?: SortOrder
+  }
+
   export type AppCreateNestedManyWithoutDeveloperInput = {
     create?: XOR<AppCreateWithoutDeveloperInput, AppUncheckedCreateWithoutDeveloperInput> | AppCreateWithoutDeveloperInput[] | AppUncheckedCreateWithoutDeveloperInput[]
     connectOrCreate?: AppCreateOrConnectWithoutDeveloperInput | AppCreateOrConnectWithoutDeveloperInput[]
@@ -10665,6 +12212,13 @@ export namespace Prisma {
     connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
   }
 
+  export type RatingCreateNestedManyWithoutAppInput = {
+    create?: XOR<RatingCreateWithoutAppInput, RatingUncheckedCreateWithoutAppInput> | RatingCreateWithoutAppInput[] | RatingUncheckedCreateWithoutAppInput[]
+    connectOrCreate?: RatingCreateOrConnectWithoutAppInput | RatingCreateOrConnectWithoutAppInput[]
+    createMany?: RatingCreateManyAppInputEnvelope
+    connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+  }
+
   export type VersionUncheckedCreateNestedManyWithoutAppInput = {
     create?: XOR<VersionCreateWithoutAppInput, VersionUncheckedCreateWithoutAppInput> | VersionCreateWithoutAppInput[] | VersionUncheckedCreateWithoutAppInput[]
     connectOrCreate?: VersionCreateOrConnectWithoutAppInput | VersionCreateOrConnectWithoutAppInput[]
@@ -10676,6 +12230,13 @@ export namespace Prisma {
     create?: XOR<TagCreateWithoutAppsInput, TagUncheckedCreateWithoutAppsInput> | TagCreateWithoutAppsInput[] | TagUncheckedCreateWithoutAppsInput[]
     connectOrCreate?: TagCreateOrConnectWithoutAppsInput | TagCreateOrConnectWithoutAppsInput[]
     connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type RatingUncheckedCreateNestedManyWithoutAppInput = {
+    create?: XOR<RatingCreateWithoutAppInput, RatingUncheckedCreateWithoutAppInput> | RatingCreateWithoutAppInput[] | RatingUncheckedCreateWithoutAppInput[]
+    connectOrCreate?: RatingCreateOrConnectWithoutAppInput | RatingCreateOrConnectWithoutAppInput[]
+    createMany?: RatingCreateManyAppInputEnvelope
+    connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
   }
 
   export type EnumCategoryFieldUpdateOperationsInput = {
@@ -10693,6 +12254,14 @@ export namespace Prisma {
 
   export type EnumPlatformFieldUpdateOperationsInput = {
     set?: $Enums.Platform
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -10738,6 +12307,20 @@ export namespace Prisma {
     deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
   }
 
+  export type RatingUpdateManyWithoutAppNestedInput = {
+    create?: XOR<RatingCreateWithoutAppInput, RatingUncheckedCreateWithoutAppInput> | RatingCreateWithoutAppInput[] | RatingUncheckedCreateWithoutAppInput[]
+    connectOrCreate?: RatingCreateOrConnectWithoutAppInput | RatingCreateOrConnectWithoutAppInput[]
+    upsert?: RatingUpsertWithWhereUniqueWithoutAppInput | RatingUpsertWithWhereUniqueWithoutAppInput[]
+    createMany?: RatingCreateManyAppInputEnvelope
+    set?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    disconnect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    delete?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    update?: RatingUpdateWithWhereUniqueWithoutAppInput | RatingUpdateWithWhereUniqueWithoutAppInput[]
+    updateMany?: RatingUpdateManyWithWhereWithoutAppInput | RatingUpdateManyWithWhereWithoutAppInput[]
+    deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
+  }
+
   export type VersionUncheckedUpdateManyWithoutAppNestedInput = {
     create?: XOR<VersionCreateWithoutAppInput, VersionUncheckedCreateWithoutAppInput> | VersionCreateWithoutAppInput[] | VersionUncheckedCreateWithoutAppInput[]
     connectOrCreate?: VersionCreateOrConnectWithoutAppInput | VersionCreateOrConnectWithoutAppInput[]
@@ -10763,6 +12346,20 @@ export namespace Prisma {
     update?: TagUpdateWithWhereUniqueWithoutAppsInput | TagUpdateWithWhereUniqueWithoutAppsInput[]
     updateMany?: TagUpdateManyWithWhereWithoutAppsInput | TagUpdateManyWithWhereWithoutAppsInput[]
     deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type RatingUncheckedUpdateManyWithoutAppNestedInput = {
+    create?: XOR<RatingCreateWithoutAppInput, RatingUncheckedCreateWithoutAppInput> | RatingCreateWithoutAppInput[] | RatingUncheckedCreateWithoutAppInput[]
+    connectOrCreate?: RatingCreateOrConnectWithoutAppInput | RatingCreateOrConnectWithoutAppInput[]
+    upsert?: RatingUpsertWithWhereUniqueWithoutAppInput | RatingUpsertWithWhereUniqueWithoutAppInput[]
+    createMany?: RatingCreateManyAppInputEnvelope
+    set?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    disconnect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    delete?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    connect?: RatingWhereUniqueInput | RatingWhereUniqueInput[]
+    update?: RatingUpdateWithWhereUniqueWithoutAppInput | RatingUpdateWithWhereUniqueWithoutAppInput[]
+    updateMany?: RatingUpdateManyWithWhereWithoutAppInput | RatingUpdateManyWithWhereWithoutAppInput[]
+    deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
   }
 
   export type AppCreateNestedOneWithoutVersionsInput = {
@@ -10887,6 +12484,20 @@ export namespace Prisma {
     update?: AppUpdateWithWhereUniqueWithoutTagsInput | AppUpdateWithWhereUniqueWithoutTagsInput[]
     updateMany?: AppUpdateManyWithWhereWithoutTagsInput | AppUpdateManyWithWhereWithoutTagsInput[]
     deleteMany?: AppScalarWhereInput | AppScalarWhereInput[]
+  }
+
+  export type AppCreateNestedOneWithoutRatingsInput = {
+    create?: XOR<AppCreateWithoutRatingsInput, AppUncheckedCreateWithoutRatingsInput>
+    connectOrCreate?: AppCreateOrConnectWithoutRatingsInput
+    connect?: AppWhereUniqueInput
+  }
+
+  export type AppUpdateOneRequiredWithoutRatingsNestedInput = {
+    create?: XOR<AppCreateWithoutRatingsInput, AppUncheckedCreateWithoutRatingsInput>
+    connectOrCreate?: AppCreateOrConnectWithoutRatingsInput
+    upsert?: AppUpsertWithoutRatingsInput
+    connect?: AppWhereUniqueInput
+    update?: XOR<XOR<AppUpdateToOneWithWhereWithoutRatingsInput, AppUpdateWithoutRatingsInput>, AppUncheckedUpdateWithoutRatingsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -11074,6 +12685,17 @@ export namespace Prisma {
     not?: NestedEnumPlatformFilter<$PrismaModel> | $Enums.Platform
   }
 
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumCategoryWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Category | EnumCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.Category[] | ListEnumCategoryFieldRefInput<$PrismaModel>
@@ -11102,6 +12724,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPlatformFilter<$PrismaModel>
     _max?: NestedEnumPlatformFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -11232,11 +12870,13 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     versions?: VersionCreateNestedManyWithoutAppInput
     tags?: TagCreateNestedManyWithoutAppsInput
+    ratings?: RatingCreateNestedManyWithoutAppInput
   }
 
   export type AppUncheckedCreateWithoutDeveloperInput = {
@@ -11256,11 +12896,13 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     versions?: VersionUncheckedCreateNestedManyWithoutAppInput
     tags?: TagUncheckedCreateNestedManyWithoutAppsInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutAppInput
   }
 
   export type AppCreateOrConnectWithoutDeveloperInput = {
@@ -11310,6 +12952,7 @@ export namespace Prisma {
     websiteUrl?: StringNullableFilter<"App"> | string | null
     privacyUrl?: StringFilter<"App"> | string
     sourceUrl?: StringNullableFilter<"App"> | string | null
+    avgRating?: FloatNullableFilter<"App"> | number | null
     totalDownloads?: IntFilter<"App"> | number
     createdAt?: DateTimeFilter<"App"> | Date | string
     updatedAt?: DateTimeFilter<"App"> | Date | string
@@ -11411,6 +13054,36 @@ export namespace Prisma {
   export type TagCreateOrConnectWithoutAppsInput = {
     where: TagWhereUniqueInput
     create: XOR<TagCreateWithoutAppsInput, TagUncheckedCreateWithoutAppsInput>
+  }
+
+  export type RatingCreateWithoutAppInput = {
+    id?: string
+    userId: string
+    score: number
+    title?: string | null
+    body?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RatingUncheckedCreateWithoutAppInput = {
+    id?: string
+    userId: string
+    score: number
+    title?: string | null
+    body?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RatingCreateOrConnectWithoutAppInput = {
+    where: RatingWhereUniqueInput
+    create: XOR<RatingCreateWithoutAppInput, RatingUncheckedCreateWithoutAppInput>
+  }
+
+  export type RatingCreateManyAppInputEnvelope = {
+    data: RatingCreateManyAppInput | RatingCreateManyAppInput[]
+    skipDuplicates?: boolean
   }
 
   export type DeveloperUpsertWithoutAppsInput = {
@@ -11516,6 +13189,36 @@ export namespace Prisma {
     name?: StringFilter<"Tag"> | string
   }
 
+  export type RatingUpsertWithWhereUniqueWithoutAppInput = {
+    where: RatingWhereUniqueInput
+    update: XOR<RatingUpdateWithoutAppInput, RatingUncheckedUpdateWithoutAppInput>
+    create: XOR<RatingCreateWithoutAppInput, RatingUncheckedCreateWithoutAppInput>
+  }
+
+  export type RatingUpdateWithWhereUniqueWithoutAppInput = {
+    where: RatingWhereUniqueInput
+    data: XOR<RatingUpdateWithoutAppInput, RatingUncheckedUpdateWithoutAppInput>
+  }
+
+  export type RatingUpdateManyWithWhereWithoutAppInput = {
+    where: RatingScalarWhereInput
+    data: XOR<RatingUpdateManyMutationInput, RatingUncheckedUpdateManyWithoutAppInput>
+  }
+
+  export type RatingScalarWhereInput = {
+    AND?: RatingScalarWhereInput | RatingScalarWhereInput[]
+    OR?: RatingScalarWhereInput[]
+    NOT?: RatingScalarWhereInput | RatingScalarWhereInput[]
+    id?: StringFilter<"Rating"> | string
+    appId?: StringFilter<"Rating"> | string
+    userId?: StringFilter<"Rating"> | string
+    score?: IntFilter<"Rating"> | number
+    title?: StringNullableFilter<"Rating"> | string | null
+    body?: StringNullableFilter<"Rating"> | string | null
+    createdAt?: DateTimeFilter<"Rating"> | Date | string
+    updatedAt?: DateTimeFilter<"Rating"> | Date | string
+  }
+
   export type AppCreateWithoutVersionsInput = {
     id?: string
     slug: string
@@ -11533,11 +13236,13 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     developer: DeveloperCreateNestedOneWithoutAppsInput
     tags?: TagCreateNestedManyWithoutAppsInput
+    ratings?: RatingCreateNestedManyWithoutAppInput
   }
 
   export type AppUncheckedCreateWithoutVersionsInput = {
@@ -11558,10 +13263,12 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     tags?: TagUncheckedCreateNestedManyWithoutAppsInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutAppInput
   }
 
   export type AppCreateOrConnectWithoutVersionsInput = {
@@ -11625,11 +13332,13 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     developer?: DeveloperUpdateOneRequiredWithoutAppsNestedInput
     tags?: TagUpdateManyWithoutAppsNestedInput
+    ratings?: RatingUpdateManyWithoutAppNestedInput
   }
 
   export type AppUncheckedUpdateWithoutVersionsInput = {
@@ -11650,10 +13359,12 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tags?: TagUncheckedUpdateManyWithoutAppsNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutAppNestedInput
   }
 
   export type DownloadLogUpsertWithWhereUniqueWithoutVersionInput = {
@@ -11794,11 +13505,13 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     developer: DeveloperCreateNestedOneWithoutAppsInput
     versions?: VersionCreateNestedManyWithoutAppInput
+    ratings?: RatingCreateNestedManyWithoutAppInput
   }
 
   export type AppUncheckedCreateWithoutTagsInput = {
@@ -11819,10 +13532,12 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     versions?: VersionUncheckedCreateNestedManyWithoutAppInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutAppInput
   }
 
   export type AppCreateOrConnectWithoutTagsInput = {
@@ -11846,6 +13561,126 @@ export namespace Prisma {
     data: XOR<AppUpdateManyMutationInput, AppUncheckedUpdateManyWithoutTagsInput>
   }
 
+  export type AppCreateWithoutRatingsInput = {
+    id?: string
+    slug: string
+    name: string
+    bundleId: string
+    category: $Enums.Category
+    description: string
+    shortDesc: string
+    iconUrl: string
+    screenshots?: AppCreatescreenshotsInput | string[]
+    status?: $Enums.AppStatus
+    platform?: $Enums.Platform
+    minAndroid?: string | null
+    minIos?: string | null
+    websiteUrl?: string | null
+    privacyUrl: string
+    sourceUrl?: string | null
+    avgRating?: number | null
+    totalDownloads?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    developer: DeveloperCreateNestedOneWithoutAppsInput
+    versions?: VersionCreateNestedManyWithoutAppInput
+    tags?: TagCreateNestedManyWithoutAppsInput
+  }
+
+  export type AppUncheckedCreateWithoutRatingsInput = {
+    id?: string
+    slug: string
+    name: string
+    bundleId: string
+    developerId: string
+    category: $Enums.Category
+    description: string
+    shortDesc: string
+    iconUrl: string
+    screenshots?: AppCreatescreenshotsInput | string[]
+    status?: $Enums.AppStatus
+    platform?: $Enums.Platform
+    minAndroid?: string | null
+    minIos?: string | null
+    websiteUrl?: string | null
+    privacyUrl: string
+    sourceUrl?: string | null
+    avgRating?: number | null
+    totalDownloads?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    versions?: VersionUncheckedCreateNestedManyWithoutAppInput
+    tags?: TagUncheckedCreateNestedManyWithoutAppsInput
+  }
+
+  export type AppCreateOrConnectWithoutRatingsInput = {
+    where: AppWhereUniqueInput
+    create: XOR<AppCreateWithoutRatingsInput, AppUncheckedCreateWithoutRatingsInput>
+  }
+
+  export type AppUpsertWithoutRatingsInput = {
+    update: XOR<AppUpdateWithoutRatingsInput, AppUncheckedUpdateWithoutRatingsInput>
+    create: XOR<AppCreateWithoutRatingsInput, AppUncheckedCreateWithoutRatingsInput>
+    where?: AppWhereInput
+  }
+
+  export type AppUpdateToOneWithWhereWithoutRatingsInput = {
+    where?: AppWhereInput
+    data: XOR<AppUpdateWithoutRatingsInput, AppUncheckedUpdateWithoutRatingsInput>
+  }
+
+  export type AppUpdateWithoutRatingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bundleId?: StringFieldUpdateOperationsInput | string
+    category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
+    description?: StringFieldUpdateOperationsInput | string
+    shortDesc?: StringFieldUpdateOperationsInput | string
+    iconUrl?: StringFieldUpdateOperationsInput | string
+    screenshots?: AppUpdatescreenshotsInput | string[]
+    status?: EnumAppStatusFieldUpdateOperationsInput | $Enums.AppStatus
+    platform?: EnumPlatformFieldUpdateOperationsInput | $Enums.Platform
+    minAndroid?: NullableStringFieldUpdateOperationsInput | string | null
+    minIos?: NullableStringFieldUpdateOperationsInput | string | null
+    websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacyUrl?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalDownloads?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developer?: DeveloperUpdateOneRequiredWithoutAppsNestedInput
+    versions?: VersionUpdateManyWithoutAppNestedInput
+    tags?: TagUpdateManyWithoutAppsNestedInput
+  }
+
+  export type AppUncheckedUpdateWithoutRatingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    bundleId?: StringFieldUpdateOperationsInput | string
+    developerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
+    description?: StringFieldUpdateOperationsInput | string
+    shortDesc?: StringFieldUpdateOperationsInput | string
+    iconUrl?: StringFieldUpdateOperationsInput | string
+    screenshots?: AppUpdatescreenshotsInput | string[]
+    status?: EnumAppStatusFieldUpdateOperationsInput | $Enums.AppStatus
+    platform?: EnumPlatformFieldUpdateOperationsInput | $Enums.Platform
+    minAndroid?: NullableStringFieldUpdateOperationsInput | string | null
+    minIos?: NullableStringFieldUpdateOperationsInput | string | null
+    websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacyUrl?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    totalDownloads?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    versions?: VersionUncheckedUpdateManyWithoutAppNestedInput
+    tags?: TagUncheckedUpdateManyWithoutAppsNestedInput
+  }
+
   export type AppCreateManyDeveloperInput = {
     id?: string
     slug: string
@@ -11863,6 +13698,7 @@ export namespace Prisma {
     websiteUrl?: string | null
     privacyUrl: string
     sourceUrl?: string | null
+    avgRating?: number | null
     totalDownloads?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11885,11 +13721,13 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     versions?: VersionUpdateManyWithoutAppNestedInput
     tags?: TagUpdateManyWithoutAppsNestedInput
+    ratings?: RatingUpdateManyWithoutAppNestedInput
   }
 
   export type AppUncheckedUpdateWithoutDeveloperInput = {
@@ -11909,11 +13747,13 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     versions?: VersionUncheckedUpdateManyWithoutAppNestedInput
     tags?: TagUncheckedUpdateManyWithoutAppsNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutAppNestedInput
   }
 
   export type AppUncheckedUpdateManyWithoutDeveloperInput = {
@@ -11933,6 +13773,7 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11954,6 +13795,16 @@ export namespace Prisma {
     scannedAt?: Date | string | null
     publishedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type RatingCreateManyAppInput = {
+    id?: string
+    userId: string
+    score: number
+    title?: string | null
+    body?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type VersionUpdateWithoutAppInput = {
@@ -12027,6 +13878,36 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
   }
 
+  export type RatingUpdateWithoutAppInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RatingUncheckedUpdateWithoutAppInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RatingUncheckedUpdateManyWithoutAppInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    score?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DownloadLogCreateManyVersionInput = {
     id?: string
     userId?: string | null
@@ -12080,11 +13961,13 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     developer?: DeveloperUpdateOneRequiredWithoutAppsNestedInput
     versions?: VersionUpdateManyWithoutAppNestedInput
+    ratings?: RatingUpdateManyWithoutAppNestedInput
   }
 
   export type AppUncheckedUpdateWithoutTagsInput = {
@@ -12105,10 +13988,12 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     versions?: VersionUncheckedUpdateManyWithoutAppNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutAppNestedInput
   }
 
   export type AppUncheckedUpdateManyWithoutTagsInput = {
@@ -12129,6 +14014,7 @@ export namespace Prisma {
     websiteUrl?: NullableStringFieldUpdateOperationsInput | string | null
     privacyUrl?: StringFieldUpdateOperationsInput | string
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avgRating?: NullableFloatFieldUpdateOperationsInput | number | null
     totalDownloads?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

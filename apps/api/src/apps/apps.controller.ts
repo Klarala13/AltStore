@@ -12,7 +12,7 @@ import {
   Request,
   UseGuards,
 } from "@nestjs/common";
-import { AppsService, AppFilters } from "./apps.service";
+import { AppsService, AppFilters, SearchFilters } from "./apps.service";
 import { CreateAppDto, UpdateAppDto } from "./apps.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { JwtPayload } from "../auth/jwt.strategy";
@@ -40,6 +40,25 @@ export class AppsController {
       limit: parseInt(limit, 10),
     };
     return this.appsService.findAll(filters);
+  }
+
+  /** GET /apps/search?q=&category=&platform=&page=&limit= — public full-text search */
+  @Get("search")
+  search(
+    @Query("q") q = "",
+    @Query("category") category?: Category,
+    @Query("platform") platform?: Platform,
+    @Query("page") page = "1",
+    @Query("limit") limit = "20"
+  ) {
+    const filters: SearchFilters = {
+      q,
+      category,
+      platform,
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    };
+    return this.appsService.search(filters);
   }
 
   @Get(":slug")

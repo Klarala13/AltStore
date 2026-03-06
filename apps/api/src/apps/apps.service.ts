@@ -11,6 +11,14 @@ export interface AppFilters {
   limit: number;
 }
 
+export interface SearchFilters {
+  q: string;
+  category?: Category;
+  platform?: Platform;
+  page: number;
+  limit: number;
+}
+
 @Injectable()
 export class AppsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -46,6 +54,47 @@ export class AppsService {
           status: status ?? "ACTIVE",
         },
       }),
+    ]);
+
+    return { items, total, page, limit };
+  }
+
+  async search(filters: SearchFilters) {
+    const { q, category, platform, page, limit } = filters;
+    const skip = (page - 1) * limit;
+    const term = q.trim();
+
+    // Use Postgres ILIKE for broad compatibility; pg_trgm index (added via migration)
+    // will accelerate this when the extension is enabled.
+    const where = {
+      status: "ACTIVE" as const,
+      ...(category && { category }),
+      ...(platform && { platform }),
+      OR: [
+        { name: { contains: term, mode: "insensitive" as const } },
+        { shortDesc: { contains: term, mode: "insensitive" as const } },
+        { description: { contains: term, mode: "insensitive" as const } },
+        { tags: { some: { name: { contains: term, mode: "insensitive" as const } } } },
+      ],
+    };
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.app.findMany({
+        where,
+        include: {
+          developer: { select: { id: true, name: true } },
+          versions: {
+            where: { status: "APPROVED" },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { versionName: true, fileSize: true, platform: true },
+          },
+        },
+        orderBy: { totalDownloads: "desc" },
+        skip,
+        take: limit,
+      }),
+      this.prisma.app.count({ where }),
     ]);
 
     return { items, total, page, limit };

@@ -49,6 +49,8 @@ model App {
   sourceUrl      String?
   versions       Version[]
   tags           Tag[]
+  ratings        Rating[]
+  avgRating      Float?
   totalDownloads Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -115,8 +117,22 @@ model Tag {
   apps App[]
 }
 
-// Rating model: to be implemented in Phase 3
-// model Rating { ... }
+// Rating model
+model Rating {
+  id          String   @id @default(cuid())
+  appId       String
+  app         App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  // userId is the NextAuth session user id (consumer) — null for anonymous drafts
+  userId      String
+  score       Int // 1–5
+  title       String?  @db.VarChar(120)
+  body        String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([appId, userId]) // one rating per user per app (upsert)
+  @@index([appId, createdAt])
+}
 
 enum DeveloperType {
   INDIVIDUAL

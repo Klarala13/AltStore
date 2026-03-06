@@ -10,6 +10,7 @@ import { VersionsModule } from "./versions/versions.module";
 import { SecurityModule } from "./security/security.module";
 import { DownloadsModule } from "./downloads/downloads.module";
 import { AdminModule } from "./admin/admin.module";
+import { RatingsModule } from "./ratings/ratings.module";
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AdminModule } from "./admin/admin.module";
     SecurityModule, // VirusTotal scan queue processor
     DownloadsModule, // Presigned URL + QR code + download log
     AdminModule, // Admin moderation panel
+    RatingsModule, // Consumer ratings + avgRating recompute
   ],
 })
 export class AppModule {}

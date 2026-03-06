@@ -154,6 +154,7 @@ exports.Prisma.AppScalarFieldEnum = {
   websiteUrl: 'websiteUrl',
   privacyUrl: 'privacyUrl',
   sourceUrl: 'sourceUrl',
+  avgRating: 'avgRating',
   totalDownloads: 'totalDownloads',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -202,6 +203,17 @@ exports.Prisma.SecurityLogScalarFieldEnum = {
 exports.Prisma.TagScalarFieldEnum = {
   id: 'id',
   name: 'name'
+};
+
+exports.Prisma.RatingScalarFieldEnum = {
+  id: 'id',
+  appId: 'appId',
+  userId: 'userId',
+  score: 'score',
+  title: 'title',
+  body: 'body',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -282,7 +294,8 @@ exports.Prisma.ModelName = {
   Version: 'Version',
   DownloadLog: 'DownloadLog',
   SecurityLog: 'SecurityLog',
-  Tag: 'Tag'
+  Tag: 'Tag',
+  Rating: 'Rating'
 };
 
 /**

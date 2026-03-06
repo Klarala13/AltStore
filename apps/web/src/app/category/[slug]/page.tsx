@@ -1,12 +1,50 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AppCard } from "@/components/AppCard";
-import { MOCK_APPS } from "@/lib/mock-data";
+import type { AppCardDto } from "@altstore/types";
+
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 
+const VALID_CATEGORIES = [
+  "PRODUCTIVITY",
+  "SOCIAL",
+  "ENTERTAINMENT",
+  "TOOLS",
+  "EDUCATION",
+  "HEALTH",
+  "FINANCE",
+  "GAMES",
+  "PHOTOGRAPHY",
+  "NAVIGATION",
+  "OTHER",
+] as const;
+
+type Category = (typeof VALID_CATEGORIES)[number];
+
 const toLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-const toCategory = (slug: string) => slug.toUpperCase();
+const toCategory = (slug: string): Category | null => {
+  const upper = slug.toUpperCase() as Category;
+  return VALID_CATEGORIES.includes(upper) ? upper : null;
+};
+
+interface ApiResponse {
+  items: AppCardDto[];
+  total: number;
+}
+
+async function getAppsByCategory(category: Category): Promise<ApiResponse> {
+  const res = await fetch(`${process.env.API_URL}/apps?category=${category}&limit=100`, {
+    next: { revalidate: 3600 },
+    headers: { "X-Internal-Key": process.env.INTERNAL_API_KEY ?? "" },
+  });
+  if (!res.ok) return { items: [], total: 0 };
+  return res.json();
+}
+
+export const generateStaticParams = () =>
+  VALID_CATEGORIES.map((cat) => ({ slug: cat.toLowerCase() }));
 
 export const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { slug } = await params;
@@ -17,15 +55,12 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
   };
 };
 
-export const generateStaticParams = () => {
-  const slugs = Array.from(new Set(MOCK_APPS.map((a) => a.category.toLowerCase())));
-  return slugs.map((slug) => ({ slug }));
-};
-
 const CategoryPage = async ({ params }: Props) => {
   const { slug } = await params;
   const category = toCategory(slug);
-  const apps = MOCK_APPS.filter((a) => a.category === category);
+  if (!category) notFound();
+
+  const { items: apps } = await getAppsByCategory(category);
 
   if (apps.length === 0) notFound();
 
@@ -46,6 +81,7 @@ const CategoryPage = async ({ params }: Props) => {
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={2}
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -83,17 +119,15 @@ const CategoryPage = async ({ params }: Props) => {
         <div className="mt-16 border-t border-zinc-800 pt-10">
           <p className="mb-5 text-sm text-zinc-500">Browse other categories</p>
           <div className="flex flex-wrap gap-3">
-            {Array.from(new Set(MOCK_APPS.map((a) => a.category)))
-              .filter((c) => c !== category)
-              .map((c) => (
-                <a
-                  key={c}
-                  href={`/category/${c.toLowerCase()}`}
-                  className="rounded-full border border-zinc-800 px-4 py-1.5 text-xs font-medium text-zinc-400 transition-all duration-200 hover:border-zinc-600 hover:text-white"
-                >
-                  {toLabel(c)}
-                </a>
-              ))}
+            {VALID_CATEGORIES.filter((c) => c !== category).map((c) => (
+              <a
+                key={c}
+                href={`/category/${c.toLowerCase()}`}
+                className="rounded-full border border-zinc-800 px-4 py-1.5 text-xs font-medium text-zinc-400 transition-all duration-200 hover:border-zinc-600 hover:text-white"
+              >
+                {toLabel(c)}
+              </a>
+            ))}
           </div>
         </div>
       </section>
