@@ -9,6 +9,7 @@ import { AppsModule } from "./apps/apps.module";
 import { VersionsModule } from "./versions/versions.module";
 import { SecurityModule } from "./security/security.module";
 import { DownloadsModule } from "./downloads/downloads.module";
+import { AdminModule } from "./admin/admin.module";
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DownloadsModule } from "./downloads/downloads.module";
     VersionsModule, // APK upload + version history
     SecurityModule, // VirusTotal scan queue processor
     DownloadsModule, // Presigned URL + QR code + download log
+    AdminModule, // Admin moderation panel
   ],
 })
 export class AppModule {}

@@ -20,6 +20,7 @@ model Developer {
   type         DeveloperType
   vatNumber    String? // For EU companies (GDPR/DMA)
   country      String // ISO 3166-1 alpha-2
+  isAdmin      Boolean       @default(false)
   verified     Boolean       @default(false)
   verifiedAt   DateTime?
   apps         App[]

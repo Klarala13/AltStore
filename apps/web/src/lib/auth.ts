@@ -34,11 +34,13 @@ export const authOptions: NextAuthOptions = {
           const payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf-8")) as {
             sub: string;
             email: string;
+            isAdmin?: boolean;
           };
 
           return {
             id: payload.sub,
             email: payload.email,
+            isAdmin: payload.isAdmin ?? false,
             // Attach the NestJS JWT so Server Components / API routes can forward it
             accessToken: data.accessToken,
           };
@@ -62,9 +64,11 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.sub = user.id;
         token.email = user.email ?? token.email;
-        // Persist NestJS access token for downstream API calls
         if ("accessToken" in user) {
           token.accessToken = user.accessToken as string;
+        }
+        if ("isAdmin" in user) {
+          token.isAdmin = user.isAdmin as boolean;
         }
       }
       return token;
@@ -73,8 +77,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as { id?: string }).id = token.sub;
       }
-      // Forward the NestJS JWT to the client so it can call the API directly
       (session as { accessToken?: string }).accessToken = token.accessToken as string | undefined;
+      (session as { isAdmin?: boolean }).isAdmin = token.isAdmin as boolean | undefined;
       return session;
     },
   },

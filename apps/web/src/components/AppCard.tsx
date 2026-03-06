@@ -1,11 +1,12 @@
-"use client";
-
-import { useState, useId } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useId } from "react";
 import type { AppCardDto } from "@altstore/types";
+import { TiltWrapper } from "@/components/TiltWrapper";
 
-const TILT_THRESHOLD = 12;
+// ---------------------------------------------------------------------------
+// StarRating — pure render, useId works in Server Components (React 18+)
+// ---------------------------------------------------------------------------
 
 const StarRating = ({ rating }: { rating: number }) => {
   const uid = useId();
@@ -60,6 +61,11 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
+// ---------------------------------------------------------------------------
+// AppCard — Server Component. TiltWrapper handles the mouse-tilt interaction
+// on the client side without forcing this entire tree to be a client bundle.
+// ---------------------------------------------------------------------------
+
 const AppCard = ({
   slug,
   name,
@@ -70,35 +76,11 @@ const AppCard = ({
   platform,
   latestVersion,
   rating,
-}: AppCardDto) => {
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-
-  const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Respect prefers-reduced-motion — check at event time so SSR is safe
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - left) / width - 0.5;
-    const y = (e.clientY - top) / height - 0.5;
-    setTilt({ x: y * -TILT_THRESHOLD, y: x * TILT_THRESHOLD });
-  };
-
-  const handleLeave = () => setTilt({ x: 0, y: 0 });
-
-  const isResting = tilt.x === 0 && tilt.y === 0;
-
-  return (
+}: AppCardDto) => (
+  <TiltWrapper>
     <Link
       href={`/apps/${slug}`}
       className="block overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-xl transition-colors duration-200 hover:border-zinc-700"
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      style={{
-        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-        transition: isResting
-          ? "transform 0.4s ease-out, border-color 0.2s ease"
-          : "transform 0.1s ease-out, border-color 0.2s ease",
-        willChange: "transform",
-      }}
     >
       {/* Cover image */}
       <div className="relative h-40 w-full overflow-hidden bg-zinc-900">
@@ -167,7 +149,7 @@ const AppCard = ({
         </div>
       </div>
     </Link>
-  );
-};
+  </TiltWrapper>
+);
 
 export { AppCard };

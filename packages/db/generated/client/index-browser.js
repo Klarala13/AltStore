@@ -129,6 +129,7 @@ exports.Prisma.DeveloperScalarFieldEnum = {
   type: 'type',
   vatNumber: 'vatNumber',
   country: 'country',
+  isAdmin: 'isAdmin',
   verified: 'verified',
   verifiedAt: 'verifiedAt',
   createdAt: 'createdAt',

@@ -1560,6 +1560,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType | null
     vatNumber: string | null
     country: string | null
+    isAdmin: boolean | null
     verified: boolean | null
     verifiedAt: Date | null
     createdAt: Date | null
@@ -1574,6 +1575,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType | null
     vatNumber: string | null
     country: string | null
+    isAdmin: boolean | null
     verified: boolean | null
     verifiedAt: Date | null
     createdAt: Date | null
@@ -1588,6 +1590,7 @@ export namespace Prisma {
     type: number
     vatNumber: number
     country: number
+    isAdmin: number
     verified: number
     verifiedAt: number
     createdAt: number
@@ -1604,6 +1607,7 @@ export namespace Prisma {
     type?: true
     vatNumber?: true
     country?: true
+    isAdmin?: true
     verified?: true
     verifiedAt?: true
     createdAt?: true
@@ -1618,6 +1622,7 @@ export namespace Prisma {
     type?: true
     vatNumber?: true
     country?: true
+    isAdmin?: true
     verified?: true
     verifiedAt?: true
     createdAt?: true
@@ -1632,6 +1637,7 @@ export namespace Prisma {
     type?: true
     vatNumber?: true
     country?: true
+    isAdmin?: true
     verified?: true
     verifiedAt?: true
     createdAt?: true
@@ -1719,6 +1725,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType
     vatNumber: string | null
     country: string
+    isAdmin: boolean
     verified: boolean
     verifiedAt: Date | null
     createdAt: Date
@@ -1750,6 +1757,7 @@ export namespace Prisma {
     type?: boolean
     vatNumber?: boolean
     country?: boolean
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: boolean
     createdAt?: boolean
@@ -1766,6 +1774,7 @@ export namespace Prisma {
     type?: boolean
     vatNumber?: boolean
     country?: boolean
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: boolean
     createdAt?: boolean
@@ -1780,6 +1789,7 @@ export namespace Prisma {
     type?: boolean
     vatNumber?: boolean
     country?: boolean
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: boolean
     createdAt?: boolean
@@ -1794,13 +1804,14 @@ export namespace Prisma {
     type?: boolean
     vatNumber?: boolean
     country?: boolean
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "type" | "vatNumber" | "country" | "verified" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
+  export type DeveloperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "type" | "vatNumber" | "country" | "isAdmin" | "verified" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["developer"]>
   export type DeveloperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apps?: boolean | Developer$appsArgs<ExtArgs>
     _count?: boolean | DeveloperCountOutputTypeDefaultArgs<ExtArgs>
@@ -1821,6 +1832,7 @@ export namespace Prisma {
       type: $Enums.DeveloperType
       vatNumber: string | null
       country: string
+      isAdmin: boolean
       verified: boolean
       verifiedAt: Date | null
       createdAt: Date
@@ -2256,6 +2268,7 @@ export namespace Prisma {
     readonly type: FieldRef<"Developer", 'DeveloperType'>
     readonly vatNumber: FieldRef<"Developer", 'String'>
     readonly country: FieldRef<"Developer", 'String'>
+    readonly isAdmin: FieldRef<"Developer", 'Boolean'>
     readonly verified: FieldRef<"Developer", 'Boolean'>
     readonly verifiedAt: FieldRef<"Developer", 'DateTime'>
     readonly createdAt: FieldRef<"Developer", 'DateTime'>
@@ -8463,6 +8476,7 @@ export namespace Prisma {
     type: 'type',
     vatNumber: 'vatNumber',
     country: 'country',
+    isAdmin: 'isAdmin',
     verified: 'verified',
     verifiedAt: 'verifiedAt',
     createdAt: 'createdAt',
@@ -8790,6 +8804,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFilter<"Developer"> | $Enums.DeveloperType
     vatNumber?: StringNullableFilter<"Developer"> | string | null
     country?: StringFilter<"Developer"> | string
+    isAdmin?: BoolFilter<"Developer"> | boolean
     verified?: BoolFilter<"Developer"> | boolean
     verifiedAt?: DateTimeNullableFilter<"Developer"> | Date | string | null
     createdAt?: DateTimeFilter<"Developer"> | Date | string
@@ -8805,6 +8820,7 @@ export namespace Prisma {
     type?: SortOrder
     vatNumber?: SortOrderInput | SortOrder
     country?: SortOrder
+    isAdmin?: SortOrder
     verified?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -8823,6 +8839,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFilter<"Developer"> | $Enums.DeveloperType
     vatNumber?: StringNullableFilter<"Developer"> | string | null
     country?: StringFilter<"Developer"> | string
+    isAdmin?: BoolFilter<"Developer"> | boolean
     verified?: BoolFilter<"Developer"> | boolean
     verifiedAt?: DateTimeNullableFilter<"Developer"> | Date | string | null
     createdAt?: DateTimeFilter<"Developer"> | Date | string
@@ -8838,6 +8855,7 @@ export namespace Prisma {
     type?: SortOrder
     vatNumber?: SortOrderInput | SortOrder
     country?: SortOrder
+    isAdmin?: SortOrder
     verified?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -8858,6 +8876,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeWithAggregatesFilter<"Developer"> | $Enums.DeveloperType
     vatNumber?: StringNullableWithAggregatesFilter<"Developer"> | string | null
     country?: StringWithAggregatesFilter<"Developer"> | string
+    isAdmin?: BoolWithAggregatesFilter<"Developer"> | boolean
     verified?: BoolWithAggregatesFilter<"Developer"> | boolean
     verifiedAt?: DateTimeNullableWithAggregatesFilter<"Developer"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Developer"> | Date | string
@@ -9298,6 +9317,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: Date | string | null
     createdAt?: Date | string
@@ -9313,6 +9333,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: Date | string | null
     createdAt?: Date | string
@@ -9328,6 +9349,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
     verified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9343,6 +9365,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
     verified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9358,6 +9381,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: Date | string | null
     createdAt?: Date | string
@@ -9372,6 +9396,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
     verified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9386,6 +9411,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
     verified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9968,6 +9994,7 @@ export namespace Prisma {
     type?: SortOrder
     vatNumber?: SortOrder
     country?: SortOrder
+    isAdmin?: SortOrder
     verified?: SortOrder
     verifiedAt?: SortOrder
     createdAt?: SortOrder
@@ -9982,6 +10009,7 @@ export namespace Prisma {
     type?: SortOrder
     vatNumber?: SortOrder
     country?: SortOrder
+    isAdmin?: SortOrder
     verified?: SortOrder
     verifiedAt?: SortOrder
     createdAt?: SortOrder
@@ -9996,6 +10024,7 @@ export namespace Prisma {
     type?: SortOrder
     vatNumber?: SortOrder
     country?: SortOrder
+    isAdmin?: SortOrder
     verified?: SortOrder
     verifiedAt?: SortOrder
     createdAt?: SortOrder
@@ -11294,6 +11323,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: Date | string | null
     createdAt?: Date | string
@@ -11308,6 +11338,7 @@ export namespace Prisma {
     type: $Enums.DeveloperType
     vatNumber?: string | null
     country: string
+    isAdmin?: boolean
     verified?: boolean
     verifiedAt?: Date | string | null
     createdAt?: Date | string
@@ -11401,6 +11432,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
     verified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11415,6 +11447,7 @@ export namespace Prisma {
     type?: EnumDeveloperTypeFieldUpdateOperationsInput | $Enums.DeveloperType
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
+    isAdmin?: BoolFieldUpdateOperationsInput | boolean
     verified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
