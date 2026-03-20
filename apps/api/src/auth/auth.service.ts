@@ -9,6 +9,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { LoginDto, RegisterDeveloperDto } from "./auth.dto";
 import { JwtPayload } from "./jwt.strategy";
 import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -62,7 +63,7 @@ export class AuthService {
       );
     }
 
-    const passwordValid = await bcrypt.compare(dto.password, developer.passwordHash);
+    const passwordValid = await this.verifyPassword(dto.password, developer.passwordHash);
     if (!passwordValid) {
       throw new UnauthorizedException("Invalid credentials");
     }
@@ -73,5 +74,23 @@ export class AuthService {
       isAdmin: developer.isAdmin,
     };
     return { accessToken: this.jwt.sign(payload) };
+  }
+
+  private async verifyPassword(plainPassword: string, passwordHash: string): Promise<boolean> {
+    if (passwordHash.startsWith("scrypt:")) {
+      const [, salt, storedHash] = passwordHash.split(":");
+      if (!salt || !storedHash) {
+        return false;
+      }
+
+      const derivedKey = crypto.scryptSync(plainPassword, salt, 64).toString("hex");
+      if (derivedKey.length !== storedHash.length) {
+        return false;
+      }
+
+      return crypto.timingSafeEqual(Buffer.from(derivedKey), Buffer.from(storedHash));
+    }
+
+    return bcrypt.compare(plainPassword, passwordHash);
   }
 }

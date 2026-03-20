@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 export interface VtAnalysis {
@@ -15,11 +15,21 @@ export interface VtAnalysis {
 @Injectable()
 export class VirusTotalService {
   private readonly logger = new Logger(VirusTotalService.name);
-  private readonly apiKey: string;
+  private readonly apiKey?: string;
   private readonly baseUrl = "https://www.virustotal.com/api/v3";
 
   constructor(private readonly config: ConfigService) {
-    this.apiKey = config.getOrThrow("VT_API_KEY");
+    this.apiKey = config.get<string>("VT_API_KEY");
+  }
+
+  private getApiKey(): string {
+    if (!this.apiKey) {
+      throw new ServiceUnavailableException(
+        "VirusTotal is not configured. Set VT_API_KEY to enable malware scanning."
+      );
+    }
+
+    return this.apiKey;
   }
 
   /**
@@ -27,12 +37,13 @@ export class VirusTotalService {
    * Max polling duration: ~5 minutes (60 attempts × 5s intervals).
    */
   async scanBuffer(buffer: Buffer, filename: string): Promise<VtAnalysis> {
+    const apiKey = this.getApiKey();
     const formData = new FormData();
     formData.append("file", new Blob([buffer]), filename);
 
     const uploadRes = await fetch(`${this.baseUrl}/files`, {
       method: "POST",
-      headers: { "x-apikey": this.apiKey },
+      headers: { "x-apikey": apiKey },
       body: formData,
     });
 
@@ -55,7 +66,7 @@ export class VirusTotalService {
       await this.sleep(intervalMs);
 
       const res = await fetch(`${this.baseUrl}/analyses/${analysisId}`, {
-        headers: { "x-apikey": this.apiKey },
+        headers: { "x-apikey": this.getApiKey() },
       });
 
       if (!res.ok) {
