@@ -92,14 +92,11 @@ const ScanStatus = ({
 
   // Kick off polling on mount if not already terminal
   useState(() => {
-    if (status !== "APPROVED" && status !== "INFECTED") {
+    if (version.status !== "APPROVED" && version.status !== "INFECTED") {
       pollingRef.current = setTimeout(() => void poll(), 4000);
     } else {
       doneRef.current = true;
     }
-    return () => {
-      if (pollingRef.current) clearTimeout(pollingRef.current);
-    };
   });
 
   const isSpinning = status === "SCANNING" || status === "PENDING";
@@ -229,9 +226,10 @@ export const UploadVersionForm = ({ appId }: { appId: string }) => {
     fd.append("file", file);
     fd.append("versionName", form.versionName);
     fd.append("versionCode", form.versionCode);
-    fd.append("platform", form.platform);
-    if (form.changelog) fd.append("changelog", form.changelog);
-    if (form.minOsVersion) fd.append("minOsVersion", form.minOsVersion);
+    fd.append("platform", "ANDROID");
+    fd.append("changelog", form.changelog || "Initial release");
+    if (form.minOsVersion) fd.append("minOs", form.minOsVersion);
+    else fd.append("minOs", "8.0");
 
     await new Promise<void>((resolve) => {
       const xhr = new XMLHttpRequest();
