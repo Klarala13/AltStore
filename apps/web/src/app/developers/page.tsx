@@ -46,7 +46,7 @@ const HeroSection = () => (
       </p>
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href="/login" className="btn-primary px-7 py-3 text-base">
+        <Link href="/dashboard/apps/new" className="btn-primary px-7 py-3 text-base">
           Submit Your App
         </Link>
         <a
@@ -401,7 +401,7 @@ const CtaSection = () => (
         users.
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href="/login" className="btn-primary px-8 py-3 text-base">
+        <Link href="/dashboard/apps/new" className="btn-primary px-8 py-3 text-base">
           Get started — it&apos;s free
         </Link>
         <Link
