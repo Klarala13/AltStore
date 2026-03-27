@@ -22,8 +22,11 @@ export const STORAGE_PROVIDER = "STORAGE_PROVIDER";
 export class R2StorageProvider implements StorageProvider {
   private readonly client?: S3Client;
   private readonly bucket?: string;
+  private readonly frontendUrl: string;
 
   constructor(private readonly config: ConfigService) {
+    this.frontendUrl = this.config.get<string>("FRONTEND_URL") ?? "http://localhost:3000";
+
     const accountId = this.config.get<string>("CF_ACCOUNT_ID");
     const accessKeyId = this.config.get<string>("R2_ACCESS_KEY");
     const secretAccessKey = this.config.get<string>("R2_SECRET_KEY");
@@ -66,6 +69,10 @@ export class R2StorageProvider implements StorageProvider {
   }
 
   async getSignedUrl(key: string, ttlSeconds: number): Promise<string> {
+    if (key.startsWith("/")) {
+      return `${this.frontendUrl}${key}`;
+    }
+
     const { client, bucket } = this.getConfiguredClient();
 
     const command = new GetObjectCommand({

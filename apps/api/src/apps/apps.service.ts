@@ -23,6 +23,48 @@ export interface SearchFilters {
 export class AppsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private formatBytes(bytes: bigint): string {
+    const value = Number(bytes);
+    if (value < 1024) return `${value} B`;
+    if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+    return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  private buildVersionList(
+    versions: Array<{
+      id: string;
+      versionName: string;
+      platform: Platform;
+      fileSize: bigint;
+      changelog: string;
+      minOs: string;
+      publishedAt: Date | null;
+      fileKey: string;
+    }>
+  ) {
+    return versions.map((version, index) => {
+      const previous = versions[index + 1];
+      const sizeDelta = previous ? Number(version.fileSize - previous.fileSize) : null;
+
+      return {
+        id: version.id,
+        versionName: version.versionName,
+        platform: version.platform,
+        fileSize: this.formatBytes(version.fileSize),
+        fileSizeDelta:
+          sizeDelta === null
+            ? null
+            : `${sizeDelta >= 0 ? "+" : "-"}${this.formatBytes(BigInt(Math.abs(sizeDelta)))}`,
+        sizeTrend: sizeDelta === null ? null : sizeDelta >= 0 ? "larger" : "smaller",
+        changelog: version.changelog,
+        minOs: version.minOs,
+        publishedAt: version.publishedAt?.toISOString() ?? null,
+        isLatest: index === 0,
+        fileKey: version.fileKey,
+      };
+    });
+  }
+
   async findAll(filters: AppFilters) {
     const { category, platform, status, page, limit } = filters;
     const skip = (page - 1) * limit;
@@ -56,7 +98,27 @@ export class AppsService {
       }),
     ]);
 
-    return { items, total, page, limit };
+    return {
+      items: items.map((app) => {
+        const latest = app.versions[0] ?? null;
+        return {
+          id: app.id,
+          slug: app.slug,
+          name: app.name,
+          category: app.category,
+          iconUrl: app.iconUrl,
+          shortDesc: app.shortDesc,
+          platform: app.platform,
+          latestVersion: latest?.versionName ?? null,
+          latestFileSize: latest ? this.formatBytes(latest.fileSize) : null,
+          totalDownloads: app.totalDownloads,
+          rating: app.avgRating ?? null,
+        };
+      }),
+      total,
+      page,
+      limit,
+    };
   }
 
   async search(filters: SearchFilters) {
@@ -97,23 +159,77 @@ export class AppsService {
       this.prisma.app.count({ where }),
     ]);
 
-    return { items, total, page, limit };
+    return {
+      items: items.map((app) => {
+        const latest = app.versions[0] ?? null;
+        return {
+          id: app.id,
+          slug: app.slug,
+          name: app.name,
+          category: app.category,
+          iconUrl: app.iconUrl,
+          shortDesc: app.shortDesc,
+          platform: app.platform,
+          latestVersion: latest?.versionName ?? null,
+          latestFileSize: latest ? this.formatBytes(latest.fileSize) : null,
+          totalDownloads: app.totalDownloads,
+          rating: app.avgRating ?? null,
+        };
+      }),
+      total,
+      page,
+      limit,
+    };
   }
 
   async findBySlug(slug: string) {
     const app = await this.prisma.app.findUnique({
       where: { slug },
       include: {
-        developer: { select: { id: true, name: true } },
+        developer: { select: { id: true, name: true, verified: true, country: true } },
         versions: {
           where: { status: "APPROVED" },
           orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            versionName: true,
+            platform: true,
+            fileSize: true,
+            changelog: true,
+            minOs: true,
+            publishedAt: true,
+            fileKey: true,
+          },
         },
         tags: true,
       },
     });
     if (!app) throw new NotFoundException(`App "${slug}" not found`);
-    return app;
+
+    const versions = this.buildVersionList(app.versions);
+    const latestVersion = versions[0] ?? null;
+
+    return {
+      id: app.id,
+      slug: app.slug,
+      name: app.name,
+      category: app.category,
+      iconUrl: app.iconUrl,
+      shortDesc: app.shortDesc,
+      platform: app.platform,
+      latestVersion: latestVersion?.versionName ?? null,
+      latestFileSize: latestVersion?.fileSize ?? null,
+      totalDownloads: app.totalDownloads,
+      rating: app.avgRating ?? null,
+      description: app.description,
+      screenshots: app.screenshots,
+      websiteUrl: app.websiteUrl,
+      privacyUrl: app.privacyUrl,
+      sourceUrl: app.sourceUrl,
+      developer: app.developer,
+      versions,
+      tags: app.tags,
+    };
   }
 
   async create(developerId: string, dto: CreateAppDto) {

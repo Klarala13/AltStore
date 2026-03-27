@@ -2,10 +2,21 @@ import type { Route } from "next";
 import Link from "next/link";
 import type { AppCardDto } from "@altstore/types";
 import { AppCard } from "@/components/AppCard";
-import { MOCK_APPS } from "@/lib/mock-data";
+
+async function getApps(): Promise<AppCardDto[]> {
+  const res = await fetch(`${process.env.API_URL}/apps?limit=40`, {
+    next: { revalidate: 60 },
+    headers: { "X-Internal-Key": process.env.INTERNAL_API_KEY ?? "" },
+  });
+
+  if (!res.ok) return [];
+
+  const data = (await res.json()) as { items?: AppCardDto[] };
+  return data.items ?? [];
+}
 
 const HomePage = async () => {
-  const apps: AppCardDto[] = MOCK_APPS;
+  const apps = await getApps();
 
   return (
     <>
@@ -16,7 +27,7 @@ const HomePage = async () => {
       <StatsSection />
 
       {/* ── App grid ── */}
-      <section className="mx-4 py-16 md:mx-16 md:py-20 lg:mx-24 xl:mx-32">
+      <section id="apps" className="mx-4 py-16 md:mx-16 md:py-20 lg:mx-24 xl:mx-32">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h2 className="font-display text-2xl font-semibold text-white">All Apps</h2>
           <CategoryBar />

@@ -1,0 +1,56 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1480" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A0A14"/>
+      <stop offset="1" stop-color="#14142A"/>
+    </linearGradient>
+    <linearGradient id="grid" x1="420" y1="180" x2="1180" y2="740" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#FF2ED1"/>
+    </linearGradient>
+    <filter id="softGlow" x="0" y="0" width="1600" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="260" cy="120" r="280" fill="#1CFF00" fill-opacity="0.06"/>
+  <circle cx="1420" cy="820" r="320" fill="#00F0FF" fill-opacity="0.08"/>
+
+  <g opacity="0.22">
+    <path d="M0 620H1600" stroke="#2D2D46" stroke-width="2"/>
+    <path d="M0 700H1600" stroke="#2D2D46" stroke-width="2"/>
+    <path d="M0 780H1600" stroke="#2D2D46" stroke-width="2"/>
+    <path d="M0 860H1600" stroke="#2D2D46" stroke-width="2"/>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <rect x="420" y="180" width="760" height="560" rx="36" fill="#0E0E1D" stroke="#2B2B45" stroke-width="4"/>
+    <line x1="673" y1="260" x2="673" y2="660" stroke="url(#grid)" stroke-width="24" stroke-linecap="round"/>
+    <line x1="927" y1="260" x2="927" y2="660" stroke="url(#grid)" stroke-width="24" stroke-linecap="round"/>
+    <line x1="500" y1="393" x2="1100" y2="393" stroke="url(#grid)" stroke-width="24" stroke-linecap="round"/>
+    <line x1="500" y1="547" x2="1100" y2="547" stroke="url(#grid)" stroke-width="24" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#softGlow)">
+    <line x1="548" y1="290" x2="630" y2="372" stroke="#1CFF00" stroke-width="18" stroke-linecap="round"/>
+    <line x1="630" y1="290" x2="548" y2="372" stroke="#1CFF00" stroke-width="18" stroke-linecap="round"/>
+    <circle cx="800" cy="316" r="48" stroke="#FFB300" stroke-width="16"/>
+    <line x1="975" y1="470" x2="1057" y2="552" stroke="#1CFF00" stroke-width="18" stroke-linecap="round"/>
+    <line x1="1057" y1="470" x2="975" y2="552" stroke="#1CFF00" stroke-width="18" stroke-linecap="round"/>
+    <circle cx="548" cy="624" r="48" stroke="#FFB300" stroke-width="16"/>
+    <line x1="722" y1="624" x2="804" y2="706" stroke="#1CFF00" stroke-width="18" stroke-linecap="round"/>
+    <line x1="804" y1="624" x2="722" y2="706" stroke="#1CFF00" stroke-width="18" stroke-linecap="round"/>
+  </g>
+
+  <text x="800" y="124" text-anchor="middle" font-family="'Avenir Next', 'Trebuchet MS', sans-serif" font-size="56" font-weight="700" fill="#FFFFFF">
+    TicTacToe 80s
+  </text>
+  <text x="800" y="800" text-anchor="middle" font-family="'Avenir Next', 'Trebuchet MS', sans-serif" font-size="26" letter-spacing="2" fill="#8E8EA8">
+    RETRO NEON ARCADE · 2 PLAYER LOCAL
+  </text>
+</svg>

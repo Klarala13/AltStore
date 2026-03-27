@@ -4,7 +4,7 @@ export const MOCK_APPS: AppCardDto[] = [
   {
     id: "1",
     slug: "opentrack",
-    name: "OpenTrack",
+    name: "OpenTrack (placeholder)",
     category: "PRODUCTIVITY",
     iconUrl: "",
     coverUrl:
@@ -19,7 +19,7 @@ export const MOCK_APPS: AppCardDto[] = [
   {
     id: "2",
     slug: "vaultpass",
-    name: "VaultPass",
+    name: "VaultPass (placeholder)",
     category: "TOOLS",
     iconUrl: "",
     coverUrl:
@@ -33,38 +33,8 @@ export const MOCK_APPS: AppCardDto[] = [
   },
   {
     id: "3",
-    slug: "tunefree",
-    name: "TuneFree",
-    category: "ENTERTAINMENT",
-    iconUrl: "",
-    coverUrl:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop",
-    shortDesc: "Stream ad-free music from libre sources. No account required.",
-    platform: "ANDROID",
-    latestVersion: "1.4.5",
-    latestFileSize: "31.7 MB",
-    totalDownloads: 63000,
-    rating: 4.3,
-  },
-  {
-    id: "4",
-    slug: "mapwise",
-    name: "MapWise",
-    category: "NAVIGATION",
-    iconUrl: "",
-    coverUrl:
-      "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop",
-    shortDesc: "Offline maps powered by OpenStreetMap. Navigate without a data connection.",
-    platform: "ANDROID",
-    latestVersion: "5.1.0",
-    latestFileSize: "54.9 MB",
-    totalDownloads: 390000,
-    rating: 4.8,
-  },
-  {
-    id: "5",
     slug: "notepilot",
-    name: "NotePilot",
+    name: "NotePilot (placeholder)",
     category: "PRODUCTIVITY",
     iconUrl: "",
     coverUrl:
@@ -77,9 +47,9 @@ export const MOCK_APPS: AppCardDto[] = [
     rating: 4.6,
   },
   {
-    id: "6",
+    id: "4",
     slug: "lexify",
-    name: "Lexify",
+    name: "Lexify (placeholder)",
     category: "EDUCATION",
     iconUrl: "",
     coverUrl:
@@ -90,35 +60,5 @@ export const MOCK_APPS: AppCardDto[] = [
     latestFileSize: "27.3 MB",
     totalDownloads: 91000,
     rating: 4.5,
-  },
-  {
-    id: "7",
-    slug: "pixelshift",
-    name: "PixelShift",
-    category: "PHOTOGRAPHY",
-    iconUrl: "",
-    coverUrl:
-      "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=600&auto=format&fit=crop",
-    shortDesc: "Non-destructive photo editing with RAW support. No subscription.",
-    platform: "ANDROID",
-    latestVersion: "1.9.1",
-    latestFileSize: "41.0 MB",
-    totalDownloads: 47000,
-    rating: 4.2,
-  },
-  {
-    id: "8",
-    slug: "budgetly",
-    name: "Budgetly",
-    category: "FINANCE",
-    iconUrl: "",
-    coverUrl:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&auto=format&fit=crop",
-    shortDesc: "Personal finance tracker with zero cloud dependency. All data stays on device.",
-    platform: "ANDROID",
-    latestVersion: "3.5.0",
-    latestFileSize: "9.8 MB",
-    totalDownloads: 72000,
-    rating: 4.4,
   },
 ];

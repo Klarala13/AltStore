@@ -1,0 +1,39 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B0B12"/>
+      <stop offset="1" stop-color="#121225"/>
+    </linearGradient>
+    <linearGradient id="neon" x1="128" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#FF2ED1"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#bg)"/>
+  <rect x="40" y="40" width="432" height="432" rx="96" stroke="#2A2A43" stroke-width="4"/>
+
+  <g stroke="url(#neon)" stroke-width="20" stroke-linecap="round" filter="url(#glow)">
+    <line x1="180" y1="128" x2="180" y2="384"/>
+    <line x1="332" y1="128" x2="332" y2="384"/>
+    <line x1="128" y1="180" x2="384" y2="180"/>
+    <line x1="128" y1="332" x2="384" y2="332"/>
+  </g>
+
+  <g stroke="#1CFF00" stroke-width="18" stroke-linecap="round" filter="url(#glow)">
+    <line x1="142" y1="142" x2="214" y2="214"/>
+    <line x1="214" y1="142" x2="142" y2="214"/>
+    <line x1="298" y1="298" x2="370" y2="370"/>
+    <line x1="370" y1="298" x2="298" y2="370"/>
+  </g>
+
+  <circle cx="334" cy="178" r="38" stroke="#FFB300" stroke-width="16" filter="url(#glow)"/>
+  <circle cx="178" cy="334" r="38" stroke="#FFB300" stroke-width="16" filter="url(#glow)"/>
+</svg>
