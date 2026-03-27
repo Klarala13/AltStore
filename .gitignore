@@ -29,3 +29,6 @@ Thumbs.db
 
 # Prisma
 packages/db/node_modules/
+
+# Local APK fixtures (never commit binaries)
+apps/web/public/apks/*.apk

@@ -1,13 +1,15 @@
+/// <reference path="./seed.node.d.ts" />
+
 /**
  * Seed script — inserts TicTacToe80s as a ready-to-download fixture.
  *
  * Run from the repo root:
- *   pnpm --filter @altstore/db seed
+ *   pnpm --filter @altstore/db db:seed
  *
  * What it does:
  *   1. Upserts a demo Developer account (seed@altstore.dev / AltStore2026!)
  *   2. Upserts the TicTacToe80s App record (status ACTIVE)
- *   3. Upserts the v1.0.0 Version record pointing at the static public APK
+ *   3. Upserts the v1.0.0 Version record with production-ready APK metadata
  *      (status APPROVED — skips VirusTotal for local testing)
  */
 
@@ -16,14 +18,17 @@ import * as crypto from "crypto";
 
 const prisma = new PrismaClient();
 
-const APK_STATIC_URL = "/apks/TicTacToe80s.apk"; // served by Next.js public/
+const APK_FILE_KEY =
+  process.env.SEED_APK_FILE_KEY ?? "apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk";
 const APP_ICON_URL = "/apps/tictactoe80s/icon.svg";
 const APP_COVER_URL = "/apps/tictactoe80s/cover.svg";
-const APK_SIZE_BYTES = 60807176n; // 58.0 MB
-const APK_SHA256 = "0c2abd632095dcf39209911deff44ee84278956edcae95da102645f5ad35e1c4";
+const APK_SIZE_BYTES = BigInt(process.env.SEED_APK_FILE_SIZE ?? "60807176");
+const APK_SHA256 =
+  process.env.SEED_APK_SHA256 ?? "0c2abd632095dcf39209911deff44ee84278956edcae95da102645f5ad35e1c4";
 
 async function main() {
   console.log("Seeding TicTacToe80s fixture…");
+  console.log(`  APK fileKey: ${APK_FILE_KEY}`);
 
   // 1. Developer
   // Hash password with scrypt (Node built-in, no extra dependency)
@@ -90,13 +95,19 @@ async function main() {
         platform: "ANDROID",
       },
     },
-    update: { status: "APPROVED" },
+    update: {
+      fileKey: APK_FILE_KEY,
+      fileSize: APK_SIZE_BYTES,
+      fileSha256: APK_SHA256,
+      status: "APPROVED",
+      publishedAt: new Date(),
+    },
     create: {
       appId: app.id,
       versionName: "1.0.0",
       versionCode: 1,
       platform: "ANDROID",
-      fileKey: APK_STATIC_URL,
+      fileKey: APK_FILE_KEY,
       fileSize: APK_SIZE_BYTES,
       fileSha256: APK_SHA256,
       changelog: "Initial release.",
