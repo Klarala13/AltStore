@@ -226,7 +226,7 @@ export const UploadVersionForm = ({ appId }: { appId: string }) => {
     fd.append("file", file);
     fd.append("versionName", form.versionName);
     fd.append("versionCode", form.versionCode);
-    fd.append("platform", "ANDROID");
+    fd.append("platform", form.platform);
     fd.append("changelog", form.changelog || "Initial release");
     if (form.minOsVersion) fd.append("minOs", form.minOsVersion);
     else fd.append("minOs", "8.0");

@@ -1,6 +1,12 @@
 import { IsEmail, IsString, IsEnum, IsOptional, Length } from "class-validator";
 import { DeveloperType } from "@altstore/db";
 
+export enum SocialProvider {
+  GOOGLE = "google",
+  GITHUB = "github",
+  APPLE = "apple",
+}
+
 export class LoginDto {
   @IsEmail()
   email!: string;
@@ -31,4 +37,16 @@ export class RegisterDeveloperDto {
   @IsString()
   @Length(8, 100)
   password!: string;
+}
+
+export class SocialLoginDto {
+  @IsEnum(SocialProvider)
+  provider!: SocialProvider;
+
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  @Length(2, 100)
+  name!: string;
 }

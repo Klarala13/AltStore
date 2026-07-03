@@ -26,6 +26,16 @@ const APK_SIZE_BYTES = BigInt(process.env.SEED_APK_FILE_SIZE ?? "60807176");
 const APK_SHA256 =
   process.env.SEED_APK_SHA256 ?? "0c2abd632095dcf39209911deff44ee84278956edcae95da102645f5ad35e1c4";
 
+const SNAKE_APK_FILE_KEY =
+  process.env.SEED_SNAKE_APK_FILE_KEY ??
+  "apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk";
+const SNAKE_APP_ICON_URL = "/apps/snakearcade80s/icon.svg";
+const SNAKE_APP_COVER_URL = "/apps/snakearcade80s/cover.svg";
+const SNAKE_APK_SIZE_BYTES = BigInt(process.env.SEED_SNAKE_APK_FILE_SIZE ?? "19177809");
+const SNAKE_APK_SHA256 =
+  process.env.SEED_SNAKE_APK_SHA256 ??
+  "a370d642eae4c7f6fada3cf308ba6789b936b4a358f6a5a46ae7d8358e0a136c";
+
 async function main() {
   console.log("Seeding TicTacToe80s fixture…");
   console.log(`  APK fileKey: ${APK_FILE_KEY}`);
@@ -117,6 +127,74 @@ async function main() {
     },
   });
   console.log(`  Version:   ${version.id} (${version.versionName}, ${version.status})`);
+
+  // 4. Snake app
+  const snakeApp = await prisma.app.upsert({
+    where: { bundleId: "com.altstore.snakearcade80s" },
+    update: {
+      slug: "snakearcade80s",
+      name: "Snake Arcade 80s",
+      category: "GAMES",
+      description:
+        "Retro 80s-inspired Snake arcade game with neon visuals and fast-paced gameplay.",
+      shortDesc: "Retro neon Snake arcade action.",
+      iconUrl: SNAKE_APP_ICON_URL,
+      screenshots: [SNAKE_APP_COVER_URL],
+      platform: "ANDROID",
+      privacyUrl: "https://altstore.dev/privacy",
+      status: "ACTIVE",
+    },
+    create: {
+      slug: "snakearcade80s",
+      name: "Snake Arcade 80s",
+      bundleId: "com.altstore.snakearcade80s",
+      developerId: developer.id,
+      category: "GAMES",
+      description:
+        "Retro 80s-inspired Snake arcade game with neon visuals and fast-paced gameplay.",
+      shortDesc: "Retro neon Snake arcade action.",
+      iconUrl: SNAKE_APP_ICON_URL,
+      screenshots: [SNAKE_APP_COVER_URL],
+      platform: "ANDROID",
+      privacyUrl: "https://altstore.dev/privacy",
+      status: "ACTIVE",
+    },
+  });
+  console.log(`  Snake app: ${snakeApp.id} (${snakeApp.slug})`);
+
+  // 5. Snake version
+  const snakeVersion = await prisma.version.upsert({
+    where: {
+      appId_versionName_platform: {
+        appId: snakeApp.id,
+        versionName: "1.0.0",
+        platform: "ANDROID",
+      },
+    },
+    update: {
+      fileKey: SNAKE_APK_FILE_KEY,
+      fileSize: SNAKE_APK_SIZE_BYTES,
+      fileSha256: SNAKE_APK_SHA256,
+      status: "APPROVED",
+      publishedAt: new Date(),
+    },
+    create: {
+      appId: snakeApp.id,
+      versionName: "1.0.0",
+      versionCode: 1,
+      platform: "ANDROID",
+      fileKey: SNAKE_APK_FILE_KEY,
+      fileSize: SNAKE_APK_SIZE_BYTES,
+      fileSha256: SNAKE_APK_SHA256,
+      changelog: "Initial release.",
+      minOs: "Android 8.0",
+      status: "APPROVED",
+      publishedAt: new Date(),
+    },
+  });
+  console.log(
+    `  Snake ver: ${snakeVersion.id} (${snakeVersion.versionName}, ${snakeVersion.status})`
+  );
 
   console.log("\nDone. Visit http://localhost:3002/apps/tictactoe80s to see it.");
 }

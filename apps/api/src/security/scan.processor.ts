@@ -105,9 +105,11 @@ export class ScanProcessor {
     } catch (err) {
       this.logger.error(`Scan failed for version ${versionId}`, err);
 
+      const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
+
       await this.prisma.version.update({
         where: { id: versionId },
-        data: { status: "SCANNING" }, // Keep in SCANNING for retry
+        data: { status: isLastAttempt ? "REJECTED" : "SCANNING" },
       });
 
       await this.prisma.securityLog.create({
@@ -116,7 +118,7 @@ export class ScanProcessor {
           entityId: versionId,
           action: "VIRUS_SCAN_ERROR",
           severity: "ERROR",
-          metadata: { error: String(err) },
+          metadata: { error: String(err), lastAttempt: isLastAttempt },
           performedBy: "SYSTEM",
         },
       });

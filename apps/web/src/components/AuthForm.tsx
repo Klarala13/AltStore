@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getProviders, signIn } from "next-auth/react";
 
 type Mode = "login" | "register";
 
@@ -74,6 +75,23 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [providers, setProviders] = useState<Record<string, { id: string }> | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    void getProviders().then((nextProviders) => {
+      if (mounted) {
+        setProviders((nextProviders ?? null) as Record<string, { id: string }> | null);
+      }
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const hasProvider = (providerId: string): boolean => Boolean(providers?.[providerId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -345,7 +363,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           <button
             type="button"
             onClick={() => signIn("google", { callbackUrl: "/" })}
-            disabled={loading}
+            disabled={loading || !hasProvider("google")}
             className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm disabled:opacity-60"
           >
             <GoogleIcon />
@@ -353,7 +371,8 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           </button>
           <button
             type="button"
-            disabled={loading}
+            onClick={() => signIn("github", { callbackUrl: "/" })}
+            disabled={loading || !hasProvider("github")}
             className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm disabled:opacity-60"
           >
             <GitHubIcon />
@@ -361,13 +380,20 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
           </button>
           <button
             type="button"
-            disabled={loading}
+            onClick={() => signIn("apple", { callbackUrl: "/" })}
+            disabled={loading || !hasProvider("apple")}
             className="btn-secondary flex h-11 flex-1 items-center justify-center gap-2.5 text-sm disabled:opacity-60"
           >
             <AppleIcon />
             Apple
           </button>
         </div>
+
+        {providers && !hasProvider("google") && !hasProvider("github") && !hasProvider("apple") && (
+          <p className="mt-3 text-xs text-zinc-500">
+            Social sign-in is temporarily unavailable in this environment.
+          </p>
+        )}
 
         {/* Toggle hint */}
         <p className="mt-5 text-center text-xs text-zinc-600">

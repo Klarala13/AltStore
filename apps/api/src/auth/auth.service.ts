@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
-import { LoginDto, RegisterDeveloperDto } from "./auth.dto";
+import { LoginDto, RegisterDeveloperDto, SocialLoginDto } from "./auth.dto";
 import { JwtPayload } from "./jwt.strategy";
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
@@ -73,6 +73,30 @@ export class AuthService {
       email: developer.email,
       isAdmin: developer.isAdmin,
     };
+    return { accessToken: this.jwt.sign(payload) };
+  }
+
+  async socialLogin(dto: SocialLoginDto): Promise<{ accessToken: string }> {
+    const existing = await this.prisma.developer.findUnique({ where: { email: dto.email } });
+
+    const developer =
+      existing ??
+      (await this.prisma.developer.create({
+        data: {
+          email: dto.email,
+          name: dto.name,
+          passwordHash: null,
+          type: "INDIVIDUAL",
+          country: "EU",
+        },
+      }));
+
+    const payload: JwtPayload = {
+      sub: developer.id,
+      email: developer.email,
+      isAdmin: developer.isAdmin,
+    };
+
     return { accessToken: this.jwt.sign(payload) };
   }
 

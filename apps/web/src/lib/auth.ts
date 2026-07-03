@@ -1,6 +1,25 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import AppleProvider from "next-auth/providers/apple";
+
+interface NestJwtPayload {
+  sub: string;
+  email: string;
+  isAdmin?: boolean;
+}
+
+function parseJwtPayload(accessToken: string): NestJwtPayload | null {
+  const parts = accessToken.split(".");
+  if (parts.length !== 3) return null;
+
+  try {
+    return JSON.parse(Buffer.from(parts[1], "base64url").toString("utf-8")) as NestJwtPayload;
+  } catch {
+    return null;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,15 +46,8 @@ export const authOptions: NextAuthOptions = {
           if (!res.ok) return null;
 
           const data = (await res.json()) as { accessToken: string };
-
-          // Decode the JWT payload to get developer id and email.
-          // We trust this token because it was issued by our own NestJS API.
-          const [, payloadB64] = data.accessToken.split(".");
-          const payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf-8")) as {
-            sub: string;
-            email: string;
-            isAdmin?: boolean;
-          };
+          const payload = parseJwtPayload(data.accessToken);
+          if (!payload) return null;
 
           return {
             id: payload.sub,
@@ -57,6 +69,22 @@ export const authOptions: NextAuthOptions = {
           }),
         ]
       : []),
+    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
+      ? [
+          GitHubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+          }),
+        ]
+      : []),
+    ...(process.env.APPLE_ID && process.env.APPLE_SECRET
+      ? [
+          AppleProvider({
+            clientId: process.env.APPLE_ID,
+            clientSecret: process.env.APPLE_SECRET,
+          }),
+        ]
+      : []),
   ],
   pages: {
     signIn: "/login",
@@ -64,7 +92,7 @@ export const authOptions: NextAuthOptions = {
   },
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.sub = user.id;
         token.email = user.email ?? token.email;
@@ -75,6 +103,38 @@ export const authOptions: NextAuthOptions = {
           token.isAdmin = user.isAdmin as boolean;
         }
       }
+
+      if (account?.provider && account.provider !== "credentials" && !token.accessToken) {
+        try {
+          if (!token.email) return token;
+
+          const res = await fetch(`${process.env.API_URL}/auth/social-login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider: account.provider,
+              email: token.email,
+              name: token.name ?? token.email,
+            }),
+          });
+
+          if (res.ok) {
+            const data = (await res.json()) as { accessToken: string };
+            const payload = parseJwtPayload(data.accessToken);
+
+            if (payload) {
+              token.sub = payload.sub;
+              token.email = payload.email;
+              token.isAdmin = payload.isAdmin ?? false;
+              token.accessToken = data.accessToken;
+            }
+          }
+        } catch {
+          // Keep OAuth session alive even if API handshake fails.
+          // UI can still show authenticated state while backend features stay protected.
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

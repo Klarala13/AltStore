@@ -15,6 +15,128 @@ You are an expert developer for AltStore, a DMA-compliant European Alternative A
 - Ensure GDPR and DMA compliance in every data-handling decision
 - Follow the Apple-inspired minimalist design system
 
+## Multi-Agent Operating Model
+
+This repo is designed to run with multiple specialized agents in parallel.
+
+### Agent Roles
+
+- `coordinator-agent`: breaks work into tasks, resolves sequencing, validates integration
+- `frontend-agent`: UI, App Router pages, components, styling, frontend tests
+- `platform-agent`: CI/CD, Docker, deployment config, env wiring, observability
+- `backend-agent`: NestJS modules, Prisma, API contracts, queues, backend tests
+
+### Scope Boundaries (strict)
+
+- Agents only edit files inside their assigned domain for each task.
+- Cross-domain edits require explicit task scope and must be listed in task definition.
+- No mixed "front + backend + platform" refactors in a single PR unless coordinator marks as integration PR.
+
+### Collaboration Contract
+
+Every task must define:
+
+- objective
+- in-scope paths
+- out-of-scope paths
+- acceptance criteria
+- validation commands
+- dependencies/blockers
+
+Every handoff must include:
+
+- what changed
+- what did not change
+- verification output summary
+- known risks
+- rollback notes
+
+### Task Template (copy/paste)
+
+```md
+## Task ID
+[ID]
+
+## Target Agent
+[frontend-agent | platform-agent | backend-agent]
+
+## Objective
+[Desired result]
+
+## Scope In
+- [allowed paths]
+
+## Scope Out
+- [disallowed paths]
+
+## Acceptance Criteria
+- [criterion]
+
+## Validation
+- `[command]`
+
+## Dependencies
+- [task/PR links]
+```
+
+### Handoff Template (copy/paste)
+
+```md
+## Task ID
+[ID]
+
+## Agent
+[frontend-agent | platform-agent | backend-agent]
+
+## Changed
+- [...]
+
+## Not Changed
+- [...]
+
+## Validation Summary
+- `[command]` -> [pass/fail + note]
+
+## Risks
+- [...]
+
+## Rollback
+- [...]
+
+## Blockers / Follow-ups
+- [...]
+```
+
+### Integration Order
+
+Default merge order (unless coordinator overrides):
+
+1. backend (contracts/data changes)
+2. frontend (consumes contracts)
+3. platform (pipeline/release/runtime alignment)
+
+### Branch and PR Conventions
+
+- One task -> one branch -> one PR
+- Branch examples:
+  - `feat/front-<id>`
+  - `feat/back-<id>`
+  - `chore/platform-<id>`
+  - `chore/integration-<id>`
+- PR description must include scope, validation, and rollback notes
+
+### Required Context Files
+
+Keep these files updated so all agents can work with shared context:
+
+- `AGENTS.md` (global source of truth)
+- `docs/FRONTEND.md` (frontend architecture, routes, conventions)
+- `docs/BACKEND.md` (modules, contracts, migration policy)
+- `docs/PLATFORM.md` (pipelines, environments, deploy and rollback)
+- `docs/WORKFLOW.md` (intake, tasking, handoff, integration flow)
+
+If these docs are stale, coordinator-agent should stop and request updates before parallel execution.
+
 ## Tech Stack
 
 - **Frontend**: Next.js 15 with App Router — SSR/SSG, Server Components by default

@@ -107,7 +107,13 @@ INTERNAL_API_KEY=
 DATABASE_URL=
 JWT_SECRET=
 INTERNAL_API_KEY=
-# Phase 2 — add when setting up Cloudflare R2
+STORAGE_DRIVER=supabase
+# Supabase Storage (MVP default)
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_STORAGE_BUCKET=apks
+# Optional: Cloudflare R2 driver
+# STORAGE_DRIVER=r2
 # CF_ACCOUNT_ID=
 # R2_ACCESS_KEY=
 # R2_SECRET_KEY=

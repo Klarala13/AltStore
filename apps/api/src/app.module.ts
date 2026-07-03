@@ -16,7 +16,7 @@ import { RatingsModule } from "./ratings/ratings.module";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ".env",
+      envFilePath: [".env.local", ".env", "apps/api/.env.local", "apps/api/.env"],
     }),
 
     // Redis queue (BullMQ) — used by VersionsModule (enqueue) and SecurityModule (process)
