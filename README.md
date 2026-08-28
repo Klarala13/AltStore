@@ -124,6 +124,36 @@ SUPABASE_STORAGE_BUCKET=apks
 
 ---
 
+## Keepalive (Supabase)
+
+Supabase pausa los proyectos del plan free tras ~7 días sin actividad, y cada
+pausa obliga a reconfigurar Railway a mano. Para evitarlo:
+
+- `scripts/keepalive.sh` — hace un ping al REST de Supabase y un `GET /apps`
+  contra el API (query real a Postgres vía Prisma).
+- `.github/workflows/keepalive.yml` — lo ejecuta cada 3 días (cron
+  `15 6 */3 * *`) y también a mano desde la pestaña **Actions**.
+
+Secrets a configurar en GitHub (_Settings → Secrets and variables → Actions_):
+
+| Secret                      | Requerido              | Valor                          |
+| --------------------------- | ---------------------- | ------------------------------ |
+| `SUPABASE_URL`              | sí                     | `https://<ref>.supabase.co`    |
+| `SUPABASE_ANON_KEY`         | sí (o el service role) | clave `anon` del proyecto      |
+| `SUPABASE_SERVICE_ROLE_KEY` | fallback               | solo si no usas la `anon`      |
+| `API_URL`                   | recomendado            | URL pública del API en Railway |
+
+Ejecución local:
+
+```bash
+SUPABASE_URL=... SUPABASE_ANON_KEY=... API_URL=... ./scripts/keepalive.sh
+```
+
+> GitHub desactiva los workflows programados tras 60 días sin actividad en el
+> repo. Si el repo se queda parado, reactívalo desde **Actions**.
+
+---
+
 ## Roadmap
 
 ### Phase 1 (Weeks 1–2) — Infrastructure MVP

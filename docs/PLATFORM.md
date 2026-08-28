@@ -56,3 +56,13 @@
 - Deployment impact and sequence
 - Rollback instructions
 - Follow-up operations tasks (if any)
+
+## Keepalive de Supabase
+
+- Workflow: `.github/workflows/keepalive.yml` (cron `15 6 */3 * *` + `workflow_dispatch`)
+- Script: `scripts/keepalive.sh`
+- Motivo: Supabase free pausa el proyecto tras ~7 días de inactividad; cada
+  pausa rompe la configuración de Railway.
+- Secrets: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (o `SUPABASE_SERVICE_ROLE_KEY`), `API_URL`
+- Rollback: desactivar el workflow en la pestaña Actions o borrar el fichero.
+- Nota operativa: GitHub desactiva los cron tras 60 días sin actividad en el repo.

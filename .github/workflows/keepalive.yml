@@ -1,0 +1,31 @@
+name: Keepalive Supabase
+
+# Supabase pausa los proyectos free tras ~7 dias sin actividad, y cada pausa
+# obliga a reconfigurar Railway. Este job hace un ping cada 3 dias.
+on:
+  schedule:
+    # 06:15 UTC los dias 1, 4, 7, ... de cada mes (cada 3 dias).
+    - cron: "15 6 */3 * *"
+  workflow_dispatch: # permite lanzarlo a mano desde la pestana Actions
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ping Supabase y API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          API_URL: ${{ secrets.API_URL }}
+        run: ./scripts/keepalive.sh
