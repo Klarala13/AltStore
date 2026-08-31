@@ -3,13 +3,16 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
+import type { VersionStatus } from "@altstore/types";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type VersionStatus = "SCANNING" | "APPROVED" | "INFECTED" | "PENDING";
 type Platform = "ANDROID" | "IOS";
+
+/** Scan outcomes the poller stops on. CLEAN still awaits approval. */
+const TERMINAL_STATUSES: readonly VersionStatus[] = ["APPROVED", "INFECTED", "REJECTED"];
 
 interface UploadedVersion {
   id: string;
@@ -45,17 +48,19 @@ const inputClass =
 // ---------------------------------------------------------------------------
 
 const STATUS_LABEL: Record<VersionStatus, string> = {
-  PENDING: "Queued",
   SCANNING: "Scanning…",
+  CLEAN: "Clean — awaiting approval",
   APPROVED: "Approved",
   INFECTED: "Infected — rejected",
+  REJECTED: "Rejected",
 };
 
 const STATUS_COLOUR: Record<VersionStatus, string> = {
-  PENDING: "text-zinc-500",
   SCANNING: "text-yellow-400",
+  CLEAN: "text-zinc-400",
   APPROVED: "text-[#1eff00]",
   INFECTED: "text-red-400",
+  REJECTED: "text-zinc-500",
 };
 
 const ScanStatus = ({
@@ -78,7 +83,7 @@ const ScanStatus = ({
       if (res.ok) {
         const data = (await res.json()) as { status: VersionStatus };
         setStatus(data.status);
-        if (data.status === "APPROVED" || data.status === "INFECTED") {
+        if (TERMINAL_STATUSES.includes(data.status)) {
           doneRef.current = true;
           onDone(data.status);
           return;
@@ -92,14 +97,14 @@ const ScanStatus = ({
 
   // Kick off polling on mount if not already terminal
   useState(() => {
-    if (version.status !== "APPROVED" && version.status !== "INFECTED") {
+    if (!TERMINAL_STATUSES.includes(version.status)) {
       pollingRef.current = setTimeout(() => void poll(), 4000);
     } else {
       doneRef.current = true;
     }
   });
 
-  const isSpinning = status === "SCANNING" || status === "PENDING";
+  const isSpinning = status === "SCANNING" || status === "CLEAN";
 
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-6">

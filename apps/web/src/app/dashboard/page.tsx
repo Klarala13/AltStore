@@ -2,45 +2,32 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { Route } from "next";
 import { authOptions } from "@/lib/auth";
-
-// ---------------------------------------------------------------------------
-// Types (mirrors NestJS response shapes)
-// ---------------------------------------------------------------------------
-
-type AppStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
-
-interface AppSummary {
-  id: string;
-  name: string;
-  slug: string;
-  category: string;
-  status: AppStatus;
-  iconUrl: string | null;
-  totalDownloads: number;
-  _count: { versions: number };
-}
-
-interface AppsResponse {
-  items: AppSummary[];
-  total: number;
-}
+import type { AppStatus, DeveloperAppListDto, DeveloperAppSummaryDto } from "@altstore/types";
 
 // ---------------------------------------------------------------------------
 // Status badge
 // ---------------------------------------------------------------------------
 
+/** "PENDING_REVIEW" has to read as "Pending review", not "Pending_review". */
+const STATUS_LABEL: Record<AppStatus, string> = {
+  PENDING_REVIEW: "Pending review",
+  ACTIVE: "Active",
+  SUSPENDED: "Suspended",
+  REMOVED: "Removed",
+};
+
 const STATUS_STYLES: Record<AppStatus, string> = {
-  APPROVED: "bg-[rgba(30,255,0,0.1)] text-[#1eff00] border border-[rgba(30,255,0,0.2)]",
-  PENDING: "bg-[rgba(250,204,21,0.08)] text-yellow-400 border border-yellow-900/40",
-  REJECTED: "bg-[rgba(239,68,68,0.08)] text-red-400 border border-red-900/40",
-  SUSPENDED: "bg-[rgba(161,161,170,0.08)] text-zinc-500 border border-zinc-800",
+  ACTIVE: "bg-[rgba(30,255,0,0.1)] text-[#1eff00] border border-[rgba(30,255,0,0.2)]",
+  PENDING_REVIEW: "bg-[rgba(250,204,21,0.08)] text-yellow-400 border border-yellow-900/40",
+  SUSPENDED: "bg-[rgba(239,68,68,0.08)] text-red-400 border border-red-900/40",
+  REMOVED: "bg-[rgba(161,161,170,0.08)] text-zinc-500 border border-zinc-800",
 };
 
 const StatusBadge = ({ status }: { status: AppStatus }) => (
   <span
     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[status]}`}
   >
-    {status.charAt(0) + status.slice(1).toLowerCase()}
+    {STATUS_LABEL[status]}
   </span>
 );
 
@@ -74,14 +61,14 @@ const EmptyState = () => (
 // Server data fetch
 // ---------------------------------------------------------------------------
 
-async function getDeveloperApps(accessToken: string): Promise<AppSummary[]> {
+async function getDeveloperApps(accessToken: string): Promise<DeveloperAppSummaryDto[]> {
   try {
-    const res = await fetch(`${process.env.API_URL}/apps?developerId=me&limit=50`, {
+    const res = await fetch(`${process.env.API_URL}/apps/mine?limit=50`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       next: { revalidate: 0 },
     });
     if (!res.ok) return [];
-    const data = (await res.json()) as AppsResponse;
+    const data = (await res.json()) as DeveloperAppListDto;
     return data.items ?? [];
   } catch {
     return [];
@@ -161,7 +148,7 @@ const DashboardPage = async () => {
                   <td className="px-5 py-4 text-right text-zinc-400">
                     {app.totalDownloads.toLocaleString()}
                   </td>
-                  <td className="px-5 py-4 text-right text-zinc-400">{app._count.versions}</td>
+                  <td className="px-5 py-4 text-right text-zinc-400">{app.versionCount}</td>
                   <td className="px-5 py-4 text-right">
                     <Link
                       href={`/dashboard/apps/${app.id}` as Route}

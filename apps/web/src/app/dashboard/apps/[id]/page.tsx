@@ -3,66 +3,52 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Route } from "next";
 import { authOptions } from "@/lib/auth";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type AppStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
-type VersionStatus = "SCANNING" | "APPROVED" | "INFECTED" | "PENDING";
-type Platform = "ANDROID" | "IOS";
-
-interface AppDetail {
-  id: string;
-  name: string;
-  slug: string;
-  category: string;
-  status: AppStatus;
-  iconUrl: string | null;
-  description: string;
-  shortDescription: string | null;
-  privacyUrl: string;
-  websiteUrl: string | null;
-  totalDownloads: number;
-}
-
-interface AppVersion {
-  id: string;
-  versionName: string;
-  versionCode: number;
-  platform: Platform;
-  status: VersionStatus;
-  fileSize: number;
-  sha256: string;
-  changelog: string | null;
-  minOsVersion: string | null;
-  createdAt: string;
-  sizeDiff: number | null;
-}
+import type {
+  AppStatus,
+  DeveloperAppDetailDto,
+  DeveloperVersionDto,
+  VersionStatus,
+} from "@altstore/types";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+const APP_STATUS_LABEL: Record<AppStatus, string> = {
+  PENDING_REVIEW: "Pending review",
+  ACTIVE: "Active",
+  SUSPENDED: "Suspended",
+  REMOVED: "Removed",
+};
+
+const VERSION_STATUS_LABEL: Record<VersionStatus, string> = {
+  SCANNING: "Scanning",
+  CLEAN: "Clean",
+  INFECTED: "Infected",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+};
+
 const VERSION_STATUS_STYLES: Record<VersionStatus, string> = {
   APPROVED: "bg-[rgba(30,255,0,0.1)] text-[#1eff00] border border-[rgba(30,255,0,0.2)]",
+  CLEAN: "bg-[rgba(30,255,0,0.06)] text-[#1eff00] border border-[rgba(30,255,0,0.15)]",
   SCANNING: "bg-[rgba(250,204,21,0.08)] text-yellow-400 border border-yellow-900/40",
-  PENDING: "bg-[rgba(161,161,170,0.06)] text-zinc-500 border border-zinc-800",
+  REJECTED: "bg-[rgba(161,161,170,0.06)] text-zinc-500 border border-zinc-800",
   INFECTED: "bg-[rgba(239,68,68,0.08)] text-red-400 border border-red-900/40",
 };
 
 const APP_STATUS_STYLES: Record<AppStatus, string> = {
-  APPROVED: "bg-[rgba(30,255,0,0.1)] text-[#1eff00] border border-[rgba(30,255,0,0.2)]",
-  PENDING: "bg-[rgba(250,204,21,0.08)] text-yellow-400 border border-yellow-900/40",
-  REJECTED: "bg-[rgba(239,68,68,0.08)] text-red-400 border border-red-900/40",
-  SUSPENDED: "bg-[rgba(161,161,170,0.08)] text-zinc-500 border border-zinc-800",
+  ACTIVE: "bg-[rgba(30,255,0,0.1)] text-[#1eff00] border border-[rgba(30,255,0,0.2)]",
+  PENDING_REVIEW: "bg-[rgba(250,204,21,0.08)] text-yellow-400 border border-yellow-900/40",
+  SUSPENDED: "bg-[rgba(239,68,68,0.08)] text-red-400 border border-red-900/40",
+  REMOVED: "bg-[rgba(161,161,170,0.08)] text-zinc-500 border border-zinc-800",
 };
 
-const badge = (styles: Record<string, string>, status: string) => (
+const badge = (styles: Record<string, string>, status: string, label: string) => (
   <span
     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] ?? ""}`}
   >
-    {status.charAt(0) + status.slice(1).toLowerCase()}
+    {label}
   </span>
 );
 
@@ -82,31 +68,21 @@ const formatDiff = (diff: number | null) => {
 // Data fetching
 // ---------------------------------------------------------------------------
 
-async function getApp(id: string, token: string): Promise<AppDetail | null> {
+/**
+ * Looks the app up by id on the authenticated developer endpoint. The public
+ * GET /apps/:slug takes a slug and only exposes APPROVED versions, so it
+ * cannot back this page.
+ */
+async function getOwnedApp(id: string, token: string): Promise<DeveloperAppDetailDto | null> {
   try {
-    const res = await fetch(`${process.env.API_URL}/apps/${id}`, {
+    const res = await fetch(`${process.env.API_URL}/apps/mine/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
       next: { revalidate: 0 },
     });
-    if (res.status === 404) return null;
     if (!res.ok) return null;
-    return (await res.json()) as AppDetail;
+    return (await res.json()) as DeveloperAppDetailDto;
   } catch {
     return null;
-  }
-}
-
-async function getVersions(slug: string, token: string): Promise<AppVersion[]> {
-  try {
-    const res = await fetch(`${process.env.API_URL}/apps/${slug}/versions`, {
-      headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 0 },
-    });
-    if (!res.ok) return [];
-    const data = (await res.json()) as { items: AppVersion[] };
-    return data.items ?? [];
-  } catch {
-    return [];
   }
 }
 
@@ -119,9 +95,12 @@ const AppDetailPage = async ({ params }: { params: Promise<{ id: string }> }) =>
   const session = await getServerSession(authOptions);
   const token = (session as { accessToken?: string }).accessToken ?? "";
 
-  const [app, versions] = await Promise.all([getApp(id, token), getVersions(id, token)]);
+  const app = await getOwnedApp(id, token);
 
   if (!app) notFound();
+
+  // The detail endpoint already returns every version, in newest-first order.
+  const versions: DeveloperVersionDto[] = app.versions;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -146,12 +125,10 @@ const AppDetailPage = async ({ params }: { params: Promise<{ id: string }> }) =>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-3">
             <h1 className="font-display text-xl font-semibold text-white">{app.name}</h1>
-            {badge(APP_STATUS_STYLES, app.status)}
+            {badge(APP_STATUS_STYLES, app.status, APP_STATUS_LABEL[app.status])}
           </div>
           <p className="mt-1 text-sm text-zinc-500">{app.category}</p>
-          {app.shortDescription && (
-            <p className="mt-2 text-sm text-zinc-400">{app.shortDescription}</p>
-          )}
+          {app.shortDesc && <p className="mt-2 text-sm text-zinc-400">{app.shortDesc}</p>}
           <div className="mt-3 flex items-center gap-4 text-xs text-zinc-600">
             <span>{app.totalDownloads.toLocaleString()} downloads</span>
             {app.websiteUrl && (
@@ -233,7 +210,9 @@ const AppDetailPage = async ({ params }: { params: Promise<{ id: string }> }) =>
                     )}
                   </td>
                   <td className="px-5 py-4 text-zinc-400">{v.platform}</td>
-                  <td className="px-5 py-4">{badge(VERSION_STATUS_STYLES, v.status)}</td>
+                  <td className="px-5 py-4">
+                    {badge(VERSION_STATUS_STYLES, v.status, VERSION_STATUS_LABEL[v.status])}
+                  </td>
                   <td className="px-5 py-4 text-right text-zinc-400">
                     <span>{formatBytes(v.fileSize)}</span>
                     {v.sizeDiff !== null && (

@@ -61,6 +61,24 @@ export class AppsController {
     return this.appsService.search(filters);
   }
 
+  /**
+   * GET /apps/mine?page=&limit= — the authenticated developer's own apps.
+   *
+   * Must stay declared before @Get(":slug") or Nest would match "mine" as a slug.
+   */
+  @Get("mine")
+  @UseGuards(JwtAuthGuard)
+  findMine(@Request() req: AuthRequest, @Query("page") page = "1", @Query("limit") limit = "20") {
+    return this.appsService.findByDeveloper(req.user.sub, parseInt(page, 10), parseInt(limit, 10));
+  }
+
+  /** GET /apps/mine/:appId — one owned app by id, with every version. */
+  @Get("mine/:appId")
+  @UseGuards(JwtAuthGuard)
+  findMineOne(@Param("appId") appId: string, @Request() req: AuthRequest) {
+    return this.appsService.findOwnedById(appId, req.user.sub);
+  }
+
   @Get(":slug")
   findOne(@Param("slug") slug: string) {
     return this.appsService.findBySlug(slug);

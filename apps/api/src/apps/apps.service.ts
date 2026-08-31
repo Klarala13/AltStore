@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/commo
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateAppDto, UpdateAppDto } from "./apps.dto";
 import { AppStatus, Category, Platform } from "@altstore/db";
+import type { DeveloperAppDetailDto, DeveloperAppListDto } from "@altstore/types";
 
 export interface AppFilters {
   category?: Category;
@@ -254,6 +255,103 @@ export class AppsService {
       where: { id },
       data: { status: "REMOVED" },
     });
+  }
+
+  /**
+   * GET /apps/mine — the authenticated developer's own apps.
+   *
+   * Deliberately different from findAll: no status filter, because a developer
+   * must see an app that is still PENDING_REVIEW, and it carries the version
+   * count the dashboard table renders.
+   */
+  async findByDeveloper(
+    developerId: string,
+    page: number,
+    limit: number
+  ): Promise<DeveloperAppListDto> {
+    const skip = (page - 1) * limit;
+    const where = { developerId, status: { not: "REMOVED" as const } };
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.app.findMany({
+        where,
+        include: { _count: { select: { versions: true } } },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      this.prisma.app.count({ where }),
+    ]);
+
+    return {
+      items: items.map((app) => ({
+        id: app.id,
+        slug: app.slug,
+        name: app.name,
+        category: app.category,
+        status: app.status,
+        iconUrl: app.iconUrl,
+        totalDownloads: app.totalDownloads,
+        versionCount: app._count.versions,
+      })),
+      total,
+      page,
+      limit,
+    };
+  }
+
+  /**
+   * GET /apps/mine/:appId — one owned app, looked up by id (not slug) and
+   * including every version whatever its scan status.
+   */
+  async findOwnedById(appId: string, developerId: string): Promise<DeveloperAppDetailDto> {
+    const app = await this.prisma.app.findUnique({
+      where: { id: appId },
+      include: {
+        versions: { orderBy: { createdAt: "desc" } },
+        _count: { select: { versions: true } },
+      },
+    });
+    if (!app) throw new NotFoundException(`App ${appId} not found`);
+    if (app.developerId !== developerId) throw new ForbiddenException();
+
+    return {
+      id: app.id,
+      slug: app.slug,
+      name: app.name,
+      bundleId: app.bundleId,
+      category: app.category,
+      status: app.status,
+      iconUrl: app.iconUrl,
+      totalDownloads: app.totalDownloads,
+      versionCount: app._count.versions,
+      description: app.description,
+      shortDesc: app.shortDesc,
+      platform: app.platform,
+      websiteUrl: app.websiteUrl,
+      privacyUrl: app.privacyUrl,
+      sourceUrl: app.sourceUrl,
+      createdAt: app.createdAt.toISOString(),
+      versions: app.versions.map((version, index) => {
+        // versions are newest-first, so the next entry is the previous release
+        const previous = app.versions[index + 1];
+        return {
+          id: version.id,
+          versionName: version.versionName,
+          versionCode: version.versionCode,
+          platform: version.platform,
+          status: version.status,
+          fileSize: Number(version.fileSize),
+          fileSha256: version.fileSha256,
+          changelog: version.changelog,
+          minOs: version.minOs,
+          createdAt: version.createdAt.toISOString(),
+          publishedAt: version.publishedAt?.toISOString() ?? null,
+          isLatest: index === 0,
+          sizeDiff: previous ? Number(version.fileSize) - Number(previous.fileSize) : null,
+        };
+      }),
+    };
   }
 
   private async assertOwnership(appId: string, developerId: string) {
