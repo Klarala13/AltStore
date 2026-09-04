@@ -30,41 +30,32 @@ Qué mirar en Railway:
 Hasta que esto no pase, el portal de desarrollador no funciona en producción por
 mucho que el código esté bien.
 
-### 2. Provisionar Redis en Railway 🔑
+### 2. ~~Provisionar Redis en Railway~~ — hecho, sin comprobar 🔑
 
-Sin Redis **subir un APK se cuelga para siempre**. Comprobado: la barra llega a
-"Uploading… 100%" y se queda ahí más de 3 minutos, sin error ni mensaje.
+Servicio Redis creado en el mismo proyecto de Railway, con las tres variables de
+referencia en `@altstore/api`. Sin `REDIS_TLS`: la red privada de Railway no lo
+usa.
 
-`apps/api/src/app.module.ts` coge `REDIS_HOST` con valor por defecto
-`localhost`. En Railway no hay Redis ahí, así que `scanQueue.add()` reintenta sin
-rendirse y la petición HTTP nunca contesta.
+Antes, sin Redis, **subir un APK no daba error: se colgaba para siempre**. La
+barra llegaba a "Uploading… 100%" y ahí se quedaba, más de 3 minutos sin mensaje.
+Arreglado aparte en `dda8732`, así que ahora falla en 36 ms con un error claro.
 
-Upstash tiene plan gratis (10.000 comandos/día). Variables a poner:
+**Queda comprobarlo de verdad**, y no se puede hasta que Railway sirva el build
+nuevo (tarea 1).
+
+### 3. ~~Corregir los secrets del keepalive~~ — cerrado ✅
+
+El workflow está registrado y **en verde**:
+[run 33867434002](https://github.com/Klarala13/AltStore/actions/runs/33867434002).
 
 ```
-REDIS_HOST=<host de Upstash>
-REDIS_PORT=6379
-REDIS_PASSWORD=<password>
-REDIS_TLS=true
+OK   supabase postgres -> HTTP 200 (select en App)
+OK   api /apps -> HTTP 200
 ```
 
-`REDIS_TLS=true` es obligatorio en Upstash.
-
-### 3. Corregir dos secrets del keepalive 🔑
-
-El workflow ya está registrado en Actions (se arregló hoy llevándolo a `main`),
-pero al lanzarlo la primera vez **falló**:
-[run 33860424315](https://github.com/Klarala13/AltStore/actions/runs/33860424315).
-
-| Secret              | Problema                                            |
-| ------------------- | --------------------------------------------------- |
-| `SUPABASE_ANON_KEY` | Supabase responde **401**. La clave no vale.        |
-| `API_URL`           | Tiene una cadena `postgresql://…`, no una URL http. |
-
-En _Settings → Secrets and variables → Actions_. `API_URL` tiene que ser la URL
-pública del API en Railway, la misma que usa Vercel.
-
-Después: relanzar el workflow y comprobar que salen los dos `OK`.
+`API_URL` tenía una cadena `postgresql://…` donde iba una URL http. Y el 401 de
+Supabase **no era la clave**: el ping iba a `/rest/v1/`, que solo admiten las
+claves secretas. El detalle está en `docs/CONFIG.md`.
 
 ---
 
@@ -118,11 +109,11 @@ mano `https://altstore.vercel.app/privacy`. Tampoco es el dominio real. 🤖
 
 No se pueden leer desde fuera. Si no están, el valor por defecto es malo:
 
-| Variable       | Para qué                | Por defecto            | Riesgo                                |
-| -------------- | ----------------------- | ---------------------- | ------------------------------------- |
-| `VT_API_KEY`   | VirusTotal              | vacío                  | El worker no puede escanear nada      |
-| `IP_HASH_SALT` | Hash de IPs para RGPD   | `change-me`            | Hash predecible. Es tema legal.        |
-| `FRONTEND_URL` | CORS                    | `http://localhost:3000` | CORS mal configurado                  |
+| Variable       | Para qué              | Por defecto             | Riesgo                           |
+| -------------- | --------------------- | ----------------------- | -------------------------------- |
+| `VT_API_KEY`   | VirusTotal            | vacío                   | El worker no puede escanear nada |
+| `IP_HASH_SALT` | Hash de IPs para RGPD | `change-me`             | Hash predecible. Es tema legal.  |
+| `FRONTEND_URL` | CORS                  | `http://localhost:3000` | CORS mal configurado             |
 
 ### 7. Activar los logins que están apagados 🔑
 
@@ -131,6 +122,59 @@ En el registro, los botones de **GitHub** y **Apple** salen desactivados. Faltan
 Vercel. Google sí funciona.
 
 Decidir si entran en el MVP o se quitan de la pantalla.
+
+---
+
+## 🟠 Marca e imagen
+
+### 5b. Cambiar el nombre: «AltStore» ya existe 🔑
+
+No es un homónimo cualquiera. **AltStore PAL es un marketplace alternativo de
+apps en la UE bajo la DMA**: mismo nombre, mismo sector, misma normativa. Encaja
+con que `altstore.eu` esté aparcado por otra persona.
+
+Conviene decidirlo pronto, porque el nombre está metido en dos sitios que después
+**no se pueden cambiar**:
+
+| Se puede cambiar luego                              | No se puede             |
+| --------------------------------------------------- | ----------------------- |
+| Nombre del repo, `@altstore/*`, proyecto de Vercel, | `bundleId` de un APK ya |
+| servicios de Railway, dominio, textos del web       | instalado               |
+|                                                     | Claves de R2 publicadas |
+
+Los `bundleId` (`com.altstore.tictactoe80s`, `com.altstore.snakearcade80s`) van
+firmados dentro del APK. Cambiarlos obliga al usuario a desinstalar y volver a
+instalar, y las claves de R2 los llevan dentro de la ruta.
+
+Ahora mismo el coste del cambio es bajo: dos apps de prueba y ningún usuario. En
+un mes, no.
+
+### 5c. Poner las portadas de las apps 🤖
+
+Las tarjetas de la home enseñan una letra gigante en vez de la portada. Los
+iconos pequeños sí salen, así que no es un problema de ficheros.
+
+`coverUrl` es un **campo fantasma**: existe solo en el tipo de TypeScript
+(`packages/types/src/index.ts`). No hay columna en Prisma, la API no lo devuelve
+nunca, y por eso `AppCard` siempre cae al plan B de la letra. Las portadas ya
+están hechas y seedeadas, pero dentro de `screenshots`.
+
+```
+seed.ts       screenshots: [APP_COVER_URL]   ✅ se guarda
+schema        coverUrl                       ❌ no existe
+apps.service  coverUrl                       ❌ no se devuelve
+AppCard       coverUrl ? img : letra          → siempre letra
+```
+
+Dos caminos:
+
+- **Corto**: que `AppCard` use `screenshots[0]` cuando no haya portada. Sin
+  migración, y las dos apps se encienden al momento.
+- **Largo**: columna `coverUrl` de verdad, con migración, seed y la API
+  devolviéndola. Más limpio, pero la migración va contra Postgres y eso pide
+  `DATABASE_URL`.
+
+Empezar por el corto.
 
 ---
 
