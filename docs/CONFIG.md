@@ -10,61 +10,74 @@ Producción corre el commit `6e8897a` de `main`.
 
 ## Resumen
 
-| Plataforma     | Estado                                                      |
-| -------------- | ----------------------------------------------------------- |
-| Supabase       | ✅ Despierto. Las lecturas van bien.                        |
-| Vercel (web)   | ⚠️ Funciona, pero faltan 3 variables                        |
-| Railway (API)  | ⚠️ Funciona, pero falta Redis: la subida de APK se cuelga   |
-| Cloudflare R2  | ⚠️ Bucket vivo, falta el APK de Snake                       |
-| GitHub Actions | ❌ Dos secrets del keepalive tienen el valor mal            |
+| Plataforma     | Estado                                                     |
+| -------------- | ---------------------------------------------------------- |
+| Supabase       | ✅ Despierto. Las lecturas van bien.                       |
+| Vercel (web)   | ⚠️ Funciona, pero faltan 3 variables                       |
+| Railway (API)  | ❌ Sirve un build de hace 6 días. Es el único bloqueo real |
+| Cloudflare R2  | ⚠️ Bucket vivo, falta el APK de Snake                      |
+| GitHub Actions | ✅ Keepalive en verde: Postgres 200, API 200               |
 
 ---
 
 ## GitHub Actions — keepalive
 
-**El workflow nunca ha corrido. Cero ejecuciones.**
+**Durante 7 días no corrió ni una vez.** `gh run list` y `gh workflow list`
+devolvían la lista vacía.
 
-`gh run list` y `gh workflow list` devuelven la lista vacía. El motivo no es un
-fallo del cron: GitHub solo registra y programa los workflows que están en la
-**rama por defecto**, y `.github/workflows/keepalive.yml` vive únicamente en
-`Klarala13/altstore`. En `main` no hay carpeta `.github/`.
+El motivo no era el cron: GitHub solo registra y programa los workflows que
+están en la **rama por defecto**, y `.github/workflows/keepalive.yml` vivía solo
+en `Klarala13/altstore`. Para GitHub ese cron no existía, y `workflow_dispatch`
+tampoco aparecía en la pestaña Actions.
 
-Mientras el fichero no llegue a `main`:
+Resuelto el 4 de septiembre de 2026 al llevarlo a `main`. Si algún día vuelve a
+salir la lista vacía, lo primero que hay que mirar es en qué rama está el
+fichero.
 
-- el cron no existe para GitHub,
-- `workflow_dispatch` tampoco aparece en la pestaña Actions,
-- Supabase sigue sin recibir el ping cada 3 días.
-
-Los tres secrets existen desde el 28 de agosto de 2026, pero **dos tienen el
-valor mal**. Se vio al lanzar el workflow a mano por primera vez
-([run 33860424315](https://github.com/Klarala13/AltStore/actions/runs/33860424315),
-falló):
-
-| Secret              | Estado | Qué pasa                                            |
-| ------------------- | ------ | --------------------------------------------------- |
-| `SUPABASE_URL`      | ✅     | Bien                                                |
-| `SUPABASE_ANON_KEY` | ❌     | Supabase responde **HTTP 401**: la clave no vale    |
-| `API_URL`           | ❌     | Tiene una cadena `postgresql://…`, no una URL http  |
-
-El log del run lo dice tal cual:
+Los tres secrets existen desde el 28 de agosto de 2026. Dos daban problemas y
+**los dos están resueltos** (4 de septiembre de 2026). El workflow está en verde:
+[run 33867434002](https://github.com/Klarala13/AltStore/actions/runs/33867434002).
 
 ```
-FAIL supabase rest -> HTTP 401
-curl: (1) Protocol "postgresql" not supported or disabled in libcurl
-FAIL api /apps -> HTTP 000000
+OK   supabase postgres -> HTTP 200 (select en App)
+OK   api /apps -> HTTP 200
 ```
 
-Para arreglarlo, en _Settings → Secrets and variables → Actions_:
+| Secret              | Estado | Qué pasaba                                         |
+| ------------------- | ------ | -------------------------------------------------- |
+| `SUPABASE_URL`      | ✅     | Correcto desde el principio                        |
+| `API_URL`           | ✅     | Tenía una cadena `postgresql://…`, no una URL http |
+| `SUPABASE_ANON_KEY` | ✅     | La clave estaba bien: el ping iba al endpoint malo |
 
-- `SUPABASE_ANON_KEY` → la clave `anon` de _Supabase → Project Settings → API_.
-  Un 401 es rechazo de credenciales, no que el proyecto esté pausado; el
-  proyecto responde bien a las lecturas del web.
-- `API_URL` → la URL pública del API en Railway, la misma que tiene Vercel en su
-  variable `API_URL`. Empieza por `https://`. Ahora mismo alguien pegó ahí la
-  cadena de conexión de Postgres.
+### El 401 de Supabase no era la clave
 
-El script ya avisa de los dos casos con un mensaje claro en vez de dejar un
-`HTTP 000000` sin explicación.
+Esto costó dos vueltas, así que conviene dejarlo escrito.
+
+El script pingaba `/rest/v1/`, la raíz de PostgREST que sirve el OpenAPI. **Ese
+endpoint solo lo admiten las claves secretas.** Con una `anon` o una
+`sb_publishable_…` contesta:
+
+```
+401 {"message":"Secret API key required",
+     "hint":"Only secret API keys can be used for this endpoint."}
+```
+
+Y ese 401 se lee exactamente igual que «la clave no vale», así que manda a rotar
+una clave que estaba perfecta.
+
+Ahora pide `GET /rest/v1/App?select=id&limit=1`, que además es mejor señal: es
+una consulta de verdad a Postgres, no solo tocar la puerta del proyecto. Si esa
+tabla falla, cae a `/auth/v1/health` y el log avisa de que Postgres no se tocó.
+
+Dos cosas que aprendimos y están dentro del script:
+
+- La clave va **solo** en `apikey`. Las nuevas no son un JWT, así que mandarlas
+  también en `Authorization: Bearer` hace que PostgREST intente leerlas como JWT
+  y devuelva 401 aunque sean correctas.
+- PostgREST distingue mayúsculas: la tabla es `App`, no `app`. Se puede cambiar
+  con `SUPABASE_KEEPALIVE_TABLE`.
+
+El proyecto de Supabase es `lrlhavreaiuhslguvyzv` y es el único que hay.
 
 > El repo `Klarala13/AltStore` es **público**. Los secrets siguen siendo
 > privados, pero cualquiera ve el código y el historial.
@@ -75,21 +88,21 @@ El script ya avisa de los dos casos con un mensaje claro en vez de dejar un
 
 Puesto y funcionando (se deduce de que las páginas responden):
 
-| Variable            | Cómo se comprobó                                 |
-| ------------------- | ------------------------------------------------ |
-| `API_URL`           | La home pinta 2 apps que vienen del API          |
-| `INTERNAL_API_KEY`  | El API acepta las llamadas del web               |
-| `NEXTAUTH_URL`      | Registro y login completan y dejan sesión        |
-| `NEXTAUTH_SECRET`   | Igual que arriba                                 |
-| `GOOGLE_CLIENT_ID`  | El botón de Google sale activo                   |
+| Variable           | Cómo se comprobó                          |
+| ------------------ | ----------------------------------------- |
+| `API_URL`          | La home pinta 2 apps que vienen del API   |
+| `INTERNAL_API_KEY` | El API acepta las llamadas del web        |
+| `NEXTAUTH_URL`     | Registro y login completan y dejan sesión |
+| `NEXTAUTH_SECRET`  | Igual que arriba                          |
+| `GOOGLE_CLIENT_ID` | El botón de Google sale activo            |
 
 ### Falta
 
-| Variable                                | Efecto ahora mismo                                                    |
-| --------------------------------------- | --------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`                  | **`/sitemap.xml` anuncia `https://altstore.eu`**, que no es tu web    |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | El botón "GitHub" del login sale desactivado                      |
-| `APPLE_ID` / `APPLE_SECRET`             | El botón "Apple" del login sale desactivado                           |
+| Variable                                    | Efecto ahora mismo                                                 |
+| ------------------------------------------- | ------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SITE_URL`                      | **`/sitemap.xml` anuncia `https://altstore.eu`**, que no es tu web |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | El botón "GitHub" del login sale desactivado                       |
+| `APPLE_ID` / `APPLE_SECRET`                 | El botón "Apple" del login sale desactivado                        |
 
 Sobre `NEXT_PUBLIC_SITE_URL`: el código cae a `https://altstore.eu` cuando no
 está (`apps/web/src/app/sitemap.ts`, `apps/web/src/app/apps/[slug]/page.tsx`).
@@ -108,39 +121,43 @@ Tampoco es el dominio real.
 
 Puesto y funcionando:
 
-| Variable                        | Cómo se comprobó                                        |
-| ------------------------------- | ------------------------------------------------------- |
-| `DATABASE_URL` / `DIRECT_URL`   | `GET /apps` devuelve datos de Postgres                  |
-| `JWT_SECRET`                    | Registro y login emiten token                           |
-| `INTERNAL_API_KEY`              | Coincide con el del web                                 |
-| `STORAGE_DRIVER=r2`             | Las URLs firmadas apuntan a `r2.cloudflarestorage.com`  |
-| `CF_ACCOUNT_ID`                 | `ebc143ac…` sale en el host de la URL firmada           |
-| `R2_ACCESS_KEY` / `R2_SECRET_KEY` | La firma es válida: R2 responde 200/404, no 403       |
-| `R2_BUCKET`                     | `altstore-apks`                                         |
+| Variable                          | Cómo se comprobó                                       |
+| --------------------------------- | ------------------------------------------------------ |
+| `DATABASE_URL` / `DIRECT_URL`     | `GET /apps` devuelve datos de Postgres                 |
+| `JWT_SECRET`                      | Registro y login emiten token                          |
+| `INTERNAL_API_KEY`                | Coincide con el del web                                |
+| `STORAGE_DRIVER=r2`               | Las URLs firmadas apuntan a `r2.cloudflarestorage.com` |
+| `CF_ACCOUNT_ID`                   | `ebc143ac…` sale en el host de la URL firmada          |
+| `R2_ACCESS_KEY` / `R2_SECRET_KEY` | La firma es válida: R2 responde 200/404, no 403        |
+| `R2_BUCKET`                       | `altstore-apks`                                        |
 
-### Falta: Redis
+### Redis: puesto, sin comprobar todavía
 
-**Sin Redis, subir un APK se queda colgado para siempre.**
+Antes no había Redis, y sin él **subir un APK no daba error: se quedaba colgado
+para siempre.** Comprobado a mano: la barra llegaba a "Uploading… 100%" y se
+quedaba ahí más de 3 minutos, sin mensaje y sin recuperarse.
 
-Comprobado a mano: creé una app, adjunté un APK válido y le di a *Upload APK*.
-La barra llega a "Uploading… 100%" y ahí se queda. Más de 3 minutos sin error ni
-mensaje. La pantalla no se recupera nunca.
+Bull cogía `REDIS_HOST` con valor por defecto `localhost`, y como en Railway no
+hay Redis ahí, `scanQueue.add()` reintentaba la conexión sin rendirse y la
+petición HTTP nunca contestaba.
 
-El motivo es `apps/api/src/app.module.ts`: Bull coge `REDIS_HOST` con valor por
-defecto `localhost` y `REDIS_PORT` `6379`. En Railway no hay Redis en localhost,
-así que `scanQueue.add()` reintenta la conexión sin rendirse y la petición HTTP
-nunca contesta.
-
-Variables a añadir (Upstash tiene plan gratis de 10.000 comandos/día):
+El 4 de septiembre de 2026 se creó un servicio Redis en el mismo proyecto de
+Railway, con estas variables de referencia en `@altstore/api`:
 
 ```
-REDIS_HOST=<host de Upstash>
-REDIS_PORT=6379
-REDIS_PASSWORD=<password de Upstash>
-REDIS_TLS=true
+REDIS_HOST=${{Redis.REDISHOST}}
+REDIS_PORT=${{Redis.REDISPORT}}
+REDIS_PASSWORD=${{Redis.REDISPASSWORD}}
 ```
 
-`REDIS_TLS=true` es obligatorio en Upstash.
+Sin `REDIS_TLS`: la red privada de Railway no lo usa. Eso es solo para Upstash.
+
+Se eligió el Redis de Railway y no Upstash a propósito: no hay cuenta nueva, ni
+coste de salida, ni tope de comandos. El plan gratis de Upstash son 10.000 al
+día, y un worker de Bull consulta Redis aunque no haya trabajo.
+
+**Queda comprobarlo.** No se puede subir un APK de verdad hasta que Railway
+sirva el build nuevo.
 
 > **Efecto secundario que conviene saber**: en `versions.service.ts` el orden es
 > subir a R2 → crear la fila `Version` en estado `SCANNING` → encolar el escaneo.
@@ -153,11 +170,11 @@ REDIS_TLS=true
 No se puede leer el entorno de Railway desde fuera, así que de estas no sé decir
 si están:
 
-| Variable       | Para qué                                                 |
-| -------------- | -------------------------------------------------------- |
-| `VT_API_KEY`   | VirusTotal. Sin ella el worker no puede escanear         |
-| `IP_HASH_SALT` | Hash de IPs para RGPD. Por defecto vale `change-me`      |
-| `FRONTEND_URL` | CORS. Por defecto `http://localhost:3000`                |
+| Variable       | Para qué                                            |
+| -------------- | --------------------------------------------------- |
+| `VT_API_KEY`   | VirusTotal. Sin ella el worker no puede escanear    |
+| `IP_HASH_SALT` | Hash de IPs para RGPD. Por defecto vale `change-me` |
+| `FRONTEND_URL` | CORS. Por defecto `http://localhost:3000`           |
 
 `IP_HASH_SALT` en `change-me` significa que el hash de IP es predecible. Es un
 tema de RGPD, no cosmético.
@@ -168,14 +185,14 @@ tema de RGPD, no cosmético.
 
 Bucket `altstore-apks`, en la cuenta `ebc143ac235a9b252bc2d9e43787c821`.
 
-| Fichero                                                     | Estado                    |
-| ----------------------------------------------------------- | ------------------------- |
-| `apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk`     | ✅ Existe (HTTP 206)      |
-| `apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk` | ❌ **No existe** (404)    |
+| Fichero                                                     | Estado                 |
+| ----------------------------------------------------------- | ---------------------- |
+| `apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk`     | ✅ Existe (HTTP 206)   |
+| `apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk` | ❌ **No existe** (404) |
 
 El seed (`packages/db/prisma/seed.ts`, línea 30) marca la versión de Snake como
 `APPROVED` apuntando a esa clave, pero el APK nunca se subió. Resultado: la
-ficha `/apps/snakearcade80s` carga bien, el botón *Download APK* genera su URL
+ficha `/apps/snakearcade80s` carga bien, el botón _Download APK_ genera su URL
 firmada, y al abrirla R2 contesta `NoSuchKey`.
 
 El binario que toca está en el portátil y **coincide exacto** con lo que espera
@@ -210,12 +227,12 @@ de 2026.
 
 ## Estáticos del web
 
-| Fichero                                        | Estado                        |
-| ---------------------------------------------- | ----------------------------- |
-| `/apps/tictactoe80s/icon.svg`                  | ✅ 200                        |
-| `/apps/tictactoe80s/cover.svg`                 | ✅ 200                        |
-| `/apps/snakearcade80s/icon.svg`                | ❌ 404 → creado en esta rama  |
-| `/apps/snakearcade80s/cover.svg`               | ❌ 404 → creado en esta rama  |
+| Fichero                          | Estado                       |
+| -------------------------------- | ---------------------------- |
+| `/apps/tictactoe80s/icon.svg`    | ✅ 200                       |
+| `/apps/tictactoe80s/cover.svg`   | ✅ 200                       |
+| `/apps/snakearcade80s/icon.svg`  | ❌ 404 → creado en esta rama |
+| `/apps/snakearcade80s/cover.svg` | ❌ 404 → creado en esta rama |
 
 El seed apunta a esas dos rutas para Snake y no existían en `public/`. Se han
 añadido, con el mismo estilo neón que las de TicTacToe.
@@ -224,8 +241,8 @@ añadido, con el mismo estilo neón que las de TicTacToe.
 
 ## El dashboard está roto en producción
 
-`/dashboard` devuelve *"Application error: a server-side exception has
-occurred"*. No es config: es el fallo que ya se arregló en el commit `0d58091`,
+`/dashboard` devuelve _"Application error: a server-side exception has
+occurred"_. No es config: es el fallo que ya se arregló en el commit `0d58091`,
 que está en la rama y no en `main`.
 
 Todo lo demás responde bien: `/`, `/apps/{slug}`, `/login`, `/register`,
@@ -247,4 +264,4 @@ Todo lo demás responde bien: `/`, `/apps/{slug}`, `/login`, `/register`,
 5. Poner `NEXT_PUBLIC_SITE_URL` en Vercel.
 6. Limpiar las filas `Version` en `SCANNING` que dejaron las subidas colgadas, y
    borrar las apps de prueba (`Claude Test App 1788179706` y las `QA Config
-   Check …`).
+Check …`).
