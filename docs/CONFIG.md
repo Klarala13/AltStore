@@ -16,7 +16,7 @@ Producción corre el commit `6e8897a` de `main`.
 | Vercel (web)   | ⚠️ Funciona, pero faltan 3 variables                        |
 | Railway (API)  | ⚠️ Funciona, pero falta Redis: la subida de APK se cuelga   |
 | Cloudflare R2  | ⚠️ Bucket vivo, falta el APK de Snake                       |
-| GitHub Actions | ❌ El keepalive nunca se ha ejecutado                       |
+| GitHub Actions | ❌ Dos secrets del keepalive tienen el valor mal            |
 
 ---
 
@@ -35,15 +35,36 @@ Mientras el fichero no llegue a `main`:
 - `workflow_dispatch` tampoco aparece en la pestaña Actions,
 - Supabase sigue sin recibir el ping cada 3 días.
 
-Los secrets sí están puestos (desde el 28 de agosto de 2026):
+Los tres secrets existen desde el 28 de agosto de 2026, pero **dos tienen el
+valor mal**. Se vio al lanzar el workflow a mano por primera vez
+([run 33860424315](https://github.com/Klarala13/AltStore/actions/runs/33860424315),
+falló):
 
-| Secret              | Estado |
-| ------------------- | ------ |
-| `SUPABASE_URL`      | ✅     |
-| `SUPABASE_ANON_KEY` | ✅     |
-| `API_URL`           | ✅     |
+| Secret              | Estado | Qué pasa                                            |
+| ------------------- | ------ | --------------------------------------------------- |
+| `SUPABASE_URL`      | ✅     | Bien                                                |
+| `SUPABASE_ANON_KEY` | ❌     | Supabase responde **HTTP 401**: la clave no vale    |
+| `API_URL`           | ❌     | Tiene una cadena `postgresql://…`, no una URL http  |
 
-Nada más que configurar aquí. Solo falta que el fichero llegue a `main`.
+El log del run lo dice tal cual:
+
+```
+FAIL supabase rest -> HTTP 401
+curl: (1) Protocol "postgresql" not supported or disabled in libcurl
+FAIL api /apps -> HTTP 000000
+```
+
+Para arreglarlo, en _Settings → Secrets and variables → Actions_:
+
+- `SUPABASE_ANON_KEY` → la clave `anon` de _Supabase → Project Settings → API_.
+  Un 401 es rechazo de credenciales, no que el proyecto esté pausado; el
+  proyecto responde bien a las lecturas del web.
+- `API_URL` → la URL pública del API en Railway, la misma que tiene Vercel en su
+  variable `API_URL`. Empieza por `https://`. Ahora mismo alguien pegó ahí la
+  cadena de conexión de Postgres.
+
+El script ya avisa de los dos casos con un mensaje claro en vez de dejar un
+`HTTP 000000` sin explicación.
 
 > El repo `Klarala13/AltStore` es **público**. Los secrets siguen siendo
 > privados, pero cualquiera ve el código y el historial.
@@ -215,11 +236,15 @@ Todo lo demás responde bien: `/`, `/apps/{slug}`, `/login`, `/register`,
 
 ## Orden para cerrarlo
 
-1. Llevar esta rama a `main`. Con eso se arregla el dashboard **y** GitHub
-   registra el keepalive. Sin este paso los dos siguen roto.
-2. Lanzar el keepalive a mano desde Actions y comprobar que sale `OK`.
-3. Subir el APK de Snake con `scripts/upload-seed-apks.sh`.
-4. Provisionar Redis en Railway y poner las 4 variables.
+1. ~~Llevar la rama a `main`~~ — hecho el 4 de septiembre de 2026. El workflow
+   ya sale en Actions y el arreglo del dashboard ya está desplegado.
+2. Corregir los secrets `SUPABASE_ANON_KEY` y `API_URL` en GitHub, y relanzar el
+   keepalive hasta que dé `OK` en los dos pings.
+3. Provisionar Redis en Railway y poner las 4 variables. Sin esto no se puede
+   subir ningún APK desde la web.
+4. Subir el APK de Snake, ya sea con `scripts/upload-seed-apks.sh` o desde el
+   panel de Cloudflare R2.
 5. Poner `NEXT_PUBLIC_SITE_URL` en Vercel.
 6. Limpiar las filas `Version` en `SCANNING` que dejaron las subidas colgadas, y
-   borrar las apps de prueba.
+   borrar las apps de prueba (`Claude Test App 1788179706` y las `QA Config
+   Check …`).
