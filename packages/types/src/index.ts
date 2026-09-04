@@ -9,7 +9,7 @@ export interface AppCardDto {
   name: string;
   category: string;
   iconUrl: string;
-  coverUrl?: string; // hero/banner image for card display
+  coverUrl?: string; // portada de la tarjeta; sale de screenshots[0], no de una columna
   shortDesc: string;
   platform: "ANDROID" | "IOS" | "BOTH";
   latestVersion: string | null;

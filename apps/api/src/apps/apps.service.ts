@@ -108,6 +108,9 @@ export class AppsService {
           name: app.name,
           category: app.category,
           iconUrl: app.iconUrl,
+          // La portada de la tarjeta es la primera captura. No hay columna
+          // coverUrl y no hace falta: el seed ya guarda la portada aqui.
+          coverUrl: app.screenshots[0],
           shortDesc: app.shortDesc,
           platform: app.platform,
           latestVersion: latest?.versionName ?? null,
@@ -169,6 +172,9 @@ export class AppsService {
           name: app.name,
           category: app.category,
           iconUrl: app.iconUrl,
+          // La portada de la tarjeta es la primera captura. No hay columna
+          // coverUrl y no hace falta: el seed ya guarda la portada aqui.
+          coverUrl: app.screenshots[0],
           shortDesc: app.shortDesc,
           platform: app.platform,
           latestVersion: latest?.versionName ?? null,
