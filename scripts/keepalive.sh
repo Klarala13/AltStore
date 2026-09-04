@@ -67,44 +67,49 @@ if [[ -z "$supabase_key" ]]; then
   exit 1
 fi
 
-# Supabase tiene dos generaciones de clave y no aceptan las mismas cabeceras:
+# El ping no puede ir a /rest/v1/ (la raiz que sirve el OpenAPI): ese endpoint
+# solo lo admiten las claves secretas. Con una publishable contesta 401 con
+# {"message":"Secret API key required"}, que se lee igual que "la clave no vale"
+# y manda a cambiar una clave que estaba bien.
 #
-#   - Las de siempre (anon / service_role) son un JWT. Valen en `apikey` y
-#     tambien en `Authorization: Bearer`.
-#   - Las nuevas (sb_publishable_… / sb_secret_…) NO son un JWT. Van en
-#     `apikey`. Si se mandan ademas en `Authorization: Bearer`, PostgREST
-#     intenta leerlas como JWT, no puede, y contesta 401 aunque la clave sea
-#     correcta.
+# Se pide una tabla de verdad, que ademas es mejor senal: es una consulta a
+# Postgres via PostgREST, no solo tocar la puerta del proyecto. Si falla, se
+# prueba /auth/v1/health, que responde sin llegar a la base de datos: sirve para
+# que Supabase no pause el proyecto, pero se avisa de que Postgres no se toco.
 #
-# `apikey` a secas basta para autenticar como rol anon en los dos casos, asi
-# que se prueba eso primero. Si falla, se reintenta con las dos cabeceras por
-# si el proyecto espera la forma antigua. El log dice cual funciono.
+# La clave va solo en `apikey`. Las nuevas (sb_publishable_…) no son un JWT, asi
+# que mandarlas ademas en `Authorization: Bearer` hace que PostgREST intente
+# leerlas como JWT y devuelva 401 aunque sean correctas.
+SUPABASE_KEEPALIVE_TABLE="${SUPABASE_KEEPALIVE_TABLE:-App}"
+
 ping_supabase() {
-  local url="${SUPABASE_URL%/}/rest/v1/"
+  local base="${SUPABASE_URL%/}"
   local code
 
+  local table_url="${base}/rest/v1/${SUPABASE_KEEPALIVE_TABLE}?select=id&limit=1"
   code=$(curl "${CURL_OPTS[@]}" --output /dev/null --write-out "%{http_code}" \
-    --header "apikey: ${supabase_key}" "$url" || echo "000")
+    --header "apikey: ${supabase_key}" "$table_url" || echo "000")
   if [[ "$code" =~ ^2|^3 ]]; then
-    echo "OK   supabase rest -> HTTP $code (cabecera apikey)"
+    echo "OK   supabase postgres -> HTTP $code (select en ${SUPABASE_KEEPALIVE_TABLE})"
     return
   fi
 
-  local first="$code"
+  local table_code="$code"
   code=$(curl "${CURL_OPTS[@]}" --output /dev/null --write-out "%{http_code}" \
-    --header "apikey: ${supabase_key}" \
-    --header "Authorization: Bearer ${supabase_key}" "$url" || echo "000")
+    --header "apikey: ${supabase_key}" "${base}/auth/v1/health" || echo "000")
   if [[ "$code" =~ ^2|^3 ]]; then
-    echo "OK   supabase rest -> HTTP $code (apikey + Bearer)"
+    echo "OK   supabase health -> HTTP $code"
+    echo "WARN el select en ${SUPABASE_KEEPALIVE_TABLE} dio HTTP ${table_code}, asi que Postgres no se toco."
+    echo "     Comprueba SUPABASE_KEEPALIVE_TABLE: PostgREST distingue mayusculas."
     return
   fi
 
-  echo "FAIL supabase rest -> HTTP $first con apikey, HTTP $code con apikey+Bearer"
-  if [[ "$first" == "401" && "$code" == "401" ]]; then
-    echo "     401 por las dos vias es la clave, no el proyecto." >&2
-    echo "     Cogela de Supabase > Settings > API Keys. Vale la 'anon public'" >&2
-    echo "     o la 'sb_publishable_…'. Pegala sin espacios ni salto de linea:" >&2
-    echo "     un \\n al final basta para que Supabase la rechace entera." >&2
+  echo "FAIL supabase -> HTTP ${table_code} en la tabla, HTTP ${code} en health"
+  if [[ "$table_code" == "401" && "$code" == "401" ]]; then
+    echo "     401 en los dos sitios apunta a la clave." >&2
+    echo "     Cogela de Supabase > Settings > API Keys: vale la 'anon public' o" >&2
+    echo "     la 'sb_publishable_…', no la secreta. Pegala sin espacios ni salto" >&2
+    echo "     de linea: un \\n al final basta para que Supabase la rechace." >&2
   fi
   fail=1
 }
