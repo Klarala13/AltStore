@@ -67,9 +67,49 @@ if [[ -z "$supabase_key" ]]; then
   exit 1
 fi
 
-ping_url "supabase rest" "${SUPABASE_URL%/}/rest/v1/" \
-  --header "apikey: ${supabase_key}" \
-  --header "Authorization: Bearer ${supabase_key}"
+# Supabase tiene dos generaciones de clave y no aceptan las mismas cabeceras:
+#
+#   - Las de siempre (anon / service_role) son un JWT. Valen en `apikey` y
+#     tambien en `Authorization: Bearer`.
+#   - Las nuevas (sb_publishable_… / sb_secret_…) NO son un JWT. Van en
+#     `apikey`. Si se mandan ademas en `Authorization: Bearer`, PostgREST
+#     intenta leerlas como JWT, no puede, y contesta 401 aunque la clave sea
+#     correcta.
+#
+# `apikey` a secas basta para autenticar como rol anon en los dos casos, asi
+# que se prueba eso primero. Si falla, se reintenta con las dos cabeceras por
+# si el proyecto espera la forma antigua. El log dice cual funciono.
+ping_supabase() {
+  local url="${SUPABASE_URL%/}/rest/v1/"
+  local code
+
+  code=$(curl "${CURL_OPTS[@]}" --output /dev/null --write-out "%{http_code}" \
+    --header "apikey: ${supabase_key}" "$url" || echo "000")
+  if [[ "$code" =~ ^2|^3 ]]; then
+    echo "OK   supabase rest -> HTTP $code (cabecera apikey)"
+    return
+  fi
+
+  local first="$code"
+  code=$(curl "${CURL_OPTS[@]}" --output /dev/null --write-out "%{http_code}" \
+    --header "apikey: ${supabase_key}" \
+    --header "Authorization: Bearer ${supabase_key}" "$url" || echo "000")
+  if [[ "$code" =~ ^2|^3 ]]; then
+    echo "OK   supabase rest -> HTTP $code (apikey + Bearer)"
+    return
+  fi
+
+  echo "FAIL supabase rest -> HTTP $first con apikey, HTTP $code con apikey+Bearer"
+  if [[ "$first" == "401" && "$code" == "401" ]]; then
+    echo "     401 por las dos vias es la clave, no el proyecto." >&2
+    echo "     Cogela de Supabase > Settings > API Keys. Vale la 'anon public'" >&2
+    echo "     o la 'sb_publishable_…'. Pegala sin espacios ni salto de linea:" >&2
+    echo "     un \\n al final basta para que Supabase la rechace entera." >&2
+  fi
+  fail=1
+}
+
+ping_supabase
 
 if [[ -n "${API_URL:-}" ]]; then
   if require_http_url API_URL "$API_URL"; then
