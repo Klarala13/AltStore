@@ -149,8 +149,32 @@ Ejecución local:
 SUPABASE_URL=... SUPABASE_ANON_KEY=... API_URL=... ./scripts/keepalive.sh
 ```
 
+> **El cron solo cuenta si el fichero está en `main`.** GitHub registra y
+> programa los workflows desde la rama por defecto. Mientras
+> `.github/workflows/keepalive.yml` viva solo en una rama, ni el cron ni
+> `workflow_dispatch` existen para GitHub, y `gh workflow list` sale vacío.
+
 > GitHub desactiva los workflows programados tras 60 días sin actividad en el
 > repo. Si el repo se queda parado, reactívalo desde **Actions**.
+
+---
+
+## APK del seed (Cloudflare R2)
+
+El seed crea las versiones de TicTacToe80s y SnakeArcade80s en estado
+`APPROVED` apuntando a una `fileKey` fija. Si el binario no está en el bucket,
+la ficha carga bien pero el botón de descarga acaba en `NoSuchKey`.
+
+Para subir los dos APK a las claves que espera el seed:
+
+```bash
+CF_ACCOUNT_ID=... R2_ACCESS_KEY=... R2_SECRET_KEY=... ./scripts/upload-seed-apks.sh
+```
+
+Comprueba el `sha256` antes de subir y no sobreescribe lo que ya está. Las rutas
+locales de los APK se pueden cambiar con `TICTACTOE_APK` y `SNAKE_APK`.
+
+El estado real de cada plataforma está en [`docs/CONFIG.md`](docs/CONFIG.md).
 
 ---
 

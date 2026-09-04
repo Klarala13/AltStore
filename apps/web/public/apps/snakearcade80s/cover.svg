@@ -1,0 +1,64 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1480" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A0A14"/>
+      <stop offset="1" stop-color="#14142A"/>
+    </linearGradient>
+    <linearGradient id="grid" x1="420" y1="180" x2="1180" y2="740" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#FF2ED1"/>
+    </linearGradient>
+    <filter id="softGlow" x="0" y="0" width="1600" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="260" cy="120" r="280" fill="#1CFF00" fill-opacity="0.06"/>
+  <circle cx="1420" cy="820" r="320" fill="#00F0FF" fill-opacity="0.08"/>
+
+  <g opacity="0.22">
+    <path d="M0 620H1600" stroke="#2D2D46" stroke-width="2"/>
+    <path d="M0 700H1600" stroke="#2D2D46" stroke-width="2"/>
+    <path d="M0 780H1600" stroke="#2D2D46" stroke-width="2"/>
+    <path d="M0 860H1600" stroke="#2D2D46" stroke-width="2"/>
+  </g>
+
+  <!-- arena -->
+  <g filter="url(#softGlow)">
+    <rect x="420" y="180" width="760" height="560" rx="36" fill="#0E0E1D" stroke="#2B2B45" stroke-width="4"/>
+  </g>
+  <g stroke="url(#grid)" stroke-width="4" opacity="0.3">
+    <line x1="420" y1="320" x2="1180" y2="320"/>
+    <line x1="420" y1="460" x2="1180" y2="460"/>
+    <line x1="420" y1="600" x2="1180" y2="600"/>
+    <line x1="610" y1="180" x2="610" y2="740"/>
+    <line x1="800" y1="180" x2="800" y2="740"/>
+    <line x1="990" y1="180" x2="990" y2="740"/>
+  </g>
+
+  <!-- snake body -->
+  <g filter="url(#softGlow)">
+    <path d="M520 650V460H705V320H900V530H1075V390"
+          stroke="#1CFF00" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="1049" y="326" width="52" height="52" rx="12" fill="#1CFF00"/>
+  </g>
+  <circle cx="1066" cy="346" r="6" fill="#0A0A14"/>
+  <circle cx="1086" cy="346" r="6" fill="#0A0A14"/>
+
+  <!-- food -->
+  <g filter="url(#softGlow)">
+    <circle cx="520" cy="330" r="34" stroke="#FFB300" stroke-width="16"/>
+  </g>
+
+  <text x="800" y="124" text-anchor="middle" font-family="'Avenir Next', 'Trebuchet MS', sans-serif" font-size="56" font-weight="700" fill="#FFFFFF">
+    Snake Arcade 80s
+  </text>
+  <text x="800" y="800" text-anchor="middle" font-family="'Avenir Next', 'Trebuchet MS', sans-serif" font-size="26" letter-spacing="2" fill="#8E8EA8">
+    RETRO NEON ARCADE · ENDLESS SINGLE PLAYER
+  </text>
+</svg>
