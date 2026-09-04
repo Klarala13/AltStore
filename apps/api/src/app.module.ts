@@ -19,7 +19,7 @@ import { RatingsModule } from "./ratings/ratings.module";
       envFilePath: [".env.local", ".env", "apps/api/.env.local", "apps/api/.env"],
     }),
 
-    // Redis queue (BullMQ) — used by VersionsModule (enqueue) and SecurityModule (process)
+    // Redis queue (Bull) — used by VersionsModule (enqueue) and SecurityModule (process)
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
@@ -28,6 +28,23 @@ import { RatingsModule } from "./ratings/ratings.module";
           port: config.get<number>("REDIS_PORT", 6379),
           password: config.get<string>("REDIS_PASSWORD"),
           tls: config.get<string>("REDIS_TLS") === "true" ? {} : undefined,
+
+          // Without this, an unreachable Redis makes POST /apps/:id/versions hang
+          // forever: ioredis buffers the command and retries the connection
+          // without ever giving up, so the upload sits at 100% and never
+          // resolves. Bounding it turns that into a real 500.
+          //
+          // Only the plain client is bounded. Bull's own createClient forces
+          // maxRetriesPerRequest: null on bclient/subscriber, so the worker
+          // keeps its default retry strategy and survives a Redis blip.
+          maxRetriesPerRequest: config.get<number>("REDIS_MAX_RETRIES_PER_REQUEST", 3),
+          connectTimeout: config.get<number>("REDIS_CONNECT_TIMEOUT_MS", 10000),
+
+          // ioredis resolves IPv4 only by default. Railway's private network is
+          // IPv6-only, so redis.railway.internal would never connect. 0 asks
+          // for both records, which also keeps IPv4 hosts (Upstash, local)
+          // working.
+          family: config.get<number>("REDIS_FAMILY", 0),
         },
       }),
       inject: [ConfigService],
