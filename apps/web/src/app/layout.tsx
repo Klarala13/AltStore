@@ -7,8 +7,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "AltStore — European App Marketplace",
-    template: "%s | AltStore",
+    default: "Appia — European App Marketplace",
+    template: "%s | Appia",
   },
   description:
     "DMA-compliant alternative app marketplace for Android apps in the EU. Secure, open, and privacy-first.",
@@ -67,7 +67,7 @@ const Footer = () => (
       <div className="flex flex-col gap-8 py-12 md:flex-row md:justify-between">
         <div className="max-w-xs">
           <Link href="/" className="font-display text-lg font-bold text-white">
-            AltStore
+            Appia
           </Link>
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
             A DMA-compliant alternative app marketplace for the EU. Every app scanned. Zero
@@ -106,7 +106,7 @@ const Footer = () => (
       {/* Bottom row */}
       <div className="flex flex-col items-start justify-between gap-3 border-t border-zinc-800 py-6 md:flex-row md:items-center">
         <p className="text-xs text-zinc-500">
-          &copy; {new Date().getFullYear()} AltStore. DMA-compliant &middot; EU.
+          &copy; {new Date().getFullYear()} Appia. DMA-compliant &middot; EU.
         </p>
         <span className="badge-accent text-xs">EU Marketplace</span>
       </div>

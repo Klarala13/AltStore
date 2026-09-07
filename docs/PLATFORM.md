@@ -57,15 +57,15 @@
 - Rollback instructions
 - Follow-up operations tasks (if any)
 
-## Por qué el build del API construye @altstore/types
+## Por qué el build del API construye @appia/types
 
 `apps/api/package.json` tiene un `build` que parece raro:
 
 ```json
-"build": "pnpm --filter @altstore/types build && nest build"
+"build": "pnpm --filter @appia/types build && nest build"
 ```
 
-No es redundante. `apps/api/tsconfig.json` resuelve `@altstore/types` a
+No es redundante. `apps/api/tsconfig.json` resuelve `@appia/types` a
 `packages/types/dist/index.d.ts`, así que ese paquete **tiene que estar
 compilado** antes de compilar el API.
 
@@ -75,9 +75,14 @@ directo:
 
 ```
 pnpm install --frozen-lockfile
-pnpm --filter @altstore/db exec prisma generate
-pnpm --filter @altstore/api build
+pnpm db:generate
+pnpm build:api
 ```
+
+Esos dos scripts de la raiz filtran **por ruta** (`./packages/db`, `./apps/api`)
+y no por nombre de paquete, a proposito: el comando de Railway vive en su panel,
+y con filtros por nombre se rompia cada vez que se renombra un paquete. Paso
+justo eso al pasar de `@altstore/*` a `@appia/*`.
 
 Eso salta turbo, así que `packages/types/dist` no existía y el build moría con
 
@@ -86,6 +91,9 @@ error TS2307: Cannot find module '@altstore/types'
   There are types at '…/node_modules/@altstore/types/src/index.ts', but this
   result could not be resolved under your current 'moduleResolution' setting.
 ```
+
+> Ese log es literal, y de antes del cambio de nombre: entonces el paquete se
+> llamaba `@altstore/types`. Hoy seria `@appia/types`.
 
 El mensaje despista: parece un problema de `moduleResolution`. Lo que pasa es que
 al no encontrar el `dist` del mapeo, TypeScript cae a resolución de Node, llega
@@ -101,7 +109,7 @@ Se usa `&&` y no un `prebuild` porque pnpm no ejecuta los scripts `pre`/`post`
 salvo que `enable-pre-post-scripts` esté activado, y en este repo no lo está.
 
 Rollback: quitar la primera mitad del script. El build volverá a fallar en
-Railway si alguien importa `@altstore/types` desde el API.
+Railway si alguien importa `@appia/types` desde el API.
 
 ## Keepalive de Supabase
 

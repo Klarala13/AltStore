@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Developers",
   description:
-    "Publish your Android app on AltStore — the DMA-compliant EU marketplace. JWT API, automated virus scanning, and instant QR installs.",
+    "Publish your Android app on Appia — the DMA-compliant EU marketplace. JWT API, automated virus scanning, and instant QR installs.",
 };
 
 /* ─────────────────────────── Page ─────────────────────────────── */
@@ -40,7 +40,7 @@ const HeroSection = () => (
       </h1>
 
       <p className="mx-auto mt-7 max-w-lg text-base leading-7 text-zinc-400 md:text-lg">
-        AltStore is the DMA-compliant alternative marketplace for Android in Europe. Submit your
+        Appia is the DMA-compliant alternative marketplace for Android in Europe. Submit your
         app, pass our automated security scan, and go live — no committee approval, no revenue
         share.
       </p>
@@ -114,7 +114,7 @@ const STEPS = [
     number: "03",
     title: "Go live in 48 hours",
     description:
-      "Once the automated scan passes, a human reviewer checks your listing. Approval typically takes under 48 hours. After approval your app is instantly available to all EU users on AltStore.",
+      "Once the automated scan passes, a human reviewer checks your listing. Approval typically takes under 48 hours. After approval your app is instantly available to all EU users on Appia.",
     cta: null,
   },
 ];
@@ -291,7 +291,7 @@ const DEV_FEATURES = [
     ),
     title: "Open Source Platform",
     description:
-      "AltStore is fully open source. Inspect exactly how your data is handled, report issues, or contribute improvements on GitHub.",
+      "Appia is fully open source. Inspect exactly how your data is handled, report issues, or contribute improvements on GitHub.",
   },
 ];
 
@@ -364,8 +364,8 @@ const ApiSnippetSection = () => (
       <div className="flex items-center bg-zinc-950 px-8 py-12 md:px-12">
         <pre className="w-full overflow-x-auto rounded-xl border border-zinc-800 bg-black p-6 text-xs leading-6 text-zinc-300">
           <code>{`# Upload a new version via the REST API
-curl -X POST https://api.altstore.eu/v1/apps/my-app/versions \\
-  -H "Authorization: Bearer $ALTSTORE_TOKEN" \\
+curl -X POST https://api.appia.eu/v1/apps/my-app/versions \\
+  -H "Authorization: Bearer $APPIA_TOKEN" \\
   -F "apk=@app-release.apk" \\
   -F "versionName=2.1.0" \\
   -F "changelog=Bug fixes and performance improvements"

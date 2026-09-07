@@ -8,7 +8,7 @@ import type {
   DeveloperAppDetailDto,
   DeveloperVersionDto,
   VersionStatus,
-} from "@altstore/types";
+} from "@appia/types";
 
 // ---------------------------------------------------------------------------
 // Helpers

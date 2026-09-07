@@ -45,7 +45,7 @@
       "size_smaller": "-{{size}} rispetto a {{version}}"
     },
     "meta": {
-      "download_title": "{{name}} - Scarica APK gratis | AltStore",
+      "download_title": "{{name}} - Scarica APK gratis | Appia",
       "android": "Android",
       "ios": "iOS"
     }
@@ -73,7 +73,7 @@
   "auth": {
     "login": {
       "title": "Bentornato",
-      "subtitle": "Accedi al tuo account AltStore",
+      "subtitle": "Accedi al tuo account Appia",
       "email": "Indirizzo e-mail",
       "password": "Password",
       "forgot_password": "Password dimenticata?",
@@ -84,7 +84,7 @@
       "google": "Continua con Google"
     },
     "register": {
-      "title": "Unisciti ad AltStore",
+      "title": "Unisciti ad Appia",
       "subtitle": "Crea il tuo account — è gratis",
       "name": "Nome completo",
       "email": "Indirizzo e-mail",
@@ -99,7 +99,7 @@
       "developer_link": "Crea un account sviluppatore"
     },
     "developer_register": {
-      "title": "Pubblica su AltStore",
+      "title": "Pubblica su Appia",
       "subtitle": "Raggiungi gli utenti europei — conforme alla DMA fin dal primo giorno",
       "type_individual": "Sviluppatore individuale",
       "type_company": "Azienda",
@@ -224,7 +224,7 @@
     "terms": "Termini di servizio",
     "for_developers": "Per gli sviluppatori",
     "contact": "Contatti",
-    "gdpr_note": "AltStore è conforme al GDPR e alla DMA. Non vendiamo mai i tuoi dati."
+    "gdpr_note": "Appia è conforme al GDPR e alla DMA. Non vendiamo mai i tuoi dati."
   },
   "error_pages": {
     "not_found": {

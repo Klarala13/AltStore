@@ -1,4 +1,4 @@
-import type { AppCardDto } from "@altstore/types";
+import type { AppCardDto } from "@appia/types";
 
 export const MOCK_APPS: AppCardDto[] = [
   {

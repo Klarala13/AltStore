@@ -16,7 +16,7 @@ import { AppsService, AppFilters, SearchFilters } from "./apps.service";
 import { CreateAppDto, UpdateAppDto } from "./apps.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { JwtPayload } from "../auth/jwt.strategy";
-import { Category, Platform } from "@altstore/db";
+import { Category, Platform } from "@appia/db";
 
 interface AuthRequest extends Request {
   user: JwtPayload;

@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
-import type { VersionStatus } from "@altstore/types";
+import type { VersionStatus } from "@appia/types";
 
 // ---------------------------------------------------------------------------
 // Types

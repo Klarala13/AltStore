@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import type { AppDetailDto } from "@altstore/types";
+import type { AppDetailDto } from "@appia/types";
 import { DownloadActions } from "@/components/DownloadActions";
+import { getSiteUrl } from "@/lib/site-url";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -23,7 +24,7 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
   const app = await getApp(slug);
   if (!app) return {};
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://altstore.eu";
+  const siteUrl = getSiteUrl();
   const canonical = `${siteUrl}/apps/${slug}`;
 
   return {
@@ -31,16 +32,16 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
     description: app.shortDesc,
     alternates: { canonical },
     openGraph: {
-      title: `${app.name} — Download APK | AltStore`,
+      title: `${app.name} — Download APK | Appia`,
       description: app.shortDesc,
       url: canonical,
-      siteName: "AltStore",
+      siteName: "Appia",
       images: app.iconUrl ? [{ url: app.iconUrl, width: 512, height: 512, alt: app.name }] : [],
       type: "website",
     },
     twitter: {
       card: "summary",
-      title: `${app.name} — Download APK | AltStore`,
+      title: `${app.name} — Download APK | Appia`,
       description: app.shortDesc,
       images: app.iconUrl ? [app.iconUrl] : [],
     },
@@ -52,7 +53,7 @@ const AppDetailPage = async ({ params }: Props) => {
   const app = await getApp(slug);
   if (!app) notFound();
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://altstore.eu";
+  const siteUrl = getSiteUrl();
   const platformLabel =
     app.platform === "BOTH" ? "Android · iOS" : app.platform === "ANDROID" ? "Android" : "iOS";
 

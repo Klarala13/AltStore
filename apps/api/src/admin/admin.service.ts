@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { AppStatus, Severity } from "@altstore/db";
+import { AppStatus, Severity } from "@appia/db";
 
 export interface AdminAppFilters {
   status?: AppStatus;

@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsPositive, IsString, MaxLength, Min } from "class-validator";
 import { Type } from "class-transformer";
-import { Platform } from "@altstore/db";
+import { Platform } from "@appia/db";
 
 export class CreateVersionDto {
   @IsString()

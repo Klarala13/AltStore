@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { VersionListItemDto } from "@altstore/types";
+import type { VersionListItemDto } from "@appia/types";
 
 interface Props {
   versions: VersionListItemDto[];

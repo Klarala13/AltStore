@@ -14,7 +14,10 @@
 #   CF_ACCOUNT_ID   (requerida) id de cuenta de Cloudflare
 #   R2_ACCESS_KEY   (requerida) access key id del token de R2
 #   R2_SECRET_KEY   (requerida) secret access key del token de R2
-#   R2_BUCKET       (opcional)  por defecto altstore-apks
+#   R2_BUCKET       (opcional)  por defecto altstore-apks, el que existe hoy.
+#                              Un bucket de R2 no se renombra en sitio: habria que
+#                              crear appia-apks y copiar. Es un nombre interno que
+#                              nadie ve, asi que se deja para cuando apetezca.
 #
 # Rutas locales de los APK (opcionales, hay valores por defecto):
 #   TICTACTOE_APK, SNAKE_APK
@@ -32,9 +35,9 @@ TICTACTOE_APK="${TICTACTOE_APK:-$HOME/projects/FORMACIÓN/TicTacToe80s/TicTacToe
 SNAKE_APK="${SNAKE_APK:-$HOME/projects/FORMACIÓN/snake-arcade-80s/app-release.apk}"
 
 # Clave en el bucket + sha256 esperado, copiados de packages/db/prisma/seed.ts.
-TICTACTOE_KEY="apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk"
+TICTACTOE_KEY="apps/com.appia.tictactoe80s/1.0.0/TicTacToe80s.apk"
 TICTACTOE_SHA="0c2abd632095dcf39209911deff44ee84278956edcae95da102645f5ad35e1c4"
-SNAKE_KEY="apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk"
+SNAKE_KEY="apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk"
 SNAKE_SHA="a370d642eae4c7f6fada3cf308ba6789b936b4a358f6a5a46ae7d8358e0a136c"
 
 for var in CF_ACCOUNT_ID R2_ACCESS_KEY R2_SECRET_KEY; do

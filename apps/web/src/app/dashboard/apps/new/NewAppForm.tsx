@@ -19,8 +19,13 @@ const CATEGORIES = [
 ];
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
-const DEFAULT_ICON_URL = "https://cdn.altstore.dev/default-app-icon.png";
-const DEFAULT_PRIVACY_URL = "https://altstore.vercel.app/privacy";
+const DEFAULT_ICON_URL = "/icon.svg";
+// Se rellena solo en el formulario, asi que no puede ser un dominio escrito a
+// mano: el de antes apuntaba a una web que no era la nuestra. Sale de la misma
+// variable que el resto del sitio, y si no esta, mejor vacio que mal.
+const DEFAULT_PRIVACY_URL = process.env.NEXT_PUBLIC_SITE_URL
+  ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/privacy`
+  : "";
 
 const slugify = (value: string) =>
   value

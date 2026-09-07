@@ -1,5 +1,5 @@
 import { IsArray, IsEnum, IsOptional, IsString, IsUrl, Length, MaxLength } from "class-validator";
-import { Category, Platform } from "@altstore/db";
+import { Category, Platform } from "@appia/db";
 
 export class CreateAppDto {
   @IsString()

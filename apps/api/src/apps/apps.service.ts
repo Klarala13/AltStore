@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateAppDto, UpdateAppDto } from "./apps.dto";
-import { AppStatus, Category, Platform } from "@altstore/db";
-import type { DeveloperAppDetailDto, DeveloperAppListDto } from "@altstore/types";
+import { AppStatus, Category, Platform } from "@appia/db";
+import type { DeveloperAppDetailDto, DeveloperAppListDto } from "@appia/types";
 
 export interface AppFilters {
   category?: Category;

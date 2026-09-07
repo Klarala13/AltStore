@@ -181,7 +181,7 @@ const AuthForm = ({ defaultMode = "login" }: AuthFormProps) => {
       <div className="relative rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 backdrop-blur-sm">
         {/* Header */}
         <div className="mb-6 text-center">
-          <span className="font-display text-2xl font-bold text-white">AltStore</span>
+          <span className="font-display text-2xl font-bold text-white">Appia</span>
           <p className="mt-1.5 text-sm text-zinc-400">
             {isLogin
               ? "Welcome back. Sign in to your account."

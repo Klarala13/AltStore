@@ -45,7 +45,7 @@
       "size_smaller": "-{{size}} ggü. {{version}}"
     },
     "meta": {
-      "download_title": "{{name}} - APK kostenlos herunterladen | AltStore",
+      "download_title": "{{name}} - APK kostenlos herunterladen | Appia",
       "android": "Android",
       "ios": "iOS"
     }
@@ -73,7 +73,7 @@
   "auth": {
     "login": {
       "title": "Willkommen zurück",
-      "subtitle": "Melde dich bei deinem AltStore-Konto an",
+      "subtitle": "Melde dich bei deinem Appia-Konto an",
       "email": "E-Mail-Adresse",
       "password": "Passwort",
       "forgot_password": "Passwort vergessen?",
@@ -84,7 +84,7 @@
       "google": "Mit Google fortfahren"
     },
     "register": {
-      "title": "AltStore beitreten",
+      "title": "Appia beitreten",
       "subtitle": "Konto erstellen — kostenlos",
       "name": "Vollständiger Name",
       "email": "E-Mail-Adresse",
@@ -99,7 +99,7 @@
       "developer_link": "Entwicklerkonto erstellen"
     },
     "developer_register": {
-      "title": "Auf AltStore veröffentlichen",
+      "title": "Auf Appia veröffentlichen",
       "subtitle": "Europäische Nutzer erreichen — DMA-konform von Anfang an",
       "type_individual": "Einzelentwickler",
       "type_company": "Unternehmen",
@@ -219,12 +219,12 @@
     "dma_badge": "DMA-konform"
   },
   "footer": {
-    "about": "Über AltStore",
+    "about": "Über Appia",
     "privacy": "Datenschutzerklärung",
     "terms": "Nutzungsbedingungen",
     "for_developers": "Für Entwickler",
     "contact": "Kontakt",
-    "gdpr_note": "AltStore ist DSGVO- und DMA-konform. Wir verkaufen deine Daten nicht."
+    "gdpr_note": "Appia ist DSGVO- und DMA-konform. Wir verkaufen deine Daten nicht."
   },
   "error_pages": {
     "not_found": {

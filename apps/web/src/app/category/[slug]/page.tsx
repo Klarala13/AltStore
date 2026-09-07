@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AppCard } from "@/components/AppCard";
-import type { AppCardDto } from "@altstore/types";
+import type { AppCardDto } from "@appia/types";
 
 export const revalidate = 3600;
 
@@ -51,7 +51,7 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
   const label = toLabel(slug);
   return {
     title: `${label} Apps`,
-    description: `Browse ${label} apps on AltStore — EU's DMA-compliant app marketplace. Virus-scanned, GDPR-compliant.`,
+    description: `Browse ${label} apps on Appia — EU's DMA-compliant app marketplace. Virus-scanned, GDPR-compliant.`,
   };
 };
 

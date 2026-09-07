@@ -20,10 +20,10 @@ importers:
 
   apps/api:
     dependencies:
-      '@altstore/db':
+      '@appia/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@altstore/types':
+      '@appia/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@aws-sdk/client-s3':
@@ -138,10 +138,10 @@ importers:
 
   apps/web:
     dependencies:
-      '@altstore/db':
+      '@appia/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@altstore/types':
+      '@appia/types':
         specifier: workspace:*
         version: link:../../packages/types
       embla-carousel-react:

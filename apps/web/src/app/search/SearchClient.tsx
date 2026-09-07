@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { AppCard } from "@/components/AppCard";
-import type { AppCardDto } from "@altstore/types";
+import type { AppCardDto } from "@appia/types";
 
 interface SearchResult {
   items: AppCardDto[];

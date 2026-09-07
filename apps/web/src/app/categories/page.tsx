@@ -5,7 +5,7 @@ import { MOCK_APPS } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: "Categories",
-  description: "Browse all app categories on AltStore — the DMA-compliant EU app marketplace.",
+  description: "Browse all app categories on Appia — the DMA-compliant EU app marketplace.",
 };
 
 const ALL_CATEGORIES = Array.from(new Set(MOCK_APPS.map((a) => a.category))).sort();

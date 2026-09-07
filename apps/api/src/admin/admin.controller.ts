@@ -3,7 +3,7 @@ import { AdminService } from "./admin.service";
 import { UpdateAppStatusDto } from "./admin.dto";
 import { AdminGuard } from "../common/guards/admin.guard";
 import { JwtPayload } from "../auth/jwt.strategy";
-import { AppStatus, Severity } from "@altstore/db";
+import { AppStatus, Severity } from "@appia/db";
 
 interface AdminRequest extends Request {
   user: JwtPayload;

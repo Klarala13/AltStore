@@ -1,5 +1,5 @@
 {
-  "name": "altstore",
+  "name": "appia",
   "private": true,
   "scripts": {
     "dev": "turbo dev",
@@ -7,7 +7,9 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "typecheck": "turbo typecheck",
-    "test": "turbo test"
+    "test": "turbo test",
+    "db:generate": "pnpm --filter ./packages/db exec prisma generate",
+    "build:api": "pnpm --filter ./apps/api build"
   },
   "devDependencies": {
     "prettier": "^3.3.3",

@@ -1,4 +1,11 @@
-# Configuración de AltStore — estado real
+# Configuración de Appia — estado real
+
+> **El proyecto se llamaba AltStore y pasó a llamarse Appia** el 7 de septiembre
+> de 2026, porque AltStore PAL ya existe: mismo nombre, mismo sector, misma
+> normativa. El código ya está renombrado. Los paneles **todavía no**, así que
+> en este documento verás nombres viejos donde siguen siendo el nombre real de
+> algo que existe: el repo `Klarala13/AltStore`, la URL
+> `altstore-nu.vercel.app` y el bucket `altstore-apks`. No son despistes.
 
 Comprobado en producción el **4 de septiembre de 2026** contra
 `https://altstore-nu.vercel.app`. Cada fila dice cómo se comprobó, no lo que
@@ -15,7 +22,7 @@ Producción corre el commit `6e8897a` de `main`.
 | Supabase       | ✅ Despierto. Las lecturas van bien.                       |
 | Vercel (web)   | ⚠️ Funciona, pero faltan 3 variables                       |
 | Railway (API)  | ❌ Sirve un build de hace 6 días. Es el único bloqueo real |
-| Cloudflare R2  | ⚠️ Bucket vivo, falta el APK de Snake                      |
+| Cloudflare R2  | ⚠️ Bucket vivo, faltan los dos APK en las claves nuevas    |
 | GitHub Actions | ✅ Keepalive en verde: Postgres 200, API 200               |
 
 ---
@@ -104,16 +111,25 @@ Puesto y funcionando (se deduce de que las páginas responden):
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | El botón "GitHub" del login sale desactivado                       |
 | `APPLE_ID` / `APPLE_SECRET`                 | El botón "Apple" del login sale desactivado                        |
 
-Sobre `NEXT_PUBLIC_SITE_URL`: el código cae a `https://altstore.eu` cuando no
-está (`apps/web/src/app/sitemap.ts`, `apps/web/src/app/apps/[slug]/page.tsx`).
-Ese dominio existe pero **no es vuestro**: resuelve a una página de aparcamiento
-(`91.195.241.232`, HTTP 403). Así que el sitemap y los `canonical` de todas las
-fichas están mandando a Google a un dominio de otro. Ponla a
-`https://altstore-nu.vercel.app` hasta que haya dominio propio.
+Sobre `NEXT_PUBLIC_SITE_URL`: **ya no hay un dominio escrito a mano**, que era
+el fallo de verdad. Antes el código caía a `https://altstore.eu`, un dominio
+aparcado por otra persona (`91.195.241.232`, HTTP 403), así que el sitemap y los
+`canonical` de todas las fichas mandaban a Google a la web de un tercero.
 
-Aparte, `apps/web/src/app/dashboard/apps/new/NewAppForm.tsx` tiene escrito a
-mano `https://altstore.vercel.app/privacy` como URL de privacidad por defecto.
-Tampoco es el dominio real.
+Ahora `apps/web/src/lib/site-url.ts` decide así:
+
+1. `NEXT_PUBLIC_SITE_URL`, cuando haya dominio propio.
+2. El dominio de producción que **Vercel inyecta solo**
+   (`VERCEL_PROJECT_PRODUCTION_URL`). Sobrevive a que se renombre el proyecto,
+   que es justo lo que va a pasar.
+3. `localhost`, en desarrollo.
+
+Peor caso: un `canonical` que apunta a la URL de Vercel. Fea, pero nuestra y
+responde. Poner la variable sigue siendo lo correcto; ya no es urgente.
+
+Lo mismo en el formulario de alta de app: la URL de privacidad por defecto salía
+de un dominio escrito a mano y ahora sale de `NEXT_PUBLIC_SITE_URL`. Si no está,
+se queda vacía, que es mejor que estar mal.
 
 ---
 
@@ -185,10 +201,23 @@ tema de RGPD, no cosmético.
 
 Bucket `altstore-apks`, en la cuenta `ebc143ac235a9b252bc2d9e43787c821`.
 
-| Fichero                                                     | Estado                 |
-| ----------------------------------------------------------- | ---------------------- |
-| `apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk`     | ✅ Existe (HTTP 206)   |
-| `apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk` | ❌ **No existe** (404) |
+El nombre del bucket se queda como está: R2 no permite renombrar en sitio,
+habría que crear otro y copiar 79 MB. Es un nombre interno que ningún usuario ve.
+
+Las claves **sí cambian**, porque llevan el `bundleId` dentro:
+
+| Clave                                                    | Estado                    |
+| -------------------------------------------------------- | ------------------------- |
+| `apps/com.appia.tictactoe80s/1.0.0/TicTacToe80s.apk`     | ❌ Falta subir            |
+| `apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk` | ❌ Falta subir            |
+| `apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk`  | 🗑️ Vieja, se puede borrar |
+| `apps/com.altstore.snakearcade80s/…`                     | 🗑️ Nunca existió          |
+
+Ojo: **el `bundleId` que guarda la base de datos no es el del binario.** El APK
+real declara `com.anonymous.snakearcade80s`, el valor por defecto de Expo que
+nadie cambió. Se ha puesto `com.appia.*` porque es la identidad que queréis y así
+la clave de R2 no vuelve a moverse, pero el desajuste sigue ahí hasta que se
+recompilen las dos apps con su paquete de verdad.
 
 El seed (`packages/db/prisma/seed.ts`, línea 30) marca la versión de Snake como
 `APPROVED` apuntando a esa clave, pero el APK nunca se subió. Resultado: la

@@ -113,7 +113,7 @@ export const MobileNav = () => {
         {/* Drawer header */}
         <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
           <Link href="/" className="font-display text-lg font-bold text-white">
-            AltStore
+            Appia
           </Link>
           <button
             type="button"

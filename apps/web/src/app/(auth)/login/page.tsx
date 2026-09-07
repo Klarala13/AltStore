@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { AuthForm } from "@/components/AuthForm";
 
 export const metadata: Metadata = {
-  title: "Sign In — AltStore",
-  description: "Sign in to your AltStore account.",
+  title: "Sign In — Appia",
+  description: "Sign in to your Appia account.",
 };
 
 const LoginPage = () => {

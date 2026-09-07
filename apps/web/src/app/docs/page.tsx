@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "API Documentation",
   description:
-    "AltStore REST API reference — upload apps, manage versions, and read analytics with JWT authentication.",
+    "Appia REST API reference — upload apps, manage versions, and read analytics with JWT authentication.",
 };
 
 const ENDPOINTS = [
@@ -97,14 +97,14 @@ const DocsPage = () => (
         API <span style={{ color: "#1eff00" }}>Reference</span>
       </h1>
       <p className="mt-4 max-w-xl text-base leading-7 text-zinc-400">
-        The AltStore REST API lets you automate everything: create listings, upload APKs, read
+        The Appia REST API lets you automate everything: create listings, upload APKs, read
         analytics, and manage your developer account programmatically.
       </p>
 
       {/* Quick info pills */}
       <div className="mt-8 flex flex-wrap gap-3">
         {[
-          { label: "Base URL", value: "https://api.altstore.eu" },
+          { label: "Base URL", value: "https://api.appia.eu" },
           { label: "Auth", value: "Bearer JWT" },
           { label: "Format", value: "JSON" },
           { label: "Version", value: "v1" },
@@ -228,10 +228,10 @@ const DocsPage = () => (
             <p className="mt-2 text-sm text-zinc-600">
               In the meantime, reach us at{" "}
               <a
-                href="mailto:api@altstore.eu"
+                href="mailto:api@appia.eu"
                 className="text-white underline underline-offset-2 hover:text-[#1eff00]"
               >
-                api@altstore.eu
+                api@appia.eu
               </a>
             </p>
           </div>

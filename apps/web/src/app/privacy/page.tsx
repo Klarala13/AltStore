@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How AltStore collects, uses, and protects your personal data in compliance with GDPR and EU law.",
+    "How Appia collects, uses, and protects your personal data in compliance with GDPR and EU law.",
 };
 
 const LAST_UPDATED = "21 February 2026";
-const CONTACT_EMAIL = "privacy@altstore.eu";
-const CONTROLLER = "AltStore EU S.L.";
+const CONTACT_EMAIL = "privacy@appia.eu";
+const CONTROLLER = "Appia EU S.L.";
 const CONTROLLER_ADDRESS = "Calle Gran Vía 28, 28013 Madrid, Spain";
 
 const PrivacyPolicyPage = () => (
@@ -26,7 +26,7 @@ const PrivacyPolicyPage = () => (
       <LegalBody>
         <Section title="1. Who We Are">
           <p>
-            AltStore is operated by <strong>{CONTROLLER}</strong>, {CONTROLLER_ADDRESS}{" "}
+            Appia is operated by <strong>{CONTROLLER}</strong>, {CONTROLLER_ADDRESS}{" "}
             (&ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;). We are the data controller
             responsible for your personal data under the EU General Data Protection Regulation
             (GDPR) and applicable Spanish and EU data protection law.
@@ -118,7 +118,7 @@ const PrivacyPolicyPage = () => (
 
         <Section title="3. Cookies and Tracking">
           <p>
-            AltStore uses <strong>no third-party advertising or analytics cookies</strong>. We set a
+            Appia uses <strong>no third-party advertising or analytics cookies</strong>. We set a
             single first-party session cookie strictly necessary for authenticated sessions (
             <code>next-auth.session-token</code>). No consent banner is required for this cookie
             under ePrivacy Directive Art. 5(3) because it is strictly necessary.
@@ -259,8 +259,8 @@ const PrivacyPolicyPage = () => (
             role-based access control; automated security scanning of all uploaded binaries; and
             regular penetration testing. Despite these measures no system is perfectly secure — if
             you discover a vulnerability, please report it responsibly to{" "}
-            <a href="mailto:security@altstore.eu" className="text-accent underline">
-              security@altstore.eu
+            <a href="mailto:security@appia.eu" className="text-accent underline">
+              security@appia.eu
             </a>
             .
           </p>
@@ -268,7 +268,7 @@ const PrivacyPolicyPage = () => (
 
         <Section title="9. Children">
           <p>
-            AltStore is not directed at children under 16. We do not knowingly collect personal data
+            Appia is not directed at children under 16. We do not knowingly collect personal data
             from anyone under 16. If you believe a child has provided us with personal data, contact
             us immediately at{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-accent underline">

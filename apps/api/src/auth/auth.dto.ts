@@ -1,5 +1,5 @@
 import { IsEmail, IsString, IsEnum, IsOptional, Length } from "class-validator";
-import { DeveloperType } from "@altstore/db";
+import { DeveloperType } from "@appia/db";
 
 export enum SocialProvider {
   GOOGLE = "google",

@@ -6,7 +6,7 @@ import { MOCK_APPS } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: "New Releases",
-  description: "The latest apps added to AltStore — EU's DMA-compliant app marketplace.",
+  description: "The latest apps added to Appia — EU's DMA-compliant app marketplace.",
 };
 
 // In production this would be sorted by createdAt desc from the API.
@@ -32,7 +32,7 @@ const NewReleasesPage = () => (
         Just <span style={{ color: "#1eff00" }}>Added</span>
       </h1>
       <p className="mt-3 max-w-md text-base text-zinc-400">
-        The most recently published apps on AltStore — all virus-scanned before listing.
+        The most recently published apps on Appia — all virus-scanned before listing.
       </p>
     </section>
 

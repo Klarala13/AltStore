@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { AuthForm } from "@/components/AuthForm";
 
 export const metadata: Metadata = {
-  title: "Create Account — AltStore",
-  description: "Create your AltStore account.",
+  title: "Create Account — Appia",
+  description: "Create your Appia account.",
 };
 
 const RegisterPage = () => {

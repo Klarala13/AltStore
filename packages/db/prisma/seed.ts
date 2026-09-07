@@ -4,10 +4,10 @@
  * Seed script — inserts TicTacToe80s as a ready-to-download fixture.
  *
  * Run from the repo root:
- *   pnpm --filter @altstore/db db:seed
+ *   pnpm --filter @appia/db db:seed
  *
  * What it does:
- *   1. Upserts a demo Developer account (seed@altstore.dev / AltStore2026!)
+ *   1. Upserts a demo Developer account (seed@appia.dev / Appia2026!)
  *   2. Upserts the TicTacToe80s App record (status ACTIVE)
  *   3. Upserts the v1.0.0 Version record with production-ready APK metadata
  *      (status APPROVED — skips VirusTotal for local testing)
@@ -19,7 +19,7 @@ import * as crypto from "crypto";
 const prisma = new PrismaClient();
 
 const APK_FILE_KEY =
-  process.env.SEED_APK_FILE_KEY ?? "apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk";
+  process.env.SEED_APK_FILE_KEY ?? "apps/com.appia.tictactoe80s/1.0.0/TicTacToe80s.apk";
 const APP_ICON_URL = "/apps/tictactoe80s/icon.svg";
 const APP_COVER_URL = "/apps/tictactoe80s/cover.svg";
 const APK_SIZE_BYTES = BigInt(process.env.SEED_APK_FILE_SIZE ?? "60807176");
@@ -28,7 +28,7 @@ const APK_SHA256 =
 
 const SNAKE_APK_FILE_KEY =
   process.env.SEED_SNAKE_APK_FILE_KEY ??
-  "apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk";
+  "apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk";
 const SNAKE_APP_ICON_URL = "/apps/snakearcade80s/icon.svg";
 const SNAKE_APP_COVER_URL = "/apps/snakearcade80s/cover.svg";
 const SNAKE_APK_SIZE_BYTES = BigInt(process.env.SEED_SNAKE_APK_FILE_SIZE ?? "19177809");
@@ -43,14 +43,14 @@ async function main() {
   // 1. Developer
   // Hash password with scrypt (Node built-in, no extra dependency)
   const salt = crypto.randomBytes(16).toString("hex");
-  const derivedKey = crypto.scryptSync("AltStore2026!", salt, 64).toString("hex");
+  const derivedKey = crypto.scryptSync("Appia2026!", salt, 64).toString("hex");
   const passwordHash = `scrypt:${salt}:${derivedKey}`;
   const developer = await prisma.developer.upsert({
-    where: { email: "seed@altstore.dev" },
+    where: { email: "seed@appia.dev" },
     update: {},
     create: {
-      email: "seed@altstore.dev",
-      name: "AltStore Seed",
+      email: "seed@appia.dev",
+      name: "Appia Seed",
       passwordHash,
       type: "INDIVIDUAL",
       country: "EU",
@@ -62,7 +62,7 @@ async function main() {
 
   // 2. App
   const app = await prisma.app.upsert({
-    where: { bundleId: "com.altstore.tictactoe80s" },
+    where: { bundleId: "com.appia.tictactoe80s" },
     update: {
       slug: "tictactoe80s",
       name: "TicTacToe 80s",
@@ -73,14 +73,14 @@ async function main() {
       iconUrl: APP_ICON_URL,
       screenshots: [APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://altstore.dev/privacy",
-      websiteUrl: "https://github.com/altstore/tictactoe80s",
+      privacyUrl: "https://appia.dev/privacy",
+      websiteUrl: "https://github.com/appia/tictactoe80s",
       status: "ACTIVE",
     },
     create: {
       slug: "tictactoe80s",
       name: "TicTacToe 80s",
-      bundleId: "com.altstore.tictactoe80s",
+      bundleId: "com.appia.tictactoe80s",
       developerId: developer.id,
       category: "GAMES",
       description:
@@ -89,8 +89,8 @@ async function main() {
       iconUrl: APP_ICON_URL,
       screenshots: [APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://altstore.dev/privacy",
-      websiteUrl: "https://github.com/altstore/tictactoe80s",
+      privacyUrl: "https://appia.dev/privacy",
+      websiteUrl: "https://github.com/appia/tictactoe80s",
       status: "ACTIVE",
     },
   });
@@ -130,7 +130,7 @@ async function main() {
 
   // 4. Snake app
   const snakeApp = await prisma.app.upsert({
-    where: { bundleId: "com.altstore.snakearcade80s" },
+    where: { bundleId: "com.appia.snakearcade80s" },
     update: {
       slug: "snakearcade80s",
       name: "Snake Arcade 80s",
@@ -141,13 +141,13 @@ async function main() {
       iconUrl: SNAKE_APP_ICON_URL,
       screenshots: [SNAKE_APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://altstore.dev/privacy",
+      privacyUrl: "https://appia.dev/privacy",
       status: "ACTIVE",
     },
     create: {
       slug: "snakearcade80s",
       name: "Snake Arcade 80s",
-      bundleId: "com.altstore.snakearcade80s",
+      bundleId: "com.appia.snakearcade80s",
       developerId: developer.id,
       category: "GAMES",
       description:
@@ -156,7 +156,7 @@ async function main() {
       iconUrl: SNAKE_APP_ICON_URL,
       screenshots: [SNAKE_APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://altstore.dev/privacy",
+      privacyUrl: "https://appia.dev/privacy",
       status: "ACTIVE",
     },
   });

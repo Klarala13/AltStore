@@ -1,5 +1,5 @@
 {
-  "name": "@altstore/web",
+  "name": "@appia/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@altstore/db": "workspace:*",
-    "@altstore/types": "workspace:*",
+    "@appia/db": "workspace:*",
+    "@appia/types": "workspace:*",
     "embla-carousel-react": "^8.6.0",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

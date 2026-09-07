@@ -12,7 +12,7 @@ export const SiteHeader = () => (
   <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/50 backdrop-blur-sm">
     <div className="mx-4 flex items-center justify-between py-4 md:mx-16 lg:mx-24 xl:mx-32">
       <Link href="/" className="font-display text-lg font-bold tracking-tight text-white">
-        AltStore
+        Appia
       </Link>
       <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
         <NavLink href="/">Apps</NavLink>

@@ -1,5 +1,5 @@
 import { Inject, Logger } from "@nestjs/common";
-import type { Prisma } from "@altstore/db";
+import type { Prisma } from "@appia/db";
 import { Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
 import { PrismaService } from "../prisma/prisma.service";

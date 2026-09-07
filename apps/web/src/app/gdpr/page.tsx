@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "GDPR — Your Data Rights",
   description:
-    "Understand and exercise your rights under the EU General Data Protection Regulation (GDPR) when using AltStore.",
+    "Understand and exercise your rights under the EU General Data Protection Regulation (GDPR) when using Appia.",
 };
 
 const LAST_UPDATED = "21 February 2026";
-const CONTACT_EMAIL = "privacy@altstore.eu";
-const CONTROLLER = "AltStore EU S.L.";
+const CONTACT_EMAIL = "privacy@appia.eu";
+const CONTROLLER = "Appia EU S.L.";
 const CONTROLLER_ADDRESS = "Calle Gran Vía 28, 28013 Madrid, Spain";
 
 const GdprPage = () => (
@@ -17,7 +17,7 @@ const GdprPage = () => (
       <LegalHeader
         eyebrow="Legal"
         title="Your Data Rights"
-        subtitle="The GDPR gives you meaningful control over your personal data. This page explains each right and exactly how to exercise it with AltStore."
+        subtitle="The GDPR gives you meaningful control over your personal data. This page explains each right and exactly how to exercise it with Appia."
         lastUpdated={LAST_UPDATED}
       />
 
@@ -126,7 +126,7 @@ const GdprPage = () => (
 
         <Section title="Automated Decision-Making and Profiling">
           <p>
-            AltStore does <strong>not</strong> engage in solely automated decision-making (including
+            Appia does <strong>not</strong> engage in solely automated decision-making (including
             profiling) that produces legal effects or similarly significantly affects you, as
             described in Art. 22 GDPR.
           </p>
@@ -393,7 +393,7 @@ const RIGHTS: Right[] = [
     article: "Art. 22",
     title: "Automated Decisions",
     description:
-      "You have the right not to be subject to decisions based solely on automated processing that produce significant effects on you. AltStore does not make such decisions about users.",
+      "You have the right not to be subject to decisions based solely on automated processing that produce significant effects on you. Appia does not make such decisions about users.",
     howTo: "Contact us if you believe an automated decision has affected you.",
     icon: <ShieldIcon />,
   },

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { getSiteUrl } from "@/lib/site-url";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://altstore.eu";
+const SITE_URL = getSiteUrl();
 
 async function fetchAllAppSlugs(): Promise<string[]> {
   try {

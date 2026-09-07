@@ -1,4 +1,7 @@
-# AltStore — tareas para cerrar el MVP
+# Appia — tareas para cerrar el MVP
+
+> El proyecto se llamaba AltStore. Se renombró a **Appia** el 7 de septiembre de 2026. Donde veas el nombre viejo aquí es porque sigue siendo el nombre real de
+> algo que existe: el repo, la URL de Vercel o el bucket de R2.
 
 Estado a **4 de septiembre de 2026**, después de probar producción como usuario.
 Cada tarjeta lleva quién puede hacerla: 🔑 necesita una credencial que solo
@@ -75,11 +78,16 @@ El fichero está en el portátil y **coincide exacto** con lo que espera el seed
   sha256 a370d642eae4c7f6fada3cf308ba6789b936b4a358f6a5a46ae7d8358e0a136c
 ```
 
-Tiene que quedar en el bucket `altstore-apks` con esta clave exacta:
+Con el cambio de nombre, **las claves se mueven**: llevan el `bundleId` dentro.
+Así que ahora hay que subir **los dos** APK, no solo el de Snake. El bucket sigue
+llamándose `altstore-apks` (R2 no permite renombrar; es interno y no lo ve nadie).
 
 ```
-apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk
+apps/com.appia.tictactoe80s/1.0.0/TicTacToe80s.apk
+apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk
 ```
+
+Las claves `com.altstore.*` quedan huérfanas y se pueden borrar.
 
 Hay script: `./scripts/upload-seed-apks.sh` (comprueba el sha256 antes de subir
 y no sobreescribe nada). O arrastrarlo desde el panel de Cloudflare R2.
@@ -89,17 +97,18 @@ y no sobreescribe nada). O arrastrarlo desde el panel de Cloudflare R2.
 > `SCANNING`, no toca la clave que el seed ya dio por publicada. Y además ese
 > camino está colgado hasta que haya Redis (tarea 2).
 
-### 5. Poner `NEXT_PUBLIC_SITE_URL` en Vercel 🔑
+### 5. ~~Poner `NEXT_PUBLIC_SITE_URL`~~ — ya no urge ✅
 
-Sin ella, el código cae a `https://altstore.eu`. Ese dominio existe pero **no es
-vuestro**: es una página de aparcamiento (`91.195.241.232`, HTTP 403).
+El fallo real no era que faltara la variable: era que el código caía a un dominio
+**escrito a mano que no era nuestro** (`altstore.eu`, aparcado por un tercero), y
+mandaba a Google ahí.
 
-Ahora mismo `/sitemap.xml` y los `canonical` de todas las fichas mandan a Google
-a un dominio de otro. Ponla a `https://altstore-nu.vercel.app` hasta que haya
-dominio propio.
+Ahora `apps/web/src/lib/site-url.ts` no adivina ningún dominio: usa
+`NEXT_PUBLIC_SITE_URL` si está, y si no el dominio que Vercel inyecta solo. Lo
+mismo en el formulario de alta de app.
 
-De paso: `apps/web/src/app/dashboard/apps/new/NewAppForm.tsx` tiene escrito a
-mano `https://altstore.vercel.app/privacy`. Tampoco es el dominio real. 🤖
+Poner la variable sigue siendo lo correcto cuando haya dominio propio. Ya no es
+un incendio.
 
 ---
 
@@ -127,7 +136,7 @@ Decidir si entran en el MVP o se quitan de la pantalla.
 
 ## 🟠 Marca e imagen
 
-### 5b. Cambiar el nombre: «AltStore» ya existe 🔑
+### 5b. ~~Cambiar el nombre~~ — hecho en código ✅
 
 No es un homónimo cualquiera. **AltStore PAL es un marketplace alternativo de
 apps en la UE bajo la DMA**: mismo nombre, mismo sector, misma normativa. Encaja
@@ -149,7 +158,7 @@ instalar, y las claves de R2 los llevan dentro de la ruta.
 Ahora mismo el coste del cambio es bajo: dos apps de prueba y ningún usuario. En
 un mes, no.
 
-### 5c. Poner las portadas de las apps 🤖
+### 5c. ~~Poner las portadas de las apps~~ — hecho ✅
 
 Las tarjetas de la home enseñan una letra gigante en vez de la portada. Los
 iconos pequeños sí salen, así que no es un problema de ficheros.

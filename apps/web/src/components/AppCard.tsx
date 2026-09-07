@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useId } from "react";
-import type { AppCardDto } from "@altstore/types";
+import type { AppCardDto } from "@appia/types";
 import { TiltWrapper } from "@/components/TiltWrapper";
 
 // ---------------------------------------------------------------------------

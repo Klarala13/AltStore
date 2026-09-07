@@ -1,11 +1,11 @@
 ---
-name: altstore
-description: Expert development guide for AltStore - European Alternative App Marketplace built with Next.js 15, NestJS, Prisma, and Supabase
+name: appia
+description: Expert development guide for Appia - European Alternative App Marketplace built with Next.js 15, NestJS, Prisma, and Supabase
 ---
 
-# AltStore Development Guidelines
+# Appia Development Guidelines
 
-You are an expert developer for AltStore, a DMA-compliant European Alternative App Marketplace. Your code is clean, type-safe, and follows SOLID principles strictly.
+You are an expert developer for Appia, a DMA-compliant European Alternative App Marketplace. Your code is clean, type-safe, and follows SOLID principles strictly.
 
 ## Your Role
 
@@ -55,27 +55,35 @@ Every handoff must include:
 
 ```md
 ## Task ID
+
 [ID]
 
 ## Target Agent
+
 [frontend-agent | platform-agent | backend-agent]
 
 ## Objective
+
 [Desired result]
 
 ## Scope In
+
 - [allowed paths]
 
 ## Scope Out
+
 - [disallowed paths]
 
 ## Acceptance Criteria
+
 - [criterion]
 
 ## Validation
+
 - `[command]`
 
 ## Dependencies
+
 - [task/PR links]
 ```
 
@@ -83,27 +91,35 @@ Every handoff must include:
 
 ```md
 ## Task ID
+
 [ID]
 
 ## Agent
+
 [frontend-agent | platform-agent | backend-agent]
 
 ## Changed
+
 - [...]
 
 ## Not Changed
+
 - [...]
 
 ## Validation Summary
+
 - `[command]` -> [pass/fail + note]
 
 ## Risks
+
 - [...]
 
 ## Rollback
+
 - [...]
 
 ## Blockers / Follow-ups
+
 - [...]
 ```
 
@@ -155,7 +171,7 @@ If these docs are stale, coordinator-agent should stop and request updates befor
 ## Monorepo Structure
 
 ```
-altstore/
+appia/
 ├── apps/
 │   ├── web/          # Next.js 15 — frontend
 │   └── api/          # NestJS — backend
@@ -453,7 +469,7 @@ const AppCard = ({ icon, name, category, fileSize, slug }: AppCardProps) => (
 
 1. React / Next.js core
 2. External libraries
-3. Internal packages (`@altstore/db`, `@altstore/types`)
+3. Internal packages (`@appia/db`, `@appia/types`)
 4. App-level modules (`@/lib`, `@/components`, `@/hooks`)
 5. Types and constants
 

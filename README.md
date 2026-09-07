@@ -1,4 +1,4 @@
-# AltStore
+# Appia
 
 European Alternative App Marketplace — DMA-compliant platform for distributing Android (and iOS in future phases) applications in the EU.
 
@@ -6,7 +6,7 @@ European Alternative App Marketplace — DMA-compliant platform for distributing
 
 ## Overview
 
-AltStore is a marketplace that allows developers to distribute their apps outside the official stores, in compliance with the EU Digital Markets Act (DMA) and GDPR. It provides automated APK scanning via VirusTotal, secure signed download URLs, and a clean, minimalist interface inspired by apple.com.
+Appia is a marketplace that allows developers to distribute their apps outside the official stores, in compliance with the EU Digital Markets Act (DMA) and GDPR. It provides automated APK scanning via VirusTotal, secure signed download URLs, and a clean, minimalist interface inspired by apple.com.
 
 ---
 
@@ -30,7 +30,7 @@ AltStore is a marketplace that allows developers to distribute their apps outsid
 ## Project Structure
 
 ```
-altstore/
+appia/
 ├── apps/
 │   ├── web/          # Next.js 15 frontend
 │   └── api/          # NestJS backend

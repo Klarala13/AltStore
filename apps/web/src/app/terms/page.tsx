@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "The terms and conditions governing your use of the AltStore EU alternative app marketplace.",
+    "The terms and conditions governing your use of the Appia EU alternative app marketplace.",
 };
 
 const LAST_UPDATED = "21 February 2026";
-const CONTACT_EMAIL = "legal@altstore.eu";
-const CONTROLLER = "AltStore EU S.L.";
+const CONTACT_EMAIL = "legal@appia.eu";
+const CONTROLLER = "Appia EU S.L.";
 const CONTROLLER_ADDRESS = "Calle Gran Vía 28, 28013 Madrid, Spain";
 
 const TermsPage = () => (
@@ -17,7 +17,7 @@ const TermsPage = () => (
       <LegalHeader
         eyebrow="Legal"
         title="Terms of Service"
-        subtitle="Please read these terms carefully before using AltStore. By accessing or using the platform you agree to be bound by them."
+        subtitle="Please read these terms carefully before using Appia. By accessing or using the platform you agree to be bound by them."
         lastUpdated={LAST_UPDATED}
       />
 
@@ -28,8 +28,8 @@ const TermsPage = () => (
           <p>
             These Terms of Service (&ldquo;Terms&rdquo;) constitute a legally binding agreement
             between you (&ldquo;User&rdquo;, &ldquo;you&rdquo;) and <strong>{CONTROLLER}</strong>,{" "}
-            {CONTROLLER_ADDRESS} (&ldquo;AltStore&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). By
-            accessing <strong>altstore.eu</strong> or any associated mobile application or API, you
+            {CONTROLLER_ADDRESS} (&ldquo;Appia&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). By
+            accessing <strong>appia.eu</strong> or any associated mobile application or API, you
             confirm that you are at least 16 years old, have the legal capacity to enter into
             contracts, and agree to these Terms and our{" "}
             <a href="/privacy" className="text-accent underline">
@@ -38,16 +38,16 @@ const TermsPage = () => (
             .
           </p>
           <p>
-            If you are using AltStore on behalf of a legal entity, you represent that you have the
+            If you are using Appia on behalf of a legal entity, you represent that you have the
             authority to bind that entity to these Terms.
           </p>
         </Section>
 
         <Section title="2. Description of the Service">
           <p>
-            AltStore is a Digital Markets Act (DMA)-compliant alternative app marketplace that
+            Appia is a Digital Markets Act (DMA)-compliant alternative app marketplace that
             allows EU users to discover, download, and install applications distributed by
-            third-party developers. AltStore operates as an intermediary platform as defined in
+            third-party developers. Appia operates as an intermediary platform as defined in
             Regulation (EU) 2022/1925 (Digital Markets Act) and Regulation (EU) 2022/2065 (Digital
             Services Act).
           </p>
@@ -78,7 +78,7 @@ const TermsPage = () => (
         </Section>
 
         <Section title="4. Acceptable Use">
-          <p>You agree not to use AltStore to:</p>
+          <p>You agree not to use Appia to:</p>
           <ul>
             <li>
               Upload, distribute, or facilitate the distribution of malware, spyware, or any
@@ -112,7 +112,7 @@ const TermsPage = () => (
 
         <Section title="5. Developer Terms">
           <p>
-            By submitting an application to AltStore, developers additionally agree to the
+            By submitting an application to Appia, developers additionally agree to the
             following:
           </p>
 
@@ -140,13 +140,13 @@ const TermsPage = () => (
           <SubSection title="5.3 DMA Compliance">
             <p>
               Developers who are gatekeepers or operate services covered by the DMA agree not to use
-              AltStore to circumvent obligations imposed on them under Regulation (EU) 2022/1925.
+              Appia to circumvent obligations imposed on them under Regulation (EU) 2022/1925.
             </p>
           </SubSection>
 
           <SubSection title="5.4 Licence Grant">
             <p>
-              By submitting an application you grant AltStore a non-exclusive, royalty-free,
+              By submitting an application you grant Appia a non-exclusive, royalty-free,
               worldwide licence to: host, store, reproduce, and distribute the binary and associated
               metadata solely for the purpose of operating the marketplace; display screenshots and
               icons in search results, category pages, and promotional materials; and generate QR
@@ -165,10 +165,10 @@ const TermsPage = () => (
 
         <Section title="6. Intellectual Property">
           <p>
-            All intellectual property in the AltStore platform — including but not limited to the
+            All intellectual property in the Appia platform — including but not limited to the
             source code, design system, trademarks, and documentation — is owned by {CONTROLLER} or
             its licensors. The platform source code is made available under an open-source licence
-            (see the repository for details); this does not grant you any rights to the AltStore
+            (see the repository for details); this does not grant you any rights to the Appia
             name, logo, or brand assets.
           </p>
           <p>
@@ -179,7 +179,7 @@ const TermsPage = () => (
 
         <Section title="7. Disclaimer of Warranties">
           <p>
-            To the maximum extent permitted by EU consumer protection law, AltStore is provided
+            To the maximum extent permitted by EU consumer protection law, Appia is provided
             &ldquo;as is&rdquo; and &ldquo;as available&rdquo; without warranty of any kind, express
             or implied, including but not limited to warranties of merchantability, fitness for a
             particular purpose, or non-infringement.
@@ -198,14 +198,14 @@ const TermsPage = () => (
 
         <Section title="8. Limitation of Liability">
           <p>
-            To the fullest extent permitted by applicable law, AltStore shall not be liable for: (a)
+            To the fullest extent permitted by applicable law, Appia shall not be liable for: (a)
             any indirect, incidental, special, consequential, or punitive damages; (b) loss of data,
             profits, goodwill, or business opportunity; arising out of or in connection with your
             use of or inability to use the platform or any application distributed through it.
           </p>
           <p>
             Our total aggregate liability to you for any cause of action shall not exceed the
-            greater of €100 or the amount paid by you to AltStore in the 12 months preceding the
+            greater of €100 or the amount paid by you to Appia in the 12 months preceding the
             event giving rise to the claim.
           </p>
           <p>
@@ -216,7 +216,7 @@ const TermsPage = () => (
 
         <Section title="9. Indemnification">
           <p>
-            Developers agree to indemnify, defend, and hold harmless AltStore and its officers,
+            Developers agree to indemnify, defend, and hold harmless Appia and its officers,
             employees, and agents from and against any claims, damages, liabilities, costs, and
             expenses (including reasonable legal fees) arising from: (a) any application you submit
             or distribute; (b) your breach of these Terms; (c) your violation of any third-party

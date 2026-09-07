@@ -1,10 +1,10 @@
 {
-  "name": "@altstore/api",
+  "name": "@appia/api",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "nest start --watch",
-    "build": "pnpm --filter @altstore/types build && nest build",
+    "build": "pnpm --filter @appia/types build && nest build",
     "start": "node dist/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "typecheck": "tsc --noEmit",
@@ -12,8 +12,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@altstore/db": "workspace:*",
-    "@altstore/types": "workspace:*",
+    "@appia/db": "workspace:*",
+    "@appia/types": "workspace:*",
     "@aws-sdk/client-s3": "^3.999.0",
     "@aws-sdk/s3-request-presigner": "^3.999.0",
     "@nestjs/bull": "^11.0.4",

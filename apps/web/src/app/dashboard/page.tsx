@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type { Route } from "next";
 import { authOptions } from "@/lib/auth";
-import type { AppStatus, DeveloperAppListDto, DeveloperAppSummaryDto } from "@altstore/types";
+import type { AppStatus, DeveloperAppListDto, DeveloperAppSummaryDto } from "@appia/types";
 
 // ---------------------------------------------------------------------------
 // Status badge

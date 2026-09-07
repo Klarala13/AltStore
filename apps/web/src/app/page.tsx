@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import type { AppCardDto } from "@altstore/types";
+import type { AppCardDto } from "@appia/types";
 import { AppCard } from "@/components/AppCard";
 
 async function getApps(): Promise<AppCardDto[]> {
@@ -380,9 +380,9 @@ const FeaturesSection = () => (
 
 const FAQ_ITEMS = [
   {
-    question: "Is AltStore legal in the EU?",
+    question: "Is Appia legal in the EU?",
     answer:
-      "Yes. AltStore operates under the EU Digital Markets Act (DMA), which requires Apple and Google to allow alternative app marketplaces in the European Union.",
+      "Yes. Appia operates under the EU Digital Markets Act (DMA), which requires Apple and Google to allow alternative app marketplaces in the European Union.",
   },
   {
     question: "How do you ensure apps are safe?",
@@ -402,7 +402,7 @@ const FAQ_ITEMS = [
   {
     question: "Is the source code available?",
     answer:
-      "Yes. AltStore is fully open source. You can inspect the code, submit issues, and contribute at our GitHub repository.",
+      "Yes. Appia is fully open source. You can inspect the code, submit issues, and contribute at our GitHub repository.",
   },
 ];
 
@@ -418,7 +418,7 @@ const FaqSection = () => (
           Asked Questions.
         </h2>
         <p className="mt-5 max-w-xs text-sm leading-6 text-zinc-400">
-          Everything you need to know about AltStore, app safety, and how we protect your privacy.
+          Everything you need to know about Appia, app safety, and how we protect your privacy.
         </p>
       </div>
 
