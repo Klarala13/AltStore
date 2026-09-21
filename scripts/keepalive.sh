@@ -24,6 +24,8 @@ set -euo pipefail
 CURL_OPTS=(--silent --show-error --location --max-time 30 --retry 3 --retry-delay 5 --retry-all-errors)
 
 fail=0
+supabase_fail=0
+api_fail=0
 
 # Un secret con una URL que no es http se veia antes como "HTTP 000000" tras
 # tres reintentos de curl. Se comprueba la forma antes de llamar.
@@ -50,7 +52,7 @@ ping_url() {
       echo "     $code es rechazo de credenciales, no que el servicio este caido." >&2
       echo "     Revisa la clave que usa este ping." >&2
     fi
-    fail=1
+    return 1
   fi
 }
 
@@ -112,18 +114,42 @@ ping_supabase() {
     echo "     de linea: un \\n al final basta para que Supabase la rechace." >&2
   fi
   fail=1
+  supabase_fail=1
 }
 
 ping_supabase
 
+api_checked=0
 if [[ -n "${API_URL:-}" ]]; then
+  api_checked=1
   if require_http_url API_URL "$API_URL"; then
-    ping_url "api /apps" "${API_URL%/}/apps?limit=1"
+    ping_url "api /apps" "${API_URL%/}/apps?limit=1" || { fail=1; api_fail=1; }
   else
     fail=1
+    api_fail=1
   fi
 else
   echo "SKIP api /apps (API_URL no definida)"
+fi
+
+# Las dos comprobaciones son independientes y fallan por motivos distintos. Con un
+# unico OK/KO, un API caido tapa el estado de la base de datos: asi se perdieron 11
+# dias sin ver que Supabase estaba pausado. El resumen dice siempre cual es cual.
+supabase_state="OK"; [[ "$supabase_fail" == "1" ]] && supabase_state="FALLA"
+if [[ "$api_checked" == "0" ]]; then
+  api_state="SKIP"
+else
+  api_state="OK"; [[ "$api_fail" == "1" ]] && api_state="FALLA"
+fi
+
+echo "----"
+echo "RESUMEN  supabase=${supabase_state}  api=${api_state}"
+
+if [[ "$supabase_fail" == "1" ]]; then
+  echo "::error title=Supabase no responde::La base de datos es lo urgente: sin ella el API no arranca."
+fi
+if [[ "$api_fail" == "1" ]]; then
+  echo "::error title=API no responde::Railway. No dice nada sobre el estado de la base de datos."
 fi
 
 exit "$fail"
