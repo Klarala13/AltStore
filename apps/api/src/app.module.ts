@@ -11,6 +11,7 @@ import { SecurityModule } from "./security/security.module";
 import { DownloadsModule } from "./downloads/downloads.module";
 import { AdminModule } from "./admin/admin.module";
 import { RatingsModule } from "./ratings/ratings.module";
+import { SubmissionsModule } from "./submissions/submissions.module";
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { RatingsModule } from "./ratings/ratings.module";
     DownloadsModule, // Presigned URL + QR code + download log
     AdminModule, // Admin moderation panel
     RatingsModule, // Consumer ratings + avgRating recompute
+    SubmissionsModule, // Accountless app submission
   ],
 })
 export class AppModule {}

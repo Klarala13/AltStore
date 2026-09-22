@@ -1,18 +1,13 @@
 import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from "@nestjs/common";
-import * as crypto from "crypto";
 import * as QRCode from "qrcode";
 import { PrismaService } from "../prisma/prisma.service";
 import { StorageProvider, STORAGE_PROVIDER } from "../storage/storage.provider";
 import { RequestDownloadDto } from "./downloads.dto";
 import { ConfigService } from "@nestjs/config";
+import { hashIp } from "../common/hash-ip";
 
 /** TTL for presigned R2 download URLs (5 minutes) */
 const SIGNED_URL_TTL = 300;
-
-/** GDPR: monthly rotating salt — stored in env, rotated externally */
-function hashIp(ip: string, salt: string): string {
-  return crypto.createHash("sha256").update(`${salt}:${ip}`).digest("hex");
-}
 
 @Injectable()
 export class DownloadsService {

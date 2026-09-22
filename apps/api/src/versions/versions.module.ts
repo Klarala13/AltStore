@@ -9,5 +9,6 @@ import { SCAN_QUEUE } from "../security/security.constants";
   imports: [StorageModule, BullModule.registerQueue({ name: SCAN_QUEUE })],
   controllers: [VersionsController],
   providers: [VersionsService],
+  exports: [VersionsService],
 })
 export class VersionsModule {}
