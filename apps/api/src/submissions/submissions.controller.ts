@@ -15,6 +15,7 @@ import { SubmitAppDto } from "./submissions.dto";
 import { VersionsService } from "../versions/versions.service";
 import { CreateVersionDto } from "../versions/versions.dto";
 import { RateLimit, RateLimitGuard } from "../common/guards/rate-limit.guard";
+import { InternalKeyGuard } from "../common/guards/internal-key.guard";
 
 const MAX_APK_BYTES = 500 * 1024 * 1024;
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -36,14 +37,14 @@ export class SubmissionsController {
   ) {}
 
   @Post()
-  @UseGuards(RateLimitGuard)
+  @UseGuards(InternalKeyGuard, RateLimitGuard)
   @RateLimit({ limit: 5, windowMs: ONE_HOUR_MS })
   submit(@Body() dto: SubmitAppDto) {
     return this.submissionsService.submit(dto);
   }
 
   @Post(":appId/apk")
-  @UseGuards(RateLimitGuard)
+  @UseGuards(InternalKeyGuard, RateLimitGuard)
   @RateLimit({ limit: 5, windowMs: ONE_HOUR_MS })
   @UseInterceptors(
     FileInterceptor("file", {
