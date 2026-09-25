@@ -33,6 +33,7 @@ export const NavLink = ({ href, children }: { href: Route; children: React.React
 const NAV_LINKS: { href: Route; label: string }[] = [
   { href: "/", label: "Apps" },
   { href: "/search", label: "Search" },
+  { href: "/submit", label: "Submit app" },
   { href: "/developers", label: "Developers" },
 ];
 

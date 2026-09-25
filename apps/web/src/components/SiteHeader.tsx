@@ -17,6 +17,7 @@ export const SiteHeader = () => (
       <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
         <NavLink href="/">Apps</NavLink>
         <NavLink href="/search">Search</NavLink>
+        <NavLink href="/submit">Submit app</NavLink>
         <NavLink href="/developers">Developers</NavLink>
       </nav>
       <div className="flex items-center gap-3">

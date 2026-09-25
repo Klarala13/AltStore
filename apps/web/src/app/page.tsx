@@ -96,17 +96,10 @@ const HeroSection = () => (
 
       {/* CTAs */}
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href="/#apps" className="btn-primary px-7 py-3 text-base">
-          Browse Apps
-        </Link>
-        <Link
-          href={"/developers#how-it-works" as Route}
-          className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-7 py-3 text-base font-medium text-white transition-all duration-200 hover:border-zinc-500 hover:bg-white/5"
-        >
-          See How It Works
+        <Link href="/submit" className="btn-primary gap-2 px-7 py-3 text-base">
           <svg
-            width="16"
-            height="16"
+            width="18"
+            height="18"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -115,10 +108,33 @@ const HeroSection = () => (
             strokeLinejoin="round"
             aria-hidden="true"
           >
-            <path d="M7 17L17 7M17 7H7M17 7v10" />
+            <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" />
+            <path d="M20 16v2.5A1.5 1.5 0 0118.5 20h-13A1.5 1.5 0 014 18.5V16" />
           </svg>
+          Upload your app
+        </Link>
+        <Link href="/search" className="btn-secondary gap-2 px-7 py-3 text-base">
+          <svg
+            width="18"
+            height="18"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+          Search for apps
         </Link>
       </div>
+
+      <p className="mt-5 text-sm text-zinc-500">
+        No account needed to publish. Every app is scanned and reviewed first.
+      </p>
 
       {/* Social proof */}
       <div className="mt-10 flex items-center justify-center gap-3">
@@ -397,7 +413,7 @@ const FAQ_ITEMS = [
   {
     question: "How do I publish my app?",
     answer:
-      "Sign in with your developer account, upload your APK, fill in the store listing, and submit for review. Our automated scanner checks the binary immediately. Human review follows within 48 hours.",
+      "You don't need an account. Go to Submit an app, fill in the listing, attach your APK, and you're done. The binary is scanned immediately and a human reviews it before it goes live. If you plan to manage several apps or ship updates over time, create a developer account instead and use the dashboard.",
   },
   {
     question: "Is the source code available?",
