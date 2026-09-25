@@ -17,19 +17,24 @@ Comprobado en producción el **22 de septiembre de 2026** contra
 `https://altstore-nu.vercel.app` y `https://altstoreapi-production.up.railway.app`.
 Cada fila dice cómo se comprobó, no lo que debería pasar.
 
-Producción corre el commit `043c28a` de `main`.
+El envío de apps sin cuenta se documentó el **25 de septiembre de 2026** leyendo
+el código de `b8d5203` y `de23cfc`, no probándolo contra producción. Esa sección
+lo dice donde toca.
+
+`main` está en `d16f2b5`.
 
 ---
 
 ## Resumen
 
-| Plataforma     | Estado                                                                 |
-| -------------- | ---------------------------------------------------------------------- |
-| Supabase       | ✅ Despierto. `GET /apps` devuelve datos reales                        |
-| Vercel (web)   | ✅ Sirve 200 y al día con `main`. La URL lleva el nombre viejo         |
-| Railway (API)  | ✅ Al día. `GET /apps` devuelve las dos apps                           |
-| Cloudflare R2  | ❌ La base de datos apunta a claves viejas. Ninguna subida arregla eso |
-| GitHub Actions | ✅ Keepalive diario, con los dos pings informando por separado         |
+| Plataforma       | Estado                                                                 |
+| ---------------- | ---------------------------------------------------------------------- |
+| Supabase         | ✅ Despierto. `GET /apps` devuelve datos reales                        |
+| Vercel (web)     | ✅ Sirve 200 y al día con `main`. La URL lleva el nombre viejo         |
+| Railway (API)    | ✅ Al día. `GET /apps` devuelve las dos apps                           |
+| Cloudflare R2    | ❌ La base de datos apunta a claves viejas. Ninguna subida arregla eso |
+| GitHub Actions   | ✅ Keepalive diario, con los dos pings informando por separado         |
+| Envío sin cuenta | ⚠️ Construido y con cuatro cerraduras. Sin enlace, nadie llega         |
 
 ---
 
@@ -261,14 +266,30 @@ privada de Railway no lo usa, eso es solo para Upstash. Y la red privada es
 No se puede leer el entorno de Railway desde fuera, así que de estas no sé decir
 si están:
 
-| Variable       | Para qué                                            |
-| -------------- | --------------------------------------------------- |
-| `VT_API_KEY`   | VirusTotal. Sin ella el worker no puede escanear    |
-| `IP_HASH_SALT` | Hash de IPs para RGPD. Por defecto vale `change-me` |
-| `FRONTEND_URL` | CORS. Por defecto `http://localhost:3000`           |
+| Variable       | Para qué                                             |
+| -------------- | ---------------------------------------------------- |
+| `VT_API_KEY`   | VirusTotal. Sin ella el worker no puede escanear     |
+| `IP_HASH_SALT` | Hash de IPs para RGPD **y para el límite de envíos** |
+| `FRONTEND_URL` | CORS. Por defecto `http://localhost:3000`            |
 
-`IP_HASH_SALT` en `change-me` significa que el hash de IP es predecible. Es un
-tema de RGPD, no cosmético.
+`IP_HASH_SALT` es ahora más importante que antes, porque tiene **dos**
+consumidores: el registro de descargas y el limitador de envíos anónimos. Si no
+está, el hash de IP es predecible, y eso es RGPD, no cosmética.
+
+> **Ojo con el valor por defecto: hay tres, y no coinciden.** Este documento
+> decía `change-me`, y era falso en los dos sitios que importan.
+>
+> | Dónde                                                   | Valor               |
+> | ------------------------------------------------------- | ------------------- |
+> | `apps/api/.env.example`                                 | `change-me-monthly` |
+> | `rate-limit.guard.ts` y `downloads.service.ts` (código) | `default-salt`      |
+> | Lo que decía este documento                             | `change-me`         |
+>
+> O sea que el valor con el que corre producción si la variable no está puesta es
+> `default-salt`, no lo que dice el ejemplo. Buscar `change-me` en los logs no
+> habría encontrado nada. Conviene unificarlo en el código para que el fallback
+> sea el mismo sitio que documenta el ejemplo, o directamente que el arranque
+> falle si falta.
 
 `VT_API_KEY` no se puede deducir mirando resultados, y ese es otro problema: si
 el escaneo **falla**, el worker reintenta 3 veces y acaba poniendo `REJECTED`, el
@@ -282,6 +303,80 @@ mismo estado que un fichero infectado. El motivo real solo queda en el
 > pooler IPv4, pero `DIRECT_URL` es el que usan las migraciones. Desde un runner
 > sin IPv6 — GitHub Actions, por ejemplo — una migración fallaría con un error de
 > red que no se parece en nada a la causa.
+
+---
+
+## Enviar una app sin cuenta
+
+Añadido el 22 de septiembre de 2026 (`b8d5203`, endurecido en `de23cfc`). La idea
+es que en el MVP alguien pueda probar la tienda y subir una app **sin registrarse
+ni inventarse una contraseña**.
+
+### Cómo funciona
+
+Son **dos pasos**, porque el APK necesita una app a la que engancharse:
+
+```
+1. POST /api/submissions            → crea la App, devuelve { appId, uploadToken }
+2. POST /api/submissions/:id/apk    → gasta ese token y sube el binario
+```
+
+Las dos rutas de `apps/web` son proxys finos a NestJS. Existen para dos cosas: no
+enseñar `API_URL` al navegador, y **reenviar la dirección del visitante** en
+`X-Forwarded-For`, para que el límite cuente por persona y no vea todos los
+envíos llegando desde Vercel.
+
+El remitente se guarda como un `Developer` **sin `passwordHash`**, que el esquema
+ya permitía, así que esto no necesitó migración. Esa persona nunca inicia sesión.
+
+Nada se salta la moderación: la app nace en `PENDING_REVIEW` y la versión en
+`SCANNING`, igual que una subida autenticada.
+
+### Las cuatro cerraduras
+
+| Qué                | Dónde                       | Detalle                                                     |
+| ------------------ | --------------------------- | ----------------------------------------------------------- |
+| `INTERNAL_API_KEY` | `internal-key.guard.ts`     | Solo pasan llamadas que vengan del front. **Falla cerrado** |
+| Límite por IP      | `rate-limit.guard.ts`       | 5 envíos por hora y por IP hasheada                         |
+| Token de subida    | `submissions.service.ts`    | JWT de 2 h, atado a `appId` y con `purpose: app-submission` |
+| Tamaño             | `submissions.controller.ts` | 500 MB por APK                                              |
+
+El orden importa: el limitador se fía de `X-Forwarded-For`, y esa cabecera se
+puede escribir a mano. Lo que la hace creíble es que `InternalKeyGuard` va
+**antes** y solo deja entrar al front. Sin esa guarda, el límite se salta mandando
+una dirección distinta cada vez. Por eso `de23cfc` no es opcional.
+
+### Lo que hay que saber para operarlo
+
+> **`INTERNAL_API_KEY` pasa a ser crítica.** Antes, si faltaba, fallaban las
+> llamadas internas del web. Ahora además **toda la vía de envío anónimo
+> devuelve 403**, porque la guarda falla cerrado a propósito. Está puesta y
+> funcionando, pero ya no es una variable de segunda.
+
+- **El contador vive en memoria del proceso.** No hay Redis por medio. Dos
+  consecuencias: una segunda instancia del API tendría su propia cuota, y **cada
+  redeploy pone los contadores a cero**. Con una sola instancia en Railway es
+  aceptable, y está comentado en el código; hay que moverlo a Redis antes de
+  escalar en horizontal.
+- **El APK se bufferiza entero en memoria** (`memoryStorage()`) antes de ir a R2.
+  Con el tope en 500 MB, un envío grande es un pico de 500 MB de RAM en el
+  contenedor de Railway. Conviene mirar el plan de memoria antes de invitar a
+  nadie, o bajar el tope.
+- **`maxDuration = 300` en la ruta de Vercel.** Ese número es un techo del plan,
+  no una garantía: en Hobby las funciones se cortan mucho antes, así que una
+  subida grande puede morir en el borde antes de llegar al API. Merece una prueba
+  con un APK de verdad.
+- `JWT_SECRET` ahora también firma los tokens de subida, no solo las sesiones.
+
+### Falta para que alguien lo use
+
+**Nadie puede llegar a la página.** `/submit` existe y funciona, pero no hay ni un
+enlace hacia ella en toda la web: `NAV_LINKS` en
+`apps/web/src/components/SiteNav.tsx` tiene Apps, Search y Developers, y nada
+más. Hoy solo entra quien se sepa la URL de memoria.
+
+Si la idea es que la gente pruebe a subir apps, esto es lo primero, y es un
+cambio de una línea en la navegación.
 
 ---
 
@@ -453,14 +548,18 @@ de calidad es `pnpm typecheck`.
 1. **Decidir el camino de R2** (rápido o correcto, arriba) y pasarme
    `CF_ACCOUNT_ID`, `R2_ACCESS_KEY` y `R2_SECRET_KEY`. Es lo único roto que ve un
    usuario: el botón de descargar de Snake.
-2. Confirmar `IP_HASH_SALT` en Railway. Es RGPD.
-3. Renombrar el proyecto de Vercel con los cinco pasos de arriba, o comprar el
+2. **Enlazar `/submit` desde la navegación.** La vía de envío sin cuenta está
+   construida y protegida, pero no hay ni un enlace hacia ella, así que hoy no la
+   usa nadie. Una línea en `SiteNav.tsx`.
+3. Confirmar `IP_HASH_SALT` en Railway. Es RGPD, y ahora también es lo que separa
+   a dos personas en el límite de envíos.
+4. Renombrar el proyecto de Vercel con los cinco pasos de arriba, o comprar el
    dominio y saltarse la tabla entera.
-4. Activar o quitar los logins de GitHub y Apple. Un botón muerto en la pantalla
+5. Activar o quitar los logins de GitHub y Apple. Un botón muerto en la pantalla
    de registro cuesta usuarios.
-5. Borrar las apps y versiones de prueba: `Claude Test App 1788179706` y
+6. Borrar las apps y versiones de prueba: `Claude Test App 1788179706` y
    `QA Config Check 1788514702`, esta última con dos versiones y sus ficheros
    huérfanos en `uploads/pending/`.
-6. Sacar `packages/db/generated/client` del control de versiones.
-7. Separar `SCAN_FAILED` de `REJECTED`, que es lo que deja confirmar
+7. Sacar `packages/db/generated/client` del control de versiones.
+8. Separar `SCAN_FAILED` de `REJECTED`, que es lo que deja confirmar
    `VT_API_KEY`.
