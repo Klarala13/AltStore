@@ -87,7 +87,7 @@ const Footer = () => (
           <FooterGroup
             title="Developers"
             links={[
-              { label: "Submit App", href: "/developers" },
+              { label: "Submit App", href: "/submit" },
               { label: "API Docs", href: "/docs" as Route },
               { label: "Sign In", href: "/login" },
             ]}
