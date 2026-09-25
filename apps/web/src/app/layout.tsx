@@ -79,17 +79,17 @@ const Footer = () => (
           <FooterGroup
             title="Marketplace"
             links={[
-              { label: "Browse Apps", href: "/" },
+              { label: "Browse apps", href: "/" },
               { label: "Categories", href: "/categories" as Route },
-              { label: "New Releases", href: "/new" as Route },
+              { label: "New releases", href: "/new" as Route },
             ]}
           />
           <FooterGroup
             title="Developers"
             links={[
-              { label: "Submit App", href: "/submit" },
-              { label: "API Docs", href: "/docs" as Route },
-              { label: "Sign In", href: "/login" },
+              { label: "Submit app", href: "/submit" },
+              { label: "API docs", href: "/docs" as Route },
+              { label: "Sign in", href: "/login" },
             ]}
           />
           <FooterGroup
