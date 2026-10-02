@@ -46,7 +46,7 @@ const HeroSection = () => (
       </p>
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href="/dashboard/apps/new" className="btn-primary px-7 py-3 text-base">
+        <Link href="/submit" className="btn-primary px-7 py-3 text-base">
           Submit Your App
         </Link>
         <a
@@ -98,16 +98,16 @@ const HeroSection = () => (
 const STEPS = [
   {
     number: "01",
-    title: "Create a developer account",
+    title: "Submit your app",
     description:
-      "Sign in with your existing account or register as a developer. Verification takes less than a minute — no forms, no documents, no wait.",
-    cta: { label: "Sign in", href: "/login" },
+      "Fill in the listing and attach your APK — no account needed. Shipping several apps or regular updates? Create a free developer account and manage everything from the dashboard.",
+    cta: { label: "Submit app", href: "/submit" },
   },
   {
     number: "02",
-    title: "Upload your APK & fill the listing",
+    title: "Automatic security scan",
     description:
-      "Upload your binary, add screenshots, a description, and a privacy policy URL. Our automated VirusTotal scan runs the moment your file lands — results in under 60 seconds.",
+      "Our VirusTotal scan runs the moment your file lands — results in under 60 seconds. Any positive detection is rejected automatically.",
     cta: null,
   },
   {
@@ -401,7 +401,7 @@ const CtaSection = () => (
         users.
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href="/dashboard/apps/new" className="btn-primary px-8 py-3 text-base">
+        <Link href="/submit" className="btn-primary px-8 py-3 text-base">
           Get started — it&apos;s free
         </Link>
         <Link

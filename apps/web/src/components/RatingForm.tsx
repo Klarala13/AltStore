@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import type { Route } from "next";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface Props {
   appSlug: string;
@@ -9,6 +12,7 @@ interface Props {
 const STARS = [1, 2, 3, 4, 5];
 
 export const RatingForm = ({ appSlug }: Props) => {
+  const { status: sessionStatus } = useSession();
   const [score, setScore] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [title, setTitle] = useState("");
@@ -35,6 +39,20 @@ export const RatingForm = ({ appSlug }: Props) => {
       setStatus("error");
     }
   };
+
+  if (sessionStatus === "unauthenticated") {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-zinc-800 bg-white/[0.02] p-6">
+        <p className="text-sm text-zinc-400">Used this app? Sign in to leave a review.</p>
+        <Link
+          href={`/login?callbackUrl=${encodeURIComponent(`/apps/${appSlug}#reviews`)}` as Route}
+          className="btn-secondary px-4 py-2 text-sm"
+        >
+          Sign in to review
+        </Link>
+      </div>
+    );
+  }
 
   if (status === "success") {
     return (

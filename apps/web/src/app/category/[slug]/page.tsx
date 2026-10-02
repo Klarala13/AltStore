@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppCard } from "@/components/AppCard";
 import type { AppCardDto } from "@appia/types";
@@ -62,16 +63,14 @@ const CategoryPage = async ({ params }: Props) => {
 
   const { items: apps } = await getAppsByCategory(category);
 
-  if (apps.length === 0) notFound();
-
   const label = toLabel(slug);
 
   return (
     <>
       {/* Header */}
       <section className="border-b border-zinc-800 px-6 py-16 md:px-16 lg:px-24 xl:px-32">
-        <a
-          href="/categories"
+        <Link
+          href={"/categories" as Route}
           className="mb-5 inline-flex items-center gap-1.5 text-xs text-zinc-500 transition-colors hover:text-white"
         >
           <svg
@@ -90,7 +89,7 @@ const CategoryPage = async ({ params }: Props) => {
             />
           </svg>
           All Categories
-        </a>
+        </Link>
 
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -101,7 +100,9 @@ const CategoryPage = async ({ params }: Props) => {
               {label} <span style={{ color: "#1eff00" }}>Apps</span>
             </h1>
             <p className="mt-3 text-base text-zinc-400">
-              {apps.length} {apps.length === 1 ? "app" : "apps"} in this category
+              {apps.length === 0
+                ? "No apps in this category yet"
+                : `${apps.length} ${apps.length === 1 ? "app" : "apps"} in this category`}
             </p>
           </div>
         </div>
@@ -109,24 +110,41 @@ const CategoryPage = async ({ params }: Props) => {
 
       {/* Grid */}
       <section className="px-6 py-12 md:px-16 lg:px-24 xl:px-32">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {apps.map((app) => (
-            <AppCard key={app.id} {...app} />
-          ))}
-        </div>
+        {apps.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {apps.map((app) => (
+              <AppCard key={app.id} {...app} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-zinc-800 px-6 py-16 text-center">
+            <p className="text-base font-medium text-zinc-300">No {label.toLowerCase()} apps yet</p>
+            <p className="mt-1 text-sm text-zinc-500">
+              New apps are added every week. Meanwhile, try another category or search.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Link href="/" className="btn-primary px-5 py-2.5 text-sm">
+                Browse all apps
+              </Link>
+              <Link href="/search" className="btn-secondary px-5 py-2.5 text-sm">
+                Search
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Browse other categories */}
         <div className="mt-16 border-t border-zinc-800 pt-10">
           <p className="mb-5 text-sm text-zinc-500">Browse other categories</p>
           <div className="flex flex-wrap gap-3">
             {VALID_CATEGORIES.filter((c) => c !== category).map((c) => (
-              <a
+              <Link
                 key={c}
-                href={`/category/${c.toLowerCase()}`}
+                href={`/category/${c.toLowerCase()}` as Route}
                 className="rounded-full border border-zinc-800 px-4 py-1.5 text-xs font-medium text-zinc-400 transition-all duration-200 hover:border-zinc-600 hover:text-white"
               >
                 {toLabel(c)}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

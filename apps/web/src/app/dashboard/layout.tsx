@@ -55,7 +55,7 @@ const NAV_ITEMS: { href: Route; label: string; icon: React.ReactNode }[] = [
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession(authOptions);
-  if (!session) redirect("/login");
+  if (!session) redirect("/login?callbackUrl=%2Fdashboard");
 
   const developerName = session.user?.name ?? session.user?.email ?? "Developer";
 

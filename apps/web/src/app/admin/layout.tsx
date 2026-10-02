@@ -52,7 +52,7 @@ const NAV_ITEMS: { href: Route; label: string; icon: React.ReactNode }[] = [
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession(authOptions);
 
-  if (!session) redirect("/login");
+  if (!session) redirect("/login?callbackUrl=%2Fadmin");
 
   // Check isAdmin flag embedded in session token
   const isAdmin = (session as { isAdmin?: boolean }).isAdmin;

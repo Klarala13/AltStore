@@ -1,85 +1,79 @@
 "use client";
 
 import { useState } from "react";
+import { useDownloadRequest } from "@/hooks/useDownloadRequest";
 
 interface DownloadActionsProps {
   versionId: string;
   appName: string;
+  fileSize?: string;
 }
 
-interface DownloadResponse {
-  signedUrl: string;
-  qrCode: string;
-}
-
-const DownloadActions = ({ versionId, appName }: DownloadActionsProps) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [payload, setPayload] = useState<DownloadResponse | null>(null);
-
-  const requestDownload = async (): Promise<DownloadResponse | null> => {
-    if (payload) return payload;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/downloads/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ versionId }),
-      });
-
-      const data = (await res.json()) as Partial<DownloadResponse> & { message?: string };
-      if (!res.ok || !data.signedUrl || !data.qrCode) {
-        throw new Error(data.message ?? "Download unavailable");
-      }
-
-      const result: DownloadResponse = { signedUrl: data.signedUrl, qrCode: data.qrCode };
-      setPayload(result);
-      return result;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Download unavailable");
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+const DownloadActions = ({ versionId, appName, fileSize }: DownloadActionsProps) => {
+  const { loading, error, payload, request, download } = useDownloadRequest(versionId);
+  const [started, setStarted] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
 
   const onDownload = async () => {
-    const result = await requestDownload();
-    if (!result) return;
-    window.open(result.signedUrl, "_blank", "noopener,noreferrer");
+    if (await download()) setStarted(true);
   };
 
-  const onQr = async () => {
-    await requestDownload();
+  const onToggleQr = async () => {
+    if (qrOpen) {
+      setQrOpen(false);
+      return;
+    }
+    if (await request()) setQrOpen(true);
   };
 
   return (
     <div className="w-full">
       <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={onDownload} disabled={loading} className="btn-primary">
-          {loading ? "Preparing..." : "Download APK"}
+        <button
+          type="button"
+          onClick={onDownload}
+          disabled={loading}
+          className="btn-primary disabled:cursor-wait disabled:opacity-60"
+        >
+          {loading ? "Preparing…" : `Download APK${fileSize ? ` · ${fileSize}` : ""}`}
         </button>
-        <button type="button" onClick={onQr} disabled={loading} className="btn-secondary">
-          Show QR
+        <button
+          type="button"
+          onClick={onToggleQr}
+          disabled={loading}
+          aria-expanded={qrOpen}
+          aria-controls="download-qr"
+          className="btn-secondary hidden md:inline-flex"
+        >
+          {qrOpen ? "Hide QR" : "Install on phone"}
         </button>
       </div>
 
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      <div aria-live="polite">
+        {error && (
+          <p role="alert" className="mt-3 text-sm text-red-400">
+            {error}
+          </p>
+        )}
 
-      {payload && (
-        <div className="mt-4 inline-flex flex-col items-start rounded-xl border border-zinc-800 bg-zinc-950 p-3">
-          <img src={payload.qrCode} alt={`QR code to download ${appName}`} className="h-40 w-40" />
-          <a
-            href={payload.signedUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 text-xs text-zinc-400 underline underline-offset-2 transition-colors hover:text-white"
-          >
-            Open direct download link
-          </a>
+        {started && !error && (
+          <p className="mt-3 text-sm text-zinc-400">
+            Your download has started. Open the file to install — Android may ask you to allow
+            installs from your browser the first time.
+          </p>
+        )}
+      </div>
+
+      {qrOpen && payload && (
+        <div
+          id="download-qr"
+          className="mt-4 inline-flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-3"
+        >
+          <img src={payload.qrCode} alt={`QR code to download ${appName}`} className="h-36 w-36" />
+          <p className="max-w-[14rem] text-xs leading-5 text-zinc-400">
+            Scan with your phone&apos;s camera to download {appName} directly. The link is valid
+            for a few minutes.
+          </p>
         </div>
       )}
     </div>

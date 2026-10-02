@@ -3,6 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 
 // ---------------------------------------------------------------------------
@@ -41,6 +42,7 @@ export const MobileNav = () => {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
+  const { status } = useSession();
 
   // Close drawer on route change — setState in effect is intentional here
   // (synchronising drawer state with external navigation events)
@@ -160,9 +162,24 @@ export const MobileNav = () => {
 
         {/* Sign-in CTA at bottom */}
         <div className="mt-auto border-t border-zinc-800 px-6 py-6">
-          <Link href="/login" className="btn-primary w-full justify-center">
-            Sign in
-          </Link>
+          {status === "authenticated" ? (
+            <div className="flex flex-col gap-3">
+              <Link href="/dashboard" className="btn-secondary w-full justify-center">
+                My apps
+              </Link>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="text-sm text-zinc-400 transition-colors hover:text-white"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <Link href="/login" className="btn-primary w-full justify-center">
+              Sign in
+            </Link>
+          )}
         </div>
       </div>
     </>

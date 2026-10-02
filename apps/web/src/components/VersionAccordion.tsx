@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { VersionListItemDto } from "@appia/types";
+import { VersionDownloadButton } from "@/components/VersionDownloadButton";
 
 interface Props {
   versions: VersionListItemDto[];
@@ -60,7 +61,7 @@ export const VersionAccordion = ({ versions }: Props) => {
             {isOpen && (
               <div className="border-t border-zinc-800/60 px-5 pb-5 pt-4">
                 <p className="text-sm leading-6 text-zinc-400">{v.changelog}</p>
-                <div className="mt-3 flex items-center justify-between">
+                <div className="mt-3 flex items-center justify-between gap-4">
                   <p className="text-xs text-zinc-600">
                     {v.minOs}
                     {v.publishedAt && (
@@ -75,14 +76,7 @@ export const VersionAccordion = ({ versions }: Props) => {
                       </>
                     )}
                   </p>
-                  <button
-                    type="button"
-                    aria-disabled="true"
-                    title="Download coming soon"
-                    className="btn-secondary cursor-not-allowed px-4 py-2 text-xs opacity-60"
-                  >
-                    Download
-                  </button>
+                  <VersionDownloadButton versionId={v.id} />
                 </div>
               </div>
             )}

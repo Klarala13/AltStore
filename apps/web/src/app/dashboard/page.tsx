@@ -81,7 +81,7 @@ async function getDeveloperApps(accessToken: string): Promise<DeveloperAppSummar
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
-  const accessToken = (session as { accessToken?: string }).accessToken ?? "";
+  const accessToken = (session as { accessToken?: string } | null)?.accessToken ?? "";
   const apps = await getDeveloperApps(accessToken);
 
   return (

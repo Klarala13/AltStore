@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { AuthForm } from "@/components/AuthForm";
+import { safeCallbackUrl } from "@/lib/safe-callback-url";
 
 export const metadata: Metadata = {
   title: "Create Account — Appia",
   description: "Create your Appia account.",
 };
 
-const RegisterPage = () => {
+interface Props {
+  searchParams: Promise<{ callbackUrl?: string | string[] }>;
+}
+
+const RegisterPage = async ({ searchParams }: Props) => {
+  const { callbackUrl } = await searchParams;
   return (
     <div className="relative flex min-h-[80vh] items-center justify-center px-6 py-16">
       <div
@@ -16,7 +22,7 @@ const RegisterPage = () => {
         }}
         aria-hidden="true"
       />
-      <AuthForm defaultMode="register" />
+      <AuthForm defaultMode="register" callbackUrl={safeCallbackUrl(callbackUrl)} />
     </div>
   );
 };

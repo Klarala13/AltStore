@@ -1,14 +1,36 @@
 import type { Metadata } from "next";
 import type { Route } from "next";
 import Link from "next/link";
-import { MOCK_APPS } from "@/lib/mock-data";
+import type { AppCardDto } from "@appia/types";
 
 export const metadata: Metadata = {
   title: "Categories",
   description: "Browse all app categories on Appia — the DMA-compliant EU app marketplace.",
 };
 
-const ALL_CATEGORIES = Array.from(new Set(MOCK_APPS.map((a) => a.category))).sort();
+const ALL_CATEGORIES = [
+  "PRODUCTIVITY",
+  "SOCIAL",
+  "ENTERTAINMENT",
+  "TOOLS",
+  "EDUCATION",
+  "HEALTH",
+  "FINANCE",
+  "GAMES",
+  "PHOTOGRAPHY",
+  "NAVIGATION",
+  "OTHER",
+];
+
+async function getApps(): Promise<{ items: AppCardDto[]; total: number }> {
+  const res = await fetch(`${process.env.API_URL}/apps?limit=100`, {
+    next: { revalidate: 3600 },
+    headers: { "X-Internal-Key": process.env.INTERNAL_API_KEY ?? "" },
+  });
+  if (!res.ok) return { items: [], total: 0 };
+  const data = (await res.json()) as { items?: AppCardDto[]; total?: number };
+  return { items: data.items ?? [], total: data.total ?? data.items?.length ?? 0 };
+}
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   PRODUCTIVITY: (
@@ -149,13 +171,14 @@ const DEFAULT_ICON = (
 
 const toLabel = (cat: string) => cat.charAt(0) + cat.slice(1).toLowerCase();
 
-const CategoriesPage = () => {
+const CategoriesPage = async () => {
+  const { items: apps, total } = await getApps();
   const categoriesWithCount = ALL_CATEGORIES.map((cat) => ({
     slug: cat.toLowerCase(),
     label: toLabel(cat),
-    count: MOCK_APPS.filter((a) => a.category === cat).length,
+    count: apps.filter((a) => a.category === cat).length,
     icon: CATEGORY_ICONS[cat] ?? DEFAULT_ICON,
-  }));
+  })).sort((a, b) => b.count - a.count);
 
   return (
     <>
@@ -165,7 +188,7 @@ const CategoriesPage = () => {
           Browse by <span style={{ color: "#1eff00" }}>Category</span>
         </h1>
         <p className="mt-3 max-w-md text-base text-zinc-400">
-          {MOCK_APPS.length} apps across {ALL_CATEGORIES.length} categories — all virus-scanned, all
+          {total} apps across {ALL_CATEGORIES.length} categories — all virus-scanned, all
           GDPR-compliant.
         </p>
       </section>
@@ -202,7 +225,7 @@ const CategoriesPage = () => {
             </div>
             <div>
               <h2 className="font-display text-base font-semibold text-white">All Apps</h2>
-              <p className="mt-0.5 text-sm text-zinc-500">{MOCK_APPS.length} apps</p>
+              <p className="mt-0.5 text-sm text-zinc-500">{total} apps</p>
             </div>
           </Link>
 
@@ -224,7 +247,7 @@ const CategoriesPage = () => {
               <div>
                 <h2 className="font-display text-base font-semibold text-white">{label}</h2>
                 <p className="mt-0.5 text-sm text-zinc-500">
-                  {count} {count === 1 ? "app" : "apps"}
+                  {count === 0 ? "Coming soon" : `${count} ${count === 1 ? "app" : "apps"}`}
                 </p>
               </div>
             </Link>

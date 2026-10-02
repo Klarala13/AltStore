@@ -79,9 +79,9 @@ const Footer = () => (
           <FooterGroup
             title="Marketplace"
             links={[
-              { label: "Browse apps", href: "/" },
+              { label: "Browse apps", href: "/#apps" as Route },
               { label: "Categories", href: "/categories" as Route },
-              { label: "New releases", href: "/new" as Route },
+              { label: "Search", href: "/search" },
             ]}
           />
           <FooterGroup

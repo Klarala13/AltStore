@@ -33,11 +33,18 @@ const HomePage = async () => {
           <CategoryBar />
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {apps.map((app) => (
-            <AppCard key={app.id} {...app} />
-          ))}
-        </div>
+        {apps.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {apps.map((app) => (
+              <AppCard key={app.id} {...app} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-zinc-800 px-6 py-16 text-center">
+            <p className="text-base font-medium text-zinc-300">We couldn&apos;t load the apps</p>
+            <p className="mt-1 text-sm text-zinc-500">Please refresh the page in a moment.</p>
+          </div>
+        )}
       </section>
 
       {/* ── Features grid ── */}
@@ -78,7 +85,7 @@ const HeroSection = () => (
           <path d="M2 17l5-5" />
         </svg>
         <span className="text-sm font-medium text-zinc-400">
-          Trusted by <span className="text-white">50,000+</span> users in Europe
+          Every app <span className="text-white">scanned and reviewed</span> before it goes live
         </span>
       </div>
 
@@ -137,12 +144,9 @@ const HeroSection = () => (
       </p>
 
       {/* Social proof */}
-      <div className="mt-10 flex items-center justify-center gap-3">
-        <span className="text-lg leading-none text-yellow-400">★★★★★</span>
-        <span className="text-sm text-zinc-500">
-          DMA-compliant &middot; EU Certified &middot; Open Source 2025
-        </span>
-      </div>
+      <p className="mt-10 text-sm text-zinc-500">
+        DMA-compliant &middot; GDPR by design &middot; Open source
+      </p>
     </div>
   </section>
 );
@@ -150,10 +154,10 @@ const HeroSection = () => (
 /* ──────────────────────────────── Stats ─────────────────────────────────── */
 
 const STATS = [
-  { value: "500+", label: "Apps available" },
-  { value: "100%", label: "Virus scanned" },
+  { value: "100%", label: "Apps virus-scanned" },
   { value: "0", label: "Trackers" },
-  { value: "GDPR", label: "Compliant" },
+  { value: "90 days", label: "Max log retention" },
+  { value: "0 €", label: "To publish" },
 ];
 
 const StatsSection = () => (
@@ -164,7 +168,7 @@ const StatsSection = () => (
         What We <span style={{ color: "#1eff00" }}>Offer</span>
       </h2>
       <p className="mx-auto mt-4 max-w-md text-base text-zinc-400">
-        A marketplace built on transparency. Every number is real — no vanity metrics.
+        A marketplace built on transparency. These are promises we keep, not vanity metrics.
       </p>
     </div>
 
@@ -212,6 +216,12 @@ const CategoryBar = () => (
         {label}
       </Link>
     ))}
+    <Link
+      href={"/categories" as Route}
+      className="rounded-full px-3.5 py-1.5 text-xs font-medium text-zinc-400 transition-colors duration-200 hover:text-white"
+    >
+      All categories →
+    </Link>
   </div>
 );
 
@@ -413,7 +423,7 @@ const FAQ_ITEMS = [
   {
     question: "How do I publish my app?",
     answer:
-      "You don't need an account. Go to Submit an app, fill in the listing, attach your APK, and you're done. The binary is scanned immediately and a human reviews it before it goes live. If you plan to manage several apps or ship updates over time, create a developer account instead and use the dashboard.",
+      "You don't need an account. Go to Submit app in the menu, fill in the listing, attach your APK, and you're done. The binary is scanned immediately and a human reviews it before it goes live. If you plan to manage several apps or ship updates over time, create a developer account instead and use the dashboard.",
   },
   {
     question: "Is the source code available?",

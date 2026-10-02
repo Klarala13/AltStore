@@ -29,7 +29,7 @@ export const SearchClient = ({ initialQ, initialCategory, categories }: Props) =
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory ?? "ALL");
   const [results, setResults] = useState<AppCardDto[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchResults = useCallback(async (q: string, category: string) => {
     setLoading(true);
@@ -71,12 +71,6 @@ export const SearchClient = ({ initialQ, initialCategory, categories }: Props) =
     }, 250);
     return () => clearTimeout(timeout);
   }, [query, activeCategory, fetchResults, updateUrl]);
-
-  // Initial fetch on mount
-  useEffect(() => {
-    fetchResults(initialQ, initialCategory ?? "ALL");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const hasFilters = query !== "" || activeCategory !== "ALL";
 
@@ -152,7 +146,7 @@ export const SearchClient = ({ initialQ, initialCategory, categories }: Props) =
       </div>
 
       {/* Results */}
-      <section className="px-6 py-12 md:px-16 lg:px-24 xl:px-32">
+      <section className="pt-12">
         <div className="mb-6 flex items-center justify-between">
           <p className="text-sm text-zinc-500">
             {loading || isPending ? (
