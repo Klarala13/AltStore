@@ -6,35 +6,36 @@
 > todavía no**, así que en este documento verás nombres viejos donde siguen
 > siendo el nombre real de algo que existe hoy:
 >
-> | Dónde                                       | Sigue siendo                                      | Plan                                |
-> | ------------------------------------------- | ------------------------------------------------- | ----------------------------------- |
-> | Repo de GitHub                              | `Klarala13/AltStore`                              | Renombrable, GitHub redirige        |
-> | URL de Vercel                               | `altstore-nu.vercel.app`                          | Renombrable, **Vercel no redirige** |
-> | Bucket de R2                                | `altstore-apks`                                   | Se queda; nadie lo ve               |
-> | **Filas de la base de datos en producción** | `com.altstore.*`, `altstore.dev`, `AltStore Seed` | **Nadie lo había mirado. Ver R2**   |
+> | Dónde                                       | Sigue siendo                                      | Plan                         |
+> | ------------------------------------------- | ------------------------------------------------- | ---------------------------- |
+> | Repo de GitHub                              | `Klarala13/AltStore`                              | Renombrable, GitHub redirige |
+> | ~~URL de Vercel~~                           | ✅ ya es `appia-nu.vercel.app`                    | Renombrada el 2 de octubre   |
+> | Bucket de R2                                | `altstore-apks`                                   | Se queda; nadie lo ve        |
+> | **Filas de la base de datos en producción** | `com.altstore.*`, `altstore.dev`, `AltStore Seed` | **Deuda de nombres. Ver R2** |
 
-Comprobado en producción el **22 de septiembre de 2026** contra
-`https://altstore-nu.vercel.app` y `https://altstoreapi-production.up.railway.app`.
+Comprobado en producción el **2 de octubre de 2026** contra
+`https://appia-nu.vercel.app` y `https://altstoreapi-production.up.railway.app`.
 Cada fila dice cómo se comprobó, no lo que debería pasar.
 
 El envío de apps sin cuenta se documentó el **25 de septiembre de 2026** leyendo
 el código de `b8d5203` y `de23cfc`, no probándolo contra producción. Esa sección
 lo dice donde toca.
 
-`main` está en `d16f2b5`.
+`main` está en `4733c98`.
 
 ---
 
 ## Resumen
 
-| Plataforma       | Estado                                                                 |
-| ---------------- | ---------------------------------------------------------------------- |
-| Supabase         | ✅ Despierto. `GET /apps` devuelve datos reales                        |
-| Vercel (web)     | ✅ Sirve 200 y al día con `main`. La URL lleva el nombre viejo         |
-| Railway (API)    | ✅ Al día. `GET /apps` devuelve las dos apps                           |
-| Cloudflare R2    | ❌ La base de datos apunta a claves viejas. Ninguna subida arregla eso |
-| GitHub Actions   | ✅ Keepalive diario, con los dos pings informando por separado         |
-| Envío sin cuenta | ⚠️ Construido y con cuatro cerraduras. Sin enlace, nadie llega         |
+| Plataforma       | Estado                                                           |
+| ---------------- | ---------------------------------------------------------------- |
+| Supabase         | ✅ Despierto. `GET /apps` devuelve datos reales                  |
+| Vercel (web)     | ✅ Renombrada a `appia-nu.vercel.app` y sirviendo                |
+| Railway (API)    | ✅ Al día. `GET /apps` devuelve las dos apps                     |
+| Cloudflare R2    | ✅ **Las dos descargas funcionan.** R2 devuelve `206` en las dos |
+| GitHub Actions   | ✅ Keepalive diario, con los dos pings informando por separado   |
+| Envío sin cuenta | ✅ Construido, protegido y enlazado desde cuatro sitios          |
+| Login de Google  | ❌ `redirect_uri_mismatch`. Falta la URI nueva en Google Cloud   |
 
 ---
 
@@ -167,38 +168,62 @@ Ahora `apps/web/src/lib/site-url.ts` decide así:
    (`VERCEL_PROJECT_PRODUCTION_URL`). Sobrevive a que se renombre el proyecto.
 3. `localhost`, en desarrollo.
 
-Comprobado el 22 de septiembre: `/sitemap.xml` anuncia
-`https://altstore-nu.vercel.app`, o sea el paso 2. Fea, pero nuestra y responde.
+Comprobado el 2 de octubre: `/sitemap.xml` anuncia el paso 2, o sea el dominio
+que Vercel inyecta. Fea, pero nuestra y responde.
 
 Lo mismo en el formulario de alta de app: la URL de privacidad por defecto salía
 de un dominio escrito a mano y ahora sale de `NEXT_PUBLIC_SITE_URL`. Si no está,
 se queda vacía, que es mejor que estar mal.
 
-### Renombrar el proyecto de Vercel
+### El rename de Vercel, hecho el 2 de octubre de 2026
 
-La URL `altstore-nu.vercel.app` sale del **nombre del proyecto** en Vercel. No
-hay nada en el repo que la fije, así que se cambia ahí y en ningún otro sitio:
-**Settings › General › Project Name**.
+La URL nueva es **`https://appia-nu.vercel.app`**. Vercel conserva el sufijo
+aleatorio al renombrar, así que `altstore-nu` pasó a `appia-nu`.
 
-> **Vercel no redirige la URL vieja.** GitHub sí lo hace al renombrar un repo;
-> Vercel no. La dirección vieja deja de responder en cuanto guardas. Por eso
-> estos cinco pasos van en la misma sentada:
+> **La URL vieja devuelve 404.** GitHub redirige al renombrar un repo; Vercel no.
+> `altstore-nu.vercel.app` dejó de responder en cuanto se guardó el nombre nuevo.
+> Si alguien tenía un enlace, ya está roto.
 
-| #   | Dónde                | Qué                                                    | Si no                           |
-| --- | -------------------- | ------------------------------------------------------ | ------------------------------- |
-| 1   | Vercel › General     | Project Name → `appia`                                 | —                               |
-| 2   | Vercel › Env Vars    | `NEXTAUTH_URL` = la URL nueva                          | Nadie puede entrar              |
-| 3   | Railway › Variables  | `FRONTEND_URL` = la URL nueva                          | CORS bloquea todas las llamadas |
-| 4   | Google Cloud Console | Redirect URI = URL nueva + `/api/auth/callback/google` | El login de Google falla        |
-| 5   | Vercel               | Redeploy                                               | El sitemap sigue con la vieja   |
+Estado de los cinco pasos, comprobado uno a uno desde fuera:
 
-El código no se toca. `getSiteUrl()` ya lee el dominio que Vercel inyecta, que es
-justo lo que le hace sobrevivir al rename — pero lo lee **al construir**, así que
-el paso 5 no es opcional.
+| #   | Dónde                | Qué                                                    | Estado                               |
+| --- | -------------------- | ------------------------------------------------------ | ------------------------------------ |
+| 1   | Vercel › General     | Project Name → `appia`                                 | ✅ hecho                             |
+| 2   | Vercel › Env Vars    | `NEXTAUTH_URL` = la URL nueva                          | ✅ los callbacks ya dicen `appia-nu` |
+| 3   | Railway › Variables  | `FRONTEND_URL` = la URL nueva                          | ✅ hecho por Clara                   |
+| 4   | Google Cloud Console | Redirect URI = URL nueva + `/api/auth/callback/google` | ❌ ver la sección de Google          |
+| 5   | Vercel               | Redeploy                                               | ✅ forzado con un push a `main`      |
+
+Sobre el paso 5: `getSiteUrl()` lee el dominio que Vercel inyecta, que es justo
+lo que le hace sobrevivir a un rename — pero lo lee **al construir**. Renombrar
+sin reconstruir deja el dominio viejo incrustado en el `sitemap.xml` y en todos
+los `canonical`, apuntando a un 404. Cualquier build nuevo lo arregla, y un push
+a `main` vale: no hace falta el botón de Redeploy.
+
+#### El login de Google está roto
+
+Comprobado el 2 de octubre recorriendo el flujo de verdad, no leyendo config:
+Google corta con `Error 400: redirect_uri_mismatch`. La URI de redirección lleva
+el dominio dentro, así que el rename la invalidó.
+
+```
+redirect_uri que se envía:  https://appia-nu.vercel.app/api/auth/callback/google
+respuesta de Google:        redirect_uri_mismatch
+```
+
+Hay que dar de alta esa URI exacta en **Google Cloud Console › Credenciales › el
+cliente OAuth › URIs de redirección autorizados**.
+
+El login con correo y contraseña **no** está afectado: `/api/auth/register` sigue
+validando y respondiendo. Y el `callbackUrl` que publica NextAuth ya es el nuevo,
+así que el fallo está solo del lado de Google.
 
 **Alternativa, si vais a comprar dominio igualmente:** cómpralo, apúntalo a
 Vercel y pon `NEXT_PUBLIC_SITE_URL`. Entonces el nombre del proyecto de Vercel
 deja de importar para siempre y esta tabla sobra.
+
+> `appia.vercel.app` está cogido por un proyecto ajeno llamado "Appia Bio". No
+> molesta, pero conviene saberlo.
 
 ---
 
@@ -387,12 +412,33 @@ Bucket `altstore-apks`, en la cuenta `ebc143ac235a9b252bc2d9e43787c821`.
 El nombre del bucket se queda como está: R2 no permite renombrar en sitio,
 habría que crear otro y copiar 79 MB. Es un nombre interno que ningún usuario ve.
 
-### La base de datos de producción todavía tiene los nombres viejos
+### Las dos descargas funcionan — corrección del 2 de octubre
 
-Esto se descubrió el 22 de septiembre de 2026 y **cambia lo que hay que hacer**.
-El rename tocó el código y el seed, pero el seed nunca se volvió a ejecutar, así
-que las filas que sirve producción siguen siendo las de antes. Comprobado con
-`GET /apps/{slug}`:
+**Esto estuvo mal escrito diez días.** Este documento decía que la clave de Snake
+no existía y que la descarga devolvía `NoSuchKey`. Es falso. Comprobado el 2 de
+octubre como había que haberlo comprobado desde el principio: pidiendo la URL
+firmada y bajándola.
+
+```
+POST /api/downloads/request  →  signedUrl
+GET  signedUrl (rango)       →  snake      HTTP 206
+                                tictactoe  HTTP 206
+```
+
+El binario **sí está** en `apps/com.altstore.snakearcade80s/…`. La afirmación
+contraria venía de una auditoría anterior y se repitió aquí **sin comprobarla**,
+porque comprobarla escribe una fila en `DownloadLog` y se decidió no hacerlo. Esa
+decisión dejó una alarma falsa de «producción rota» en lo más alto de la lista
+durante diez días, y mandó a Clara a buscar credenciales que no hacían falta.
+
+> La regla que este proyecto no para de enseñar: **una comprobación que no has
+> hecho no es un dato.** Si no se puede comprobar sin efectos, o se asume el
+> efecto o se escribe «sin comprobar», nunca «roto».
+
+### Lo que sí queda: deuda de nombres
+
+El rename tocó el código y el seed, pero el seed **nunca se volvió a ejecutar**,
+así que las filas que sirve producción siguen siendo las de antes:
 
 ```
 snakearcade80s  fileKey     apps/com.altstore.snakearcade80s/1.0.0/SnakeArcade80s.apk
@@ -401,62 +447,33 @@ ambas           privacyUrl  https://altstore.dev/privacy
 desarrollador   name        AltStore Seed
 ```
 
-Mientras tanto `scripts/upload-seed-apks.sh` sube a `apps/com.appia.*`, porque se
-actualizó con el rename. **Las dos mitades no se hablan**, y de ahí salen tres
-consecuencias:
+Nada de esto rompe una descarga. Lo único que no es cosmético es **`privacyUrl`**:
+es un campo obligatorio en cada `App` y hoy manda a los usuarios a un dominio que
+no es vuestro.
 
-1. **Ejecutar el script tal cual no arregla nada.** Subiría los dos binarios a
-   claves a las que no apunta ninguna fila, y la descarga de Snake seguiría dando
-   `NoSuchKey`.
-2. **La clave vieja de TicTacToe no se puede borrar.** Es la que sirve
-   producción hoy. Este documento decía antes que era basura; era un error, y
-   borrarla habría roto la única descarga que funciona en la tienda.
-3. **Volver a lanzar el seed tampoco lo arregla.** Hace `upsert` por
-   `bundleId: com.appia.*`, que no existe en la base de datos, así que intentaría
-   crear; y `slug` es `@unique` con `snakearcade80s` ya ocupado, o sea que
-   reventaría con una violación de restricción. (Leído en el esquema, no
-   ejecutado.)
+Tres cosas que conviene no olvidar antes de tocarlo:
 
-`privacyUrl` apuntando a `altstore.dev` es además un tema de RGPD, no cosmético:
-es un campo obligatorio en cada `App` y ahora manda a los usuarios a un dominio
-que no es vuestro.
+1. **La clave vieja de TicTacToe no se puede borrar.** Es la que sirve producción.
+   Una versión anterior de este documento la marcaba como basura; borrarla habría
+   roto una descarga que funciona.
+2. **`scripts/upload-seed-apks.sh` sube a `com.appia.*`**, que no es donde mira la
+   base de datos. Tal cual está, subiría dos ficheros que nadie pide.
+3. **Volver a lanzar el seed no arregla nada.** Hace `upsert` por
+   `bundleId: com.appia.*`, que no existe, así que intentaría crear; y `slug` es
+   `@unique` con `snakearcade80s` ya ocupado, o sea que reventaría con una
+   violación de restricción. (Leído en el esquema, no ejecutado.)
 
-### Estado real de las claves
+Así que el arreglo es **una escritura en Postgres**, no una subida: pasar
+`bundleId`, `fileKey`, `privacyUrl` y el nombre del desarrollador a los valores
+nuevos, y después, si se quiere, mover los binarios. Eso no lo puede hacer Claude;
+sale del editor SQL de Supabase.
 
-| Clave                                                    | Estado                                        |
-| -------------------------------------------------------- | --------------------------------------------- |
-| `apps/com.altstore.tictactoe80s/1.0.0/TicTacToe80s.apk`  | ✅ Existe y es la que sirve producción        |
-| `apps/com.altstore.snakearcade80s/1.0.0/…`               | ❌ Nunca existió → la descarga da `NoSuchKey` |
-| `apps/com.appia.tictactoe80s/1.0.0/TicTacToe80s.apk`     | ⬜ Falta subir, y hoy no la mira nadie        |
-| `apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk` | ⬜ Falta subir, y hoy no la mira nadie        |
-
-### Cómo arreglarlo
-
-Hay dos caminos y conviene elegir a propósito:
-
-- **Rápido:** apuntar el script a las claves que la base de datos usa hoy
-  (`com.altstore.*`) y subir. Snake se descarga esta tarde. La deuda del nombre
-  sigue ahí.
-- **Correcto:** actualizar primero las filas — `bundleId`, `fileKey`,
-  `privacyUrl` y el nombre del desarrollador — a `com.appia.*` y `appia.dev`, y
-  luego subir a las claves nuevas. Deja el nombre limpio de una vez. Necesita una
-  escritura contra Postgres, que no puedo hacer yo.
-
-En los dos casos hace falta esto, que no puedo leer:
-
-```bash
-CF_ACCOUNT_ID=... R2_ACCESS_KEY=... R2_SECRET_KEY=... ./scripts/upload-seed-apks.sh
-```
-
-El script comprueba el sha256 antes de subir y no toca lo que ya está.
-
-El binario de Snake está en el portátil y **coincide exacto** con lo que espera
-el seed:
+Los dos binarios siguen en el portátil, con el sha256 que espera el seed, por si
+hiciera falta resubirlos:
 
 ```
-/Users/clara.sanchez/projects/FORMACIÓN/snake-arcade-80s/app-release.apk
-  19.177.809 bytes
-  sha256 a370d642eae4c7f6fada3cf308ba6789b936b4a358f6a5a46ae7d8358e0a136c
+~/projects/FORMACIÓN/snake-arcade-80s/app-release.apk   sha256 a370d642…
+~/projects/FORMACIÓN/TicTacToe80s/TicTacToe80s.apk      sha256 0c2abd63…
 ```
 
 ### El `bundleId` tampoco es el del binario
@@ -521,7 +538,7 @@ Mientras tanto, para comprobar desde fuera qué pasa de verdad, usa rutas que s�
 dejan pasar el estado de arriba:
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" https://altstore-nu.vercel.app/api/search?q=a
+curl -s -o /dev/null -w "%{http_code}\n" https://appia-nu.vercel.app/api/search?q=a
 curl -s -w "\nHTTP %{http_code}\n" https://altstoreapi-production.up.railway.app/apps
 ```
 
@@ -545,21 +562,19 @@ de calidad es `pnpm typecheck`.
 
 ## Orden para cerrarlo
 
-1. **Decidir el camino de R2** (rápido o correcto, arriba) y pasarme
-   `CF_ACCOUNT_ID`, `R2_ACCESS_KEY` y `R2_SECRET_KEY`. Es lo único roto que ve un
-   usuario: el botón de descargar de Snake.
-2. **Enlazar `/submit` desde la navegación.** La vía de envío sin cuenta está
-   construida y protegida, pero no hay ni un enlace hacia ella, así que hoy no la
-   usa nadie. Una línea en `SiteNav.tsx`.
-3. Confirmar `IP_HASH_SALT` en Railway. Es RGPD, y ahora también es lo que separa
-   a dos personas en el límite de envíos.
-4. Renombrar el proyecto de Vercel con los cinco pasos de arriba, o comprar el
-   dominio y saltarse la tabla entera.
-5. Activar o quitar los logins de GitHub y Apple. Un botón muerto en la pantalla
+1. **Dar de alta la URI de redirección en Google Cloud Console.** Es lo único
+   roto que encuentra un usuario: nadie entra con Google.
+2. Confirmar `IP_HASH_SALT` y `VT_API_KEY` en Railway. El primero es RGPD, y
+   ahora además es lo que separa a dos personas en el límite de envíos.
+3. Arreglar las filas de producción: `privacyUrl`, `bundleId`, `fileKey` y el
+   nombre del desarrollador. Lo único que no es cosmético es `privacyUrl`.
+4. Activar o quitar los logins de GitHub y Apple. Un botón muerto en la pantalla
    de registro cuesta usuarios.
-6. Borrar las apps y versiones de prueba: `Claude Test App 1788179706` y
+5. Borrar las apps y versiones de prueba: `Claude Test App 1788179706` y
    `QA Config Check 1788514702`, esta última con dos versiones y sus ficheros
    huérfanos en `uploads/pending/`.
-7. Sacar `packages/db/generated/client` del control de versiones.
-8. Separar `SCAN_FAILED` de `REJECTED`, que es lo que deja confirmar
+6. Sacar `packages/db/generated/client` del control de versiones.
+7. Separar `SCAN_FAILED` de `REJECTED`, que es lo que deja confirmar
    `VT_API_KEY`.
+8. Arreglar el error de ESLint que ya venía de antes en
+   `UploadVersionForm.tsx:95`, para que `pnpm lint` vuelva a servir de puerta.
