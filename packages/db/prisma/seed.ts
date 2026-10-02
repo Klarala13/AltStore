@@ -18,6 +18,19 @@ import * as crypto from "crypto";
 
 const prisma = new PrismaClient();
 
+/**
+ * Pagina de privacidad. Obligatoria por RGPD en cada App.
+ *
+ * Aqui habia un dominio escrito a mano: primero altstore.dev, y tras el rename
+ * appia.dev. Ninguno de los dos es nuestro — appia.dev ni siquiera resuelve —
+ * asi que el seed mandaba a los usuarios a la web de un tercero. Mismo error
+ * que ya cometimos con altstore.eu en el sitemap.
+ *
+ * Se coge de SEED_PRIVACY_URL, y si no esta se usa la URL de produccion, que
+ * sirve esa pagina de verdad. No se adivina ningun dominio nuevo.
+ */
+const PRIVACY_URL = process.env.SEED_PRIVACY_URL ?? "https://appia-nu.vercel.app/privacy";
+
 const APK_FILE_KEY =
   process.env.SEED_APK_FILE_KEY ?? "apps/com.appia.tictactoe80s/1.0.0/TicTacToe80s.apk";
 const APP_ICON_URL = "/apps/tictactoe80s/icon.svg";
@@ -27,8 +40,7 @@ const APK_SHA256 =
   process.env.SEED_APK_SHA256 ?? "0c2abd632095dcf39209911deff44ee84278956edcae95da102645f5ad35e1c4";
 
 const SNAKE_APK_FILE_KEY =
-  process.env.SEED_SNAKE_APK_FILE_KEY ??
-  "apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk";
+  process.env.SEED_SNAKE_APK_FILE_KEY ?? "apps/com.appia.snakearcade80s/1.0.0/SnakeArcade80s.apk";
 const SNAKE_APP_ICON_URL = "/apps/snakearcade80s/icon.svg";
 const SNAKE_APP_COVER_URL = "/apps/snakearcade80s/cover.svg";
 const SNAKE_APK_SIZE_BYTES = BigInt(process.env.SEED_SNAKE_APK_FILE_SIZE ?? "19177809");
@@ -73,8 +85,7 @@ async function main() {
       iconUrl: APP_ICON_URL,
       screenshots: [APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://appia.dev/privacy",
-      websiteUrl: "https://github.com/appia/tictactoe80s",
+      privacyUrl: PRIVACY_URL,
       status: "ACTIVE",
     },
     create: {
@@ -89,8 +100,7 @@ async function main() {
       iconUrl: APP_ICON_URL,
       screenshots: [APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://appia.dev/privacy",
-      websiteUrl: "https://github.com/appia/tictactoe80s",
+      privacyUrl: PRIVACY_URL,
       status: "ACTIVE",
     },
   });
@@ -141,7 +151,7 @@ async function main() {
       iconUrl: SNAKE_APP_ICON_URL,
       screenshots: [SNAKE_APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://appia.dev/privacy",
+      privacyUrl: PRIVACY_URL,
       status: "ACTIVE",
     },
     create: {
@@ -156,7 +166,7 @@ async function main() {
       iconUrl: SNAKE_APP_ICON_URL,
       screenshots: [SNAKE_APP_COVER_URL],
       platform: "ANDROID",
-      privacyUrl: "https://appia.dev/privacy",
+      privacyUrl: PRIVACY_URL,
       status: "ACTIVE",
     },
   });
