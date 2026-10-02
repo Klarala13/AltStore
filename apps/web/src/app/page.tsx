@@ -85,7 +85,7 @@ const HeroSection = () => (
           <path d="M2 17l5-5" />
         </svg>
         <span className="text-sm font-medium text-zinc-400">
-          Every app <span className="text-white">scanned and reviewed</span> before it goes live
+          Every new upload <span className="text-white">scanned and reviewed</span> before it goes live
         </span>
       </div>
 
@@ -154,10 +154,10 @@ const HeroSection = () => (
 /* ──────────────────────────────── Stats ─────────────────────────────────── */
 
 const STATS = [
-  { value: "100%", label: "Apps virus-scanned" },
+  { value: "VirusTotal", label: "Scan on every upload" },
   { value: "0", label: "Trackers" },
-  { value: "90 days", label: "Max log retention" },
   { value: "0 €", label: "To publish" },
+  { value: "Open", label: "Source code" },
 ];
 
 const StatsSection = () => (

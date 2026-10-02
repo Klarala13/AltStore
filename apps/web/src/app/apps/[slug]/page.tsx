@@ -186,7 +186,7 @@ const AppDetailPage = async ({ params }: Props) => {
             </div>
 
             <p className="mt-6 border-t border-zinc-800 pt-4 text-xs text-zinc-500">
-              Scanned for malware and reviewed by a person before publishing.
+              New uploads are scanned for malware and reviewed by a person before publishing.
             </p>
           </div>
 
