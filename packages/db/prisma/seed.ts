@@ -73,6 +73,10 @@ async function main() {
   console.log(`  Developer: ${developer.id} (${developer.email})`);
 
   // 2. App
+  // Igual que en las versiones: el `update` no fija `status`. El borrado de una
+  // app es un soft delete a REMOVED (apps.service.ts:262), asi que forzar
+  // ACTIVE aqui resucitaria una app retirada por moderacion en el siguiente
+  // seed.
   const app = await prisma.app.upsert({
     where: { bundleId: "com.appia.tictactoe80s" },
     update: {
@@ -86,7 +90,6 @@ async function main() {
       screenshots: [APP_COVER_URL],
       platform: "ANDROID",
       privacyUrl: PRIVACY_URL,
-      status: "ACTIVE",
     },
     create: {
       slug: "tictactoe80s",
@@ -115,12 +118,15 @@ async function main() {
         platform: "ANDROID",
       },
     },
+    // Deliberadamente sin `status` ni `publishedAt`: este bloque solo corre
+    // sobre una version que YA existe. Forzar APPROVED aqui deshace cualquier
+    // veredicto posterior — un rescan que marque la version INFECTED se
+    // republicaria sola con el siguiente seed. El estado lo decide el escaneo,
+    // nunca el fixture. En `create` si se fija, porque ahi la version nace.
     update: {
       fileKey: APK_FILE_KEY,
       fileSize: APK_SIZE_BYTES,
       fileSha256: APK_SHA256,
-      status: "APPROVED",
-      publishedAt: new Date(),
     },
     create: {
       appId: app.id,
@@ -152,7 +158,6 @@ async function main() {
       screenshots: [SNAKE_APP_COVER_URL],
       platform: "ANDROID",
       privacyUrl: PRIVACY_URL,
-      status: "ACTIVE",
     },
     create: {
       slug: "snakearcade80s",
@@ -181,12 +186,15 @@ async function main() {
         platform: "ANDROID",
       },
     },
+    // Deliberadamente sin `status` ni `publishedAt`: este bloque solo corre
+    // sobre una version que YA existe. Forzar APPROVED aqui deshace cualquier
+    // veredicto posterior — un rescan que marque la version INFECTED se
+    // republicaria sola con el siguiente seed. El estado lo decide el escaneo,
+    // nunca el fixture. En `create` si se fija, porque ahi la version nace.
     update: {
       fileKey: SNAKE_APK_FILE_KEY,
       fileSize: SNAKE_APK_SIZE_BYTES,
       fileSha256: SNAKE_APK_SHA256,
-      status: "APPROVED",
-      publishedAt: new Date(),
     },
     create: {
       appId: snakeApp.id,
