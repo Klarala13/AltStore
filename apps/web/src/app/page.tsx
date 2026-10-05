@@ -140,7 +140,7 @@ const HeroSection = () => (
       </div>
 
       <p className="mt-5 text-sm text-zinc-500">
-        No account needed to publish. Every app is scanned and reviewed first.
+        No account needed to publish. Every new upload is scanned and reviewed first.
       </p>
 
       {/* Social proof */}
