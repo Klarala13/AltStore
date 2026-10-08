@@ -103,7 +103,7 @@ const HeroSection = () => (
 
       {/* CTAs */}
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Link href="/submit" className="btn-primary gap-2 px-7 py-3 text-base">
+        <Link href="/submit" className="btn-primary btn-glow gap-2 px-7 py-3 text-base">
           <svg
             width="18"
             height="18"

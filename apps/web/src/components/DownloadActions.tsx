@@ -33,7 +33,7 @@ const DownloadActions = ({ versionId, appName, fileSize }: DownloadActionsProps)
           type="button"
           onClick={onDownload}
           disabled={loading}
-          className="btn-primary disabled:cursor-wait disabled:opacity-60"
+          className="btn-primary btn-glow disabled:cursor-wait disabled:opacity-60"
         >
           {loading ? "Preparing…" : `Download APK${fileSize ? ` · ${fileSize}` : ""}`}
         </button>
