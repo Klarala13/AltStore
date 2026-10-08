@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { RescanButton } from "./RescanButton";
 import { SecurityLogsTable } from "./SecurityLogsTable";
 
 export type Severity = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
@@ -47,18 +48,21 @@ interface Props {
 const SecurityLogsPage = async ({ searchParams }: Props) => {
   const { severity } = await searchParams;
   const session = await getServerSession(authOptions);
-  const accessToken = (session as { accessToken?: string }).accessToken ?? "";
+  const accessToken = (session as { accessToken?: string } | null)?.accessToken ?? "";
 
   const { logs, total } = await getSecurityLogs(accessToken, severity);
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-8">
-        <h1 className="font-display text-2xl font-semibold text-white">Security Logs</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          {total === 0 ? "No logs found." : `${total} log entries`}
-          {severity ? ` — filtered by ${severity}` : ""}
-        </p>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-white">Security Logs</h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            {total === 0 ? "No logs found." : `${total} log entries`}
+            {severity ? ` — filtered by ${severity}` : ""}
+          </p>
+        </div>
+        <RescanButton />
       </div>
 
       <SecurityLogsTable logs={logs} activeSeverity={severity} />

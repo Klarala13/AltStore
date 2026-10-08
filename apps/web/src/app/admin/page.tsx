@@ -36,7 +36,7 @@ async function getPendingApps(accessToken: string): Promise<AppSummary[]> {
 
 const AdminPage = async () => {
   const session = await getServerSession(authOptions);
-  const accessToken = (session as { accessToken?: string }).accessToken ?? "";
+  const accessToken = (session as { accessToken?: string } | null)?.accessToken ?? "";
   const apps = await getPendingApps(accessToken);
 
   return (
