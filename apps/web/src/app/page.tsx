@@ -85,7 +85,8 @@ const HeroSection = () => (
           <path d="M2 17l5-5" />
         </svg>
         <span className="text-sm font-medium text-zinc-400">
-          Every new upload <span className="text-white">scanned and reviewed</span> before it goes live
+          Every new upload <span className="text-white">scanned and reviewed</span> before it goes
+          live
         </span>
       </div>
 
@@ -268,7 +269,7 @@ const FEATURES = [
     ),
     title: "Privacy First",
     description:
-      "No fingerprinting. No tracking. IPs are hashed and download logs are purged after 90 days.",
+      "No fingerprinting. No tracking. Your IP is hashed with a rotating salt before it is ever stored.",
   },
   {
     icon: (
@@ -418,7 +419,7 @@ const FAQ_ITEMS = [
   {
     question: "What data do you collect?",
     answer:
-      "We collect the minimum required: a hashed (SHA-256) version of your IP for rate limiting, and download counts per app version. No personal profiles, no ad tracking. Download logs are deleted after 90 days.",
+      "We collect the minimum required: a hashed (SHA-256) version of your IP for rate limiting, and download counts per app version. No personal profiles, no ad tracking. See the privacy policy for how long each kind of record is kept.",
   },
   {
     question: "How do I publish my app?",
