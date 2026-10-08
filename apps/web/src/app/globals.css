@@ -81,34 +81,70 @@
     box-shadow: 0 0 0 4px rgba(30, 255, 0, 0.2);
   }
 
-  /* Glow for the two actions we want to encourage: uploading and downloading apps.
-     Static glow as the base so reduced-motion users still see the emphasis. */
-  .btn-glow {
-    box-shadow:
-      0 0 12px rgba(30, 255, 0, 0.45),
-      0 0 32px rgba(30, 255, 0, 0.2);
-    animation: btn-glow-pulse 2.4s ease-in-out infinite;
-  }
-  .btn-glow:hover {
-    box-shadow:
-      0 0 16px rgba(30, 255, 0, 0.6),
-      0 0 44px rgba(30, 255, 0, 0.3);
-  }
-  .btn-glow:disabled {
-    animation: none;
-    box-shadow: none;
-  }
-  @keyframes btn-glow-pulse {
-    0%,
-    100% {
-      box-shadow:
-        0 0 12px rgba(30, 255, 0, 0.45),
-        0 0 32px rgba(30, 255, 0, 0.2);
+  /* Hover shimmer for the two actions we want to encourage: uploading and downloading.
+     Ported from GitLab's merge button (.mr-merge-button-shimmer), recoloured to our
+     accent: a blurred moving gradient behind the button plus a 1px gradient ring.
+     A normal button at rest; reduced-motion users keep the plain button. */
+  @media (prefers-reduced-motion: no-preference) {
+    .btn-glow {
+      --glow-thickness: 1px;
+      --glow-offset: 1px;
+      --glow-gradient: linear-gradient(
+        160deg,
+        transparent 0%,
+        #ffffff 15%,
+        #1eff00 20%,
+        #7dff6b 25%,
+        #15b100 30%,
+        transparent 36%,
+        transparent 40%,
+        #ffffff 55%,
+        #1eff00 60%,
+        #7dff6b 65%,
+        #15b100 70%,
+        transparent 76%,
+        transparent 80%,
+        #ffffff 95%,
+        #1eff00 100%
+      );
+      --glow-opacity: 0;
+      position: relative;
+      z-index: 1;
+      transform-style: preserve-3d;
     }
-    50% {
-      box-shadow:
-        0 0 18px rgba(30, 255, 0, 0.6),
-        0 0 48px rgba(30, 255, 0, 0.3);
+    .btn-glow::before,
+    .btn-glow::after {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      background: var(--glow-gradient) 15% 15% / 300% 300%;
+      opacity: var(--glow-opacity);
+      transition: opacity 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+      animation: btn-glow-shimmer 3s linear infinite;
+    }
+    .btn-glow::before {
+      inset: 0;
+      border-radius: inherit;
+      filter: blur(12px);
+      transform: translateZ(-1px);
+      opacity: calc(var(--glow-opacity) * 0.9);
+    }
+    .btn-glow::after {
+      inset: calc(-1 * (var(--glow-offset) + var(--glow-thickness)) + 1px);
+      padding: var(--glow-thickness);
+      border-radius: calc(0.5rem + var(--glow-offset) + var(--glow-thickness));
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+    }
+    .btn-glow:hover:not(:focus-within):not(:disabled) {
+      --glow-opacity: 1;
+    }
+  }
+  @keyframes btn-glow-shimmer {
+    to {
+      background-position: 75% 75%;
     }
   }
 
