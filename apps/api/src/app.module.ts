@@ -12,6 +12,7 @@ import { DownloadsModule } from "./downloads/downloads.module";
 import { AdminModule } from "./admin/admin.module";
 import { RatingsModule } from "./ratings/ratings.module";
 import { SubmissionsModule } from "./submissions/submissions.module";
+import { RetentionModule } from "./retention/retention.module";
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { SubmissionsModule } from "./submissions/submissions.module";
     AdminModule, // Admin moderation panel
     RatingsModule, // Consumer ratings + avgRating recompute
     SubmissionsModule, // Accountless app submission
+    RetentionModule, // Daily DownloadLog sweep (the 90 days /privacy promises)
   ],
 })
 export class AppModule {}
