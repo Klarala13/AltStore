@@ -4,18 +4,37 @@ import Link from "next/link";
 import { AuthProvider } from "@/components/AuthProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
+import { getSiteUrl } from "@/lib/site-url";
+
+const SITE_DESCRIPTION =
+  "DMA-compliant alternative app marketplace for Android apps in the EU. Secure, open, and privacy-first.";
 
 export const metadata: Metadata = {
+  // Sin metadataBase, Next deja las URLs de las imagenes en relativo y los
+  // previews de Slack o WhatsApp no pueden resolverlas: necesitan absolutas.
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "Appia — European App Marketplace",
     template: "%s | Appia",
   },
-  description:
-    "DMA-compliant alternative app marketplace for Android apps in the EU. Secure, open, and privacy-first.",
+  description: SITE_DESCRIPTION,
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
     apple: "/icon.svg",
+  },
+  // La imagen en si la pone app/opengraph-image.tsx, por convencion de fichero.
+  openGraph: {
+    type: "website",
+    siteName: "Appia",
+    title: "Appia — European App Marketplace",
+    description: SITE_DESCRIPTION,
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Appia — European App Marketplace",
+    description: SITE_DESCRIPTION,
   },
 };
 

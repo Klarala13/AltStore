@@ -43,7 +43,9 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
       description: app.shortDesc,
       url: canonical,
       siteName: "Appia",
-      images: app.iconUrl ? [{ url: app.iconUrl, width: 512, height: 512, alt: app.name }] : [],
+      // Sin `images`: lo pone opengraph-image.tsx, que genera un PNG. Declararlo
+      // aqui ganaria sobre el fichero, y antes apuntaba a un SVG que ningun
+      // servicio de previews sabe pintar.
       type: "website",
     },
     twitter: {
