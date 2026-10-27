@@ -9,12 +9,10 @@ import {
   slugify,
   type AppDetails,
 } from "@/components/AppDetailsFields";
+import { getDefaultPrivacyUrl } from "@/lib/site-url";
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
 const DEFAULT_ICON_URL = "/icon.svg";
-const DEFAULT_PRIVACY_URL = process.env.NEXT_PUBLIC_SITE_URL
-  ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/privacy`
-  : "";
 
 interface Submitter {
   email: string;
@@ -68,7 +66,7 @@ export const SubmitAppForm = () => {
           description: app.description,
           shortDesc: app.shortDescription || app.description.slice(0, 120),
           iconUrl: DEFAULT_ICON_URL,
-          privacyUrl: DEFAULT_PRIVACY_URL,
+          privacyUrl: getDefaultPrivacyUrl(),
           submitterEmail: submitter.email,
           submitterName: submitter.name,
           submitterType: submitter.type,

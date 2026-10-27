@@ -24,3 +24,31 @@ export function getSiteUrl(): string {
 
   return "http://localhost:3000";
 }
+
+/**
+ * URL de privacidad por defecto que los formularios envian al crear una app.
+ *
+ * Existe aparte de getSiteUrl() porque los formularios son componentes de
+ * cliente y VERCEL_PROJECT_PRODUCTION_URL solo existe en el servidor. Ahi
+ * getSiteUrl() caeria a localhost dentro del navegador de un usuario.
+ *
+ * Por que importa tanto: `privacyUrl` es obligatorio en el DTO (`@IsUrl()`) y
+ * ningun formulario lo pinta, asi que se manda a ciegas. Cuando esto devolvia
+ * cadena vacia, el API rechazaba la creacion con «privacyUrl must be a URL
+ * address» — un error sobre un campo que no esta en pantalla, imposible de
+ * arreglar desde la interfaz. Tuvo rotas las dos vias de alta de app.
+ *
+ * Llamala DENTRO del handler, nunca en el ambito del modulo: durante el
+ * render en servidor `window` no existe.
+ */
+export function getDefaultPrivacyUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return `${explicit.replace(/\/+$/, "")}/privacy`;
+
+  // En el navegador siempre sabemos el dominio real, sin configurar nada.
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/privacy`;
+  }
+
+  return "";
+}

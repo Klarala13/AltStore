@@ -9,15 +9,14 @@ import {
   slugify,
   type AppDetails,
 } from "@/components/AppDetailsFields";
+import { getDefaultPrivacyUrl } from "@/lib/site-url";
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
 const DEFAULT_ICON_URL = "/icon.svg";
-// Se rellena solo en el formulario, asi que no puede ser un dominio escrito a
-// mano: el de antes apuntaba a una web que no era la nuestra. Sale de la misma
-// variable que el resto del sitio, y si no esta, mejor vacio que mal.
-const DEFAULT_PRIVACY_URL = process.env.NEXT_PUBLIC_SITE_URL
-  ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/privacy`
-  : "";
+// privacyUrl se manda sin pintarlo en el formulario, asi que su valor por
+// defecto vive en getDefaultPrivacyUrl(). Aqui decia «si no esta, mejor vacio
+// que mal» — y vacio resulto ser peor: el DTO lo exige con @IsUrl() y el alta
+// fallaba entera.
 
 export const NewAppForm = () => {
   const router = useRouter();
@@ -45,7 +44,7 @@ export const NewAppForm = () => {
           description: form.description,
           shortDesc: form.shortDescription || form.description.slice(0, 120),
           iconUrl: DEFAULT_ICON_URL,
-          privacyUrl: DEFAULT_PRIVACY_URL,
+          privacyUrl: getDefaultPrivacyUrl(),
         }),
       });
 
