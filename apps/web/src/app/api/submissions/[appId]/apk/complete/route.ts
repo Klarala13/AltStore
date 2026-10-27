@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-export const maxDuration = 300;
-
 /**
- * POST /api/submissions/:appId/apk — uploads the APK for a submission.
+ * POST /api/submissions/:appId/apk/complete — confirma la subida.
  *
- * The multipart body is streamed straight through; re-parsing a 500 MB upload
- * here would only buffer it twice. Authorisation is the one-shot token the
- * submit step returned, not a session.
+ * El navegador avisa de que ya escribio en R2 y manda los datos de la version.
+ * El API comprueba el objeto por su cuenta antes de darlo por bueno: no se fia
+ * de lo que diga el cliente sobre un fichero que no ha visto pasar.
  */
 export async function POST(
   req: NextRequest,
@@ -24,17 +21,17 @@ export async function POST(
     return NextResponse.json({ message: "Missing upload token" }, { status: 400 });
   }
 
-  const res = await fetch(`${process.env.API_URL}/submissions/${appId}/apk`, {
+  const res = await fetch(`${process.env.API_URL}/submissions/${appId}/apk/complete`, {
     method: "POST",
     headers: {
-      "Content-Type": req.headers.get("content-type") ?? "",
+      "Content-Type": "application/json",
       "X-Internal-Key": process.env.INTERNAL_API_KEY ?? "",
       "X-Forwarded-For": req.headers.get("x-forwarded-for") ?? "",
       "x-upload-token": uploadToken,
     },
-    body: await req.arrayBuffer(),
+    body: JSON.stringify(await req.json()),
   });
 
-  const data: unknown = await res.json().catch(() => ({ message: "Upload failed" }));
+  const data: unknown = await res.json().catch(() => ({ message: "Could not finish the upload" }));
   return NextResponse.json(data, { status: res.status });
 }

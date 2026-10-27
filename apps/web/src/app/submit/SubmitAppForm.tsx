@@ -11,6 +11,7 @@ import {
 } from "@/components/AppDetailsFields";
 import { getDefaultPrivacyUrl } from "@/lib/site-url";
 import { FormError } from "@/components/FormError";
+import { ApkUploadError, uploadApk } from "@/lib/upload-apk";
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
 const DEFAULT_ICON_URL = "/icon.svg";
@@ -85,29 +86,26 @@ export const SubmitAppForm = () => {
         uploadToken: string;
       };
 
-      // The APK needs an app to hang off, so it can only go up once the record exists.
-      const body = new FormData();
-      body.append("file", file);
-      body.append("versionName", versionName);
-      body.append("versionCode", "1");
-      body.append("platform", "ANDROID");
-      body.append("changelog", "First submission");
-      body.append("minOs", "8.0");
-
-      const uploaded = await fetch(`/api/submissions/${appId}/apk`, {
-        method: "POST",
-        headers: { "x-upload-token": uploadToken },
-        body,
-      });
-
-      if (!uploaded.ok) {
-        setError(await readError(uploaded));
-        return;
-      }
+      // El APK necesita una app de la que colgar, asi que solo puede subir una
+      // vez existe el registro. Va directo a R2: por nuestro servidor no cabe.
+      await uploadApk(
+        {
+          basePath: `/api/submissions/${appId}/apk`,
+          headers: { "x-upload-token": uploadToken },
+        },
+        file,
+        {
+          versionName,
+          versionCode: 1,
+          platform: "ANDROID",
+          changelog: "First submission",
+          minOs: "8.0",
+        }
+      );
 
       setDone(true);
-    } catch {
-      setError(GENERIC_ERROR);
+    } catch (err) {
+      setError(err instanceof ApkUploadError ? err.message : GENERIC_ERROR);
     } finally {
       setLoading(false);
     }
