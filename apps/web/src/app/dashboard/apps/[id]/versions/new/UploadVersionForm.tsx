@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import type { VersionStatus } from "@appia/types";
 import { FormError } from "@/components/FormError";
+import { ApkUploadError, uploadApk } from "@/lib/upload-apk";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -228,49 +229,26 @@ export const UploadVersionForm = ({ appId }: { appId: string }) => {
     setUploading(true);
     setUploadProgress(0);
 
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("versionName", form.versionName);
-    fd.append("versionCode", form.versionCode);
-    fd.append("platform", form.platform);
-    fd.append("changelog", form.changelog || "Initial release");
-    if (form.minOsVersion) fd.append("minOs", form.minOsVersion);
-    else fd.append("minOs", "8.0");
+    try {
+      const version = (await uploadApk(
+        { basePath: `/api/apps/${appId}/versions` },
+        file,
+        {
+          versionName: form.versionName,
+          versionCode: Number(form.versionCode),
+          platform: form.platform,
+          changelog: form.changelog || "Initial release",
+          minOs: form.minOsVersion || "8.0",
+        },
+        setUploadProgress
+      )) as UploadedVersion;
 
-    await new Promise<void>((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `/api/apps/${appId}/versions`);
-
-      xhr.upload.addEventListener("progress", (ev) => {
-        if (ev.lengthComputable) {
-          setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
-        }
-      });
-
-      xhr.addEventListener("load", () => {
-        setUploading(false);
-        if (xhr.status >= 200 && xhr.status < 300) {
-          const version = JSON.parse(xhr.responseText) as UploadedVersion;
-          setUploadedVersion(version);
-        } else {
-          try {
-            const body = JSON.parse(xhr.responseText) as { message?: string };
-            setError(body.message ?? "Upload failed. Please try again.");
-          } catch {
-            setError("Upload failed. Please try again.");
-          }
-        }
-        resolve();
-      });
-
-      xhr.addEventListener("error", () => {
-        setUploading(false);
-        setError("Network error. Please check your connection.");
-        resolve();
-      });
-
-      xhr.send(fd);
-    });
+      setUploadedVersion(version);
+    } catch (err) {
+      setError(err instanceof ApkUploadError ? err.message : "Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const set =

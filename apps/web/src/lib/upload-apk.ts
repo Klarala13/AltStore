@@ -22,6 +22,9 @@ export interface ApkUploadTarget {
   headers?: Record<string, string>;
 }
 
+/** Progreso de 0 a 100 del paso 2, el unico que tarda. */
+export type ProgressFn = (percent: number) => void;
+
 export interface ApkVersionFields {
   versionName: string;
   versionCode: number;
@@ -46,8 +49,9 @@ async function readError(res: Response, fallback: string): Promise<string> {
 export async function uploadApk(
   target: ApkUploadTarget,
   file: File,
-  fields: ApkVersionFields
-): Promise<void> {
+  fields: ApkVersionFields,
+  onProgress?: ProgressFn
+): Promise<unknown> {
   const headers = target.headers ?? {};
 
   // --- 1. URL firmada ---
@@ -65,20 +69,7 @@ export async function uploadApk(
   };
 
   // --- 2. el binario, directo al almacen ---
-  // El Content-Type va dentro de la firma, asi que tiene que ser exactamente el
-  // que devolvio el paso 1 o R2 rechaza el PUT.
-  const put = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "Content-Type": contentType },
-    body: file,
-  });
-  if (!put.ok) {
-    throw new ApkUploadError(
-      put.status === 0
-        ? "The upload was blocked by the browser. Check the storage CORS policy."
-        : `The storage service rejected the upload (HTTP ${put.status}).`
-    );
-  }
+  await putWithProgress(uploadUrl, contentType, file, onProgress);
 
   // --- 3. confirmar ---
   const completed = await fetch(`${target.basePath}/complete`, {
@@ -89,4 +80,57 @@ export async function uploadApk(
   if (!completed.ok) {
     throw new ApkUploadError(await readError(completed, "Could not finish the upload."));
   }
+
+  return completed.json();
+}
+
+/**
+ * El PUT va con XMLHttpRequest y no con fetch por una razon concreta: fetch no
+ * informa del progreso de subida, y aqui pueden ser 60 MB. Una barra parada es
+ * indistinguible de algo colgado.
+ *
+ * El Content-Type va dentro de la firma, asi que tiene que ser exactamente el
+ * que devolvio el paso 1 o R2 rechaza el PUT.
+ */
+function putWithProgress(
+  url: string,
+  contentType: string,
+  file: File,
+  onProgress?: ProgressFn
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", contentType);
+
+    xhr.upload.addEventListener("progress", (ev) => {
+      if (ev.lengthComputable) onProgress?.(Math.round((ev.loaded / ev.total) * 100));
+    });
+
+    xhr.addEventListener("load", () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onProgress?.(100);
+        resolve();
+        return;
+      }
+      reject(new ApkUploadError(`The storage service rejected the upload (HTTP ${xhr.status}).`));
+    });
+
+    // Un fallo de CORS llega aqui, sin estado y sin cuerpo: el navegador no deja
+    // ver la respuesta. Por eso el mensaje nombra CORS en vez de decir "error de
+    // red", que mandaria a buscar en el sitio equivocado.
+    xhr.addEventListener("error", () => {
+      reject(
+        new ApkUploadError(
+          "The browser blocked the upload. Check the storage CORS policy allows PUT from this site."
+        )
+      );
+    });
+
+    xhr.addEventListener("abort", () => {
+      reject(new ApkUploadError("The upload was cancelled."));
+    });
+
+    xhr.send(file);
+  });
 }
