@@ -4,16 +4,40 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   DeleteObjectCommand,
   CopyObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+/** Lo que se sabe de un objeto sin descargarlo entero. */
+export interface StoredObject {
+  size: number;
+  contentType?: string;
+}
 
 export interface StorageProvider {
   upload(key: string, buffer: Buffer, contentType: string): Promise<void>;
   getSignedUrl(key: string, ttlSeconds: number): Promise<string>;
   delete(key: string): Promise<void>;
   move(sourceKey: string, destinationKey: string): Promise<void>;
+
+  /**
+   * URL firmada para que el NAVEGADOR escriba directamente en el almacen.
+   *
+   * Existe porque el APK no puede viajar por el servidor: la funcion de Vercel
+   * que hacia de puente corta el cuerpo a 4,5 MB (FUNCTION_PAYLOAD_TOO_LARGE), y
+   * ningun APK real cabe ahi. Mandando los bytes directos al almacen, ni Vercel
+   * ni Railway los ven pasar — lo que de paso quita el pico de memoria de
+   * bufferear el fichero entero en el API.
+   */
+  getSignedUploadUrl(key: string, ttlSeconds: number, contentType: string): Promise<string>;
+
+  /** Metadatos del objeto, o null si no existe. Para comprobar lo que subio el navegador. */
+  head(key: string): Promise<StoredObject | null>;
+
+  /** Primeros bytes del objeto, para validar magic bytes sin descargarlo entero. */
+  readPrefix(key: string, bytes: number): Promise<Buffer>;
 }
 
 export const STORAGE_PROVIDER = "STORAGE_PROVIDER";
@@ -155,6 +179,28 @@ export class SupabaseStorageProvider implements StorageProvider {
       throw new ServiceUnavailableException(`Supabase move failed: ${error}`);
     }
   }
+
+  // Produccion corre con STORAGE_DRIVER=r2, asi que la subida directa se
+  // implemento solo ahi. Fallar con un mensaje que diga exactamente que pasa es
+  // mejor que devolver una URL que no funcione: este proyecto ya ha perdido
+  // demasiado tiempo con errores que no se parecian a su causa.
+  getSignedUploadUrl(): Promise<string> {
+    throw new ServiceUnavailableException(
+      "Direct browser upload is only implemented for the R2 driver. Set STORAGE_DRIVER=r2."
+    );
+  }
+
+  head(): Promise<StoredObject | null> {
+    throw new ServiceUnavailableException(
+      "Object inspection is only implemented for the R2 driver. Set STORAGE_DRIVER=r2."
+    );
+  }
+
+  readPrefix(): Promise<Buffer> {
+    throw new ServiceUnavailableException(
+      "Object inspection is only implemented for the R2 driver. Set STORAGE_DRIVER=r2."
+    );
+  }
 }
 
 @Injectable()
@@ -242,4 +288,61 @@ export class R2StorageProvider implements StorageProvider {
     );
     await this.delete(sourceKey);
   }
+
+  async getSignedUploadUrl(key: string, ttlSeconds: number, contentType: string): Promise<string> {
+    const { client, bucket } = this.getConfiguredClient();
+
+    // ContentType va firmado: el navegador tiene que mandar exactamente este
+    // encabezado o R2 rechaza la subida. Evita que una URL firmada para un APK
+    // sirva para colar otra cosa.
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      ContentType: contentType,
+    });
+
+    return getSignedUrl(client, command, { expiresIn: ttlSeconds });
+  }
+
+  async head(key: string): Promise<StoredObject | null> {
+    const { client, bucket } = this.getConfiguredClient();
+
+    try {
+      const res = await client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+      return {
+        size: Number(res.ContentLength ?? 0),
+        contentType: res.ContentType,
+      };
+    } catch (error) {
+      if (isNotFound(error)) return null;
+      throw error;
+    }
+  }
+
+  async readPrefix(key: string, bytes: number): Promise<Buffer> {
+    const { client, bucket } = this.getConfiguredClient();
+
+    // Range pide solo la cabecera del fichero. Validar los magic bytes no puede
+    // costar descargar 60 MB.
+    const res = await client.send(
+      new GetObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Range: `bytes=0-${bytes - 1}`,
+      })
+    );
+
+    const body = res.Body as { transformToByteArray?: () => Promise<Uint8Array> } | undefined;
+    if (!body?.transformToByteArray) return Buffer.alloc(0);
+
+    return Buffer.from(await body.transformToByteArray());
+  }
+}
+
+/** R2 responde 404/NotFound/NoSuchKey segun la operacion; se cubren los tres. */
+function isNotFound(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const name = (error as { name?: unknown }).name;
+  const status = (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+  return name === "NotFound" || name === "NoSuchKey" || status === 404;
 }
