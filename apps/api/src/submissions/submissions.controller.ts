@@ -13,7 +13,7 @@ import { memoryStorage } from "multer";
 import { SubmissionsService } from "./submissions.service";
 import { SubmitAppDto } from "./submissions.dto";
 import { VersionsService } from "../versions/versions.service";
-import { CreateVersionDto } from "../versions/versions.dto";
+import { CompleteUploadDto, CreateVersionDto } from "../versions/versions.dto";
 import { RateLimit, RateLimitGuard } from "../common/guards/rate-limit.guard";
 import { InternalKeyGuard } from "../common/guards/internal-key.guard";
 
@@ -41,6 +41,36 @@ export class SubmissionsController {
   @RateLimit({ limit: 5, windowMs: ONE_HOUR_MS })
   submit(@Body() dto: SubmitAppDto) {
     return this.submissionsService.submit(dto);
+  }
+
+  /**
+   * Subida directa, en dos llamadas pequenas con el binario en medio yendo a R2.
+   *
+   * La ruta multipart de abajo no sirve para un APK real: el puente de Vercel
+   * corta el cuerpo a 4,5 MB. Estas dos solo mueven JSON, asi que pasan de
+   * sobra.
+   */
+  @Post(":appId/apk/upload-url")
+  @UseGuards(InternalKeyGuard, RateLimitGuard)
+  @RateLimit({ limit: 10, windowMs: ONE_HOUR_MS })
+  async createUploadUrl(
+    @Param("appId") appId: string,
+    @Headers("x-upload-token") uploadToken: string | undefined
+  ) {
+    const developerId = await this.submissionsService.resolveUploadToken(uploadToken, appId);
+    return this.versionsService.createUploadUrl(appId, developerId);
+  }
+
+  @Post(":appId/apk/complete")
+  @UseGuards(InternalKeyGuard, RateLimitGuard)
+  @RateLimit({ limit: 10, windowMs: ONE_HOUR_MS })
+  async completeUpload(
+    @Param("appId") appId: string,
+    @Headers("x-upload-token") uploadToken: string | undefined,
+    @Body() dto: CompleteUploadDto
+  ) {
+    const developerId = await this.submissionsService.resolveUploadToken(uploadToken, appId);
+    return this.versionsService.completeUpload(appId, developerId, dto);
   }
 
   @Post(":appId/apk")

@@ -34,3 +34,16 @@ export class VersionQueryDto {
   @Type(() => Number)
   limit?: number = 20;
 }
+
+/**
+ * Confirmacion de una subida directa a R2.
+ *
+ * `uploadRef` es el JWT que devolvio el paso de la URL firmada, y lleva dentro
+ * la clave del objeto. No se acepta la clave suelta a proposito: si el cliente
+ * pudiera nombrarla, podria confirmar la subida de otro y colgar su binario de
+ * su propia app.
+ */
+export class CompleteUploadDto extends CreateVersionDto {
+  @IsString()
+  uploadRef!: string;
+}

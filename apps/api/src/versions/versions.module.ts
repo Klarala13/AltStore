@@ -3,10 +3,13 @@ import { BullModule } from "@nestjs/bull";
 import { VersionsService } from "./versions.service";
 import { VersionsController } from "./versions.controller";
 import { StorageModule } from "../storage/storage.module";
+import { AuthModule } from "../auth/auth.module";
 import { SCAN_QUEUE } from "../security/security.constants";
 
 @Module({
-  imports: [StorageModule, BullModule.registerQueue({ name: SCAN_QUEUE })],
+  // AuthModule exporta JwtModule: VersionsService firma el `uploadRef` que
+  // enlaza el paso de la URL firmada con el de confirmacion.
+  imports: [StorageModule, AuthModule, BullModule.registerQueue({ name: SCAN_QUEUE })],
   controllers: [VersionsController],
   providers: [VersionsService],
   exports: [VersionsService],

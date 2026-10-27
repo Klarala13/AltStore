@@ -6,23 +6,40 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectQueue } from "@nestjs/bull";
+import { JwtService } from "@nestjs/jwt";
 import { Queue } from "bull";
 import * as crypto from "crypto";
 import { PrismaService } from "../prisma/prisma.service";
 import { StorageProvider, STORAGE_PROVIDER } from "../storage/storage.provider";
-import { CreateVersionDto } from "./versions.dto";
+import { CompleteUploadDto, CreateVersionDto } from "./versions.dto";
 import { SCAN_QUEUE, ScanJobData } from "../security/security.constants";
 
 /** APK files start with PK (ZIP) magic bytes: 0x50 0x4B 0x03 0x04 */
 const APK_MAGIC = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
 const MAX_APK_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
 
+const APK_CONTENT_TYPE = "application/vnd.android.package-archive";
+
+/** Marca el JWT como valido solo para cerrar una subida, nunca para el API en general. */
+const UPLOAD_PURPOSE = "apk-upload";
+
+/** Margen para subir el binario. Generoso: 500 MB por una linea domestica tarda. */
+const UPLOAD_REF_TTL = "2h";
+
+/** Lo que firma el paso 1 y devuelve el navegador en el paso 3. */
+interface UploadRefPayload {
+  appId: string;
+  fileKey: string;
+  purpose: string;
+}
+
 @Injectable()
 export class VersionsService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(STORAGE_PROVIDER) private readonly storage: StorageProvider,
-    @InjectQueue(SCAN_QUEUE) private readonly scanQueue: Queue<ScanJobData>
+    @InjectQueue(SCAN_QUEUE) private readonly scanQueue: Queue<ScanJobData>,
+    private readonly jwt: JwtService
   ) {}
 
   async getVersionHistory(appSlug: string) {
@@ -51,6 +68,117 @@ export class VersionsService {
    * 4. Create Version record (SCANNING status)
    * 5. Enqueue VirusTotal scan job
    */
+  /**
+   * Paso 1 de la subida directa: una URL firmada para que el navegador escriba
+   * en R2 por su cuenta.
+   *
+   * El fichero no puede pasar por el servidor. La funcion de Vercel que hacia
+   * de puente corta el cuerpo a 4,5 MB y devuelve FUNCTION_PAYLOAD_TOO_LARGE, y
+   * no hay APK real que quepa ahi: Snake pesa 18 MB y TicTacToe 61 MB. Durante
+   * meses solo "funciono" con un zip falso de 692 bytes.
+   *
+   * La clave se devuelve dentro de un JWT, no suelta. Si el cliente pudiera
+   * elegirla, podria cerrar la subida de otra persona contra su propia app.
+   */
+  async createUploadUrl(appId: string, developerId: string) {
+    const app = await this.assertOwnership(appId, developerId);
+
+    const fileKey = `uploads/pending/${crypto.randomUUID()}.apk`;
+    const uploadUrl = await this.storage.getSignedUploadUrl(fileKey, 3600, APK_CONTENT_TYPE);
+
+    const uploadRef = await this.jwt.signAsync(
+      { appId: app.id, fileKey, purpose: UPLOAD_PURPOSE } satisfies UploadRefPayload,
+      { expiresIn: UPLOAD_REF_TTL }
+    );
+
+    // contentType se devuelve porque la firma lo incluye: si el navegador manda
+    // otro encabezado, R2 rechaza el PUT y el error no se parece a su causa.
+    return { uploadUrl, uploadRef, contentType: APK_CONTENT_TYPE };
+  }
+
+  /**
+   * Paso 3: el navegador dice que ya subio, y el API lo comprueba.
+   *
+   * Nada de lo que afirme el cliente sobre el fichero se da por bueno. El API no
+   * lo ha visto pasar, asi que mira el objeto en R2: que exista, cuanto pesa y
+   * con que bytes empieza. Y calcula el sha256 el mismo.
+   */
+  async completeUpload(appId: string, developerId: string, dto: CompleteUploadDto) {
+    const app = await this.assertOwnership(appId, developerId);
+    const fileKey = await this.resolveUploadRef(dto.uploadRef, app.id);
+
+    const object = await this.storage.head(fileKey);
+    if (!object) {
+      throw new BadRequestException(
+        "No file was uploaded. Upload the APK to the signed URL before completing."
+      );
+    }
+    if (object.size === 0) {
+      throw new BadRequestException("The uploaded file is empty.");
+    }
+    if (object.size > MAX_APK_SIZE_BYTES) {
+      throw new BadRequestException(
+        `APK exceeds the ${MAX_APK_SIZE_BYTES / (1024 * 1024)} MB limit.`
+      );
+    }
+
+    const prefix = await this.storage.readPrefix(fileKey, APK_MAGIC.length);
+    if (!prefix.equals(APK_MAGIC)) {
+      // Nota: esto demuestra "es un zip", no "es un APK". Un IPA pasaria igual,
+      // porque tambien es un zip. Distinguirlos pide mirar dentro.
+      await this.storage.delete(fileKey).catch(() => undefined);
+      throw new BadRequestException("File is not a valid APK (invalid magic bytes)");
+    }
+
+    const sha256 = await this.storage.sha256(fileKey);
+
+    const version = await this.prisma.version.create({
+      data: {
+        appId,
+        versionName: dto.versionName,
+        versionCode: dto.versionCode,
+        platform: dto.platform,
+        fileKey,
+        fileSize: BigInt(object.size),
+        fileSha256: sha256,
+        changelog: dto.changelog,
+        minOs: dto.minOs,
+        status: "SCANNING",
+      },
+    });
+
+    await this.scanQueue.add(
+      { versionId: version.id, fileKey, appBundleId: app.bundleId },
+      { attempts: 3, backoff: { type: "exponential", delay: 5000 } }
+    );
+
+    return { ...version, fileSize: version.fileSize.toString() };
+  }
+
+  private async assertOwnership(appId: string, developerId: string) {
+    const app = await this.prisma.app.findUnique({
+      where: { id: appId },
+      select: { id: true, developerId: true, bundleId: true },
+    });
+    if (!app) throw new NotFoundException(`App ${appId} not found`);
+    if (app.developerId !== developerId) throw new ForbiddenException();
+    return app;
+  }
+
+  private async resolveUploadRef(uploadRef: string, appId: string): Promise<string> {
+    let payload: UploadRefPayload;
+    try {
+      payload = await this.jwt.verifyAsync<UploadRefPayload>(uploadRef);
+    } catch {
+      throw new BadRequestException("Upload link expired. Start the upload again.");
+    }
+
+    if (payload.purpose !== UPLOAD_PURPOSE || payload.appId !== appId) {
+      throw new ForbiddenException("This upload does not belong to that app");
+    }
+    return payload.fileKey;
+  }
+
   async uploadApk(
     appId: string,
     developerId: string,

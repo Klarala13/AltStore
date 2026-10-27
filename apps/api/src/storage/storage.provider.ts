@@ -9,6 +9,7 @@ import {
   CopyObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createHash } from "crypto";
 
 /** Lo que se sabe de un objeto sin descargarlo entero. */
 export interface StoredObject {
@@ -38,6 +39,16 @@ export interface StorageProvider {
 
   /** Primeros bytes del objeto, para validar magic bytes sin descargarlo entero. */
   readPrefix(key: string, bytes: number): Promise<Buffer>;
+
+  /**
+   * SHA-256 del objeto, leyendolo en streaming.
+   *
+   * `Version.fileSha256` no admite nulo y el API ya no ve pasar el fichero, asi
+   * que tiene que calcularlo desde el almacen. Se hace por trozos y no cargando
+   * el objeto entero: un APK de 500 MB en memoria es justo el pico que esta
+   * subida directa venia a quitar.
+   */
+  sha256(key: string): Promise<string>;
 }
 
 export const STORAGE_PROVIDER = "STORAGE_PROVIDER";
@@ -201,6 +212,12 @@ export class SupabaseStorageProvider implements StorageProvider {
       "Object inspection is only implemented for the R2 driver. Set STORAGE_DRIVER=r2."
     );
   }
+
+  sha256(): Promise<string> {
+    throw new ServiceUnavailableException(
+      "Object inspection is only implemented for the R2 driver. Set STORAGE_DRIVER=r2."
+    );
+  }
 }
 
 @Injectable()
@@ -336,6 +353,22 @@ export class R2StorageProvider implements StorageProvider {
     if (!body?.transformToByteArray) return Buffer.alloc(0);
 
     return Buffer.from(await body.transformToByteArray());
+  }
+
+  async sha256(key: string): Promise<string> {
+    const { client, bucket } = this.getConfiguredClient();
+
+    const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    const body = res.Body as AsyncIterable<Uint8Array> | undefined;
+    if (!body) {
+      throw new ServiceUnavailableException(`Could not read ${key} back from storage`);
+    }
+
+    const hash = createHash("sha256");
+    for await (const chunk of body) {
+      hash.update(chunk);
+    }
+    return hash.digest("hex");
   }
 }
 
