@@ -1,8 +1,29 @@
-import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateAppDto, UpdateAppDto } from "./apps.dto";
 import { AppStatus, Category, Platform } from "@appia/db";
 import type { DeveloperAppDetailDto, DeveloperAppListDto } from "@appia/types";
+
+/**
+ * Devuelve el campo que provoco una violacion de restriccion unica, o null si
+ * el error es otra cosa. Se mira por forma y no con `instanceof
+ * PrismaClientKnownRequestError`, porque el cliente de Prisma es generado y
+ * comparar clases entre paquetes del monorepo es fragil.
+ */
+function uniqueConstraintTarget(error: unknown): string | null {
+  if (typeof error !== "object" || error === null) return null;
+  if ((error as { code?: unknown }).code !== "P2002") return null;
+
+  const target = (error as { meta?: { target?: unknown } }).meta?.target;
+  if (Array.isArray(target) && typeof target[0] === "string") return target[0];
+  if (typeof target === "string") return target;
+  return "field";
+}
 
 export interface AppFilters {
   category?: Category;
@@ -239,15 +260,43 @@ export class AppsService {
     };
   }
 
+  /**
+   * `slug` y `bundleId` son `@unique`. Sin capturar el choque, Prisma lanza un
+   * P2002 que nadie recoge y Nest lo convierte en un `500 Internal server
+   * error`: el usuario ve un fallo del servidor cuando en realidad el nombre ya
+   * esta cogido, y no tiene forma de saber que cambiar.
+   *
+   * Pasa de verdad y es facil de provocar: si el alta crea la app y la subida
+   * del APK falla despues, reintentar el mismo formulario choca siempre consigo
+   * mismo.
+   */
   async create(developerId: string, dto: CreateAppDto) {
-    return this.prisma.app.create({
-      data: {
-        ...dto,
-        developerId,
-        screenshots: dto.screenshots ?? [],
-        platform: dto.platform ?? "ANDROID",
-      },
-    });
+    try {
+      return await this.prisma.app.create({
+        data: {
+          ...dto,
+          developerId,
+          screenshots: dto.screenshots ?? [],
+          platform: dto.platform ?? "ANDROID",
+        },
+      });
+    } catch (error) {
+      const target = uniqueConstraintTarget(error);
+      if (target === "slug") {
+        throw new ConflictException(
+          `An app called "${dto.name}" already exists. Pick a different name.`
+        );
+      }
+      if (target === "bundleId") {
+        throw new ConflictException(
+          `The bundle ID "${dto.bundleId}" is already registered to another app.`
+        );
+      }
+      if (target) {
+        throw new ConflictException(`That ${target} is already taken.`);
+      }
+      throw error;
+    }
   }
 
   async update(id: string, developerId: string, dto: UpdateAppDto) {

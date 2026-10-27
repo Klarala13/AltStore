@@ -10,6 +10,7 @@ import {
   type AppDetails,
 } from "@/components/AppDetailsFields";
 import { getDefaultPrivacyUrl } from "@/lib/site-url";
+import { FormError } from "@/components/FormError";
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
 const DEFAULT_ICON_URL = "/icon.svg";
@@ -126,14 +127,7 @@ export const SubmitAppForm = () => {
 
   return (
     <>
-      {error && (
-        <div
-          role="alert"
-          className="mb-6 rounded-lg border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm text-red-400"
-        >
-          {error}
-        </div>
-      )}
+      <FormError message={error} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <AppDetailsFields form={app} onChange={setAppField} disabled={loading} />

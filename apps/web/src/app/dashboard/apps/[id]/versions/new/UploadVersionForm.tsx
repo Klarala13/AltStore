@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import type { VersionStatus } from "@appia/types";
+import { FormError } from "@/components/FormError";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -329,14 +330,7 @@ export const UploadVersionForm = ({ appId }: { appId: string }) => {
 
   return (
     <>
-      {error && (
-        <div
-          role="alert"
-          className="mb-6 rounded-lg border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm text-red-400"
-        >
-          {error}
-        </div>
-      )}
+      <FormError message={error} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         {/* Drag-and-drop zone */}
