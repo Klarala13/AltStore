@@ -27,7 +27,8 @@ const HomePage = async () => {
       <StatsSection />
 
       {/* ── App grid ── */}
-      <section id="apps" className="mx-4 py-16 md:mx-16 md:py-20 lg:mx-24 xl:mx-32">
+      {/* scroll-mt deja sitio al header pegajoso: sin el, tapa el titulo. */}
+      <section id="apps" className="mx-4 scroll-mt-20 py-16 md:mx-16 md:py-20 lg:mx-24 xl:mx-32">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h2 className="font-display text-2xl font-semibold text-white">All Apps</h2>
           <CategoryBar />

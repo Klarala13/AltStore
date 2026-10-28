@@ -10,9 +10,16 @@ import { useState, useEffect, useRef } from "react";
 // NavLink — desktop nav item with active-page indicator
 // ---------------------------------------------------------------------------
 
+/**
+ * `usePathname()` devuelve la ruta sin el hash, asi que comparar contra
+ * "/#apps" nunca daria verdadero y "Apps" perderia el resaltado justo en la
+ * home, que es donde lleva.
+ */
+const isCurrent = (pathname: string, href: Route) => pathname === String(href).split("#")[0];
+
 export const NavLink = ({ href, children }: { href: Route; children: React.ReactNode }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = isCurrent(pathname, href);
   return (
     <Link
       href={href}
@@ -32,7 +39,9 @@ export const NavLink = ({ href, children }: { href: Route; children: React.React
 // ---------------------------------------------------------------------------
 
 const NAV_LINKS: { href: Route; label: string }[] = [
-  { href: "/", label: "Apps" },
+  // Al catalogo, no a la home a secas: pulsarlo estando ya en la home no hacia
+  // nada y parecia un enlace roto.
+  { href: "/#apps" as Route, label: "Apps" },
   { href: "/search", label: "Search" },
   { href: "/submit", label: "Submit app" },
   { href: "/developers", label: "Developers" },
@@ -141,7 +150,7 @@ export const MobileNav = () => {
         {/* Nav links */}
         <nav className="flex flex-col gap-1 px-4 py-6" aria-label="Mobile navigation">
           {NAV_LINKS.map(({ href, label }) => {
-            const isActive = pathname === href;
+            const isActive = isCurrent(pathname, href);
             return (
               <Link
                 key={String(href)}

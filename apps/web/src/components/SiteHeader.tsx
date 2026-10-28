@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 import { NavLink } from "@/components/SiteNav";
 import { MobileNav } from "@/components/SiteNav";
@@ -15,7 +16,7 @@ export const SiteHeader = () => (
         Appia
       </Link>
       <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
-        <NavLink href="/">Apps</NavLink>
+        <NavLink href={"/#apps" as Route}>Apps</NavLink>
         <NavLink href="/search">Search</NavLink>
         <NavLink href="/submit">Submit app</NavLink>
         <NavLink href="/developers">Developers</NavLink>

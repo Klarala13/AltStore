@@ -18,6 +18,13 @@
     outline: none;
   }
 
+  /* Los enlaces de ancla, como "Apps" -> #apps, se deslizan en vez de saltar.
+     El bloque de abajo ya lo anulaba para quien pide menos movimiento, pero
+     nadie lo habia activado. */
+  html {
+    scroll-behavior: smooth;
+  }
+
   /* Respect reduced-motion preference for all transitions */
   @media (prefers-reduced-motion: reduce) {
     *,
