@@ -55,14 +55,25 @@ WHERE "slug" = 'frasefuerte';
 -- ---------------------------------------------------------------------------
 -- 3. Imagenes de catalogo
 -- ---------------------------------------------------------------------------
+-- RUTAS RELATIVAS, no URLs absolutas. El catalogo pinta con next/image, que
+-- solo optimiza dominios dados de alta en next.config (remotePatterns), y
+-- appia-nu.vercel.app no esta en esa lista: con la URL entera devuelve 400 y
+-- la tarjeta sale con un hueco negro. Relativo es ademas lo que ya hace el
+-- seed, y lo que guarda el formulario nuevo.
+--
+-- La PRIMERA captura es la portada de la tarjeta, no una captura: el API hace
+-- coverUrl = screenshots[0] (apps.service.ts:134). Por eso va 0-portada.png
+-- delante. Sin ella, la tarjeta sale vacia al lado de las dos del seed.
+
 UPDATE "App"
 SET
-  "iconUrl" = 'https://appia-nu.vercel.app/catalog/frase-fuerte/icon.png',
+  "iconUrl" = '/catalog/frase-fuerte/icon.png',
   "screenshots" = ARRAY[
-    'https://appia-nu.vercel.app/catalog/frase-fuerte/1-medida.png',
-    'https://appia-nu.vercel.app/catalog/frase-fuerte/2-sugerencias.png',
-    'https://appia-nu.vercel.app/catalog/frase-fuerte/3-aviso.png',
-    'https://appia-nu.vercel.app/catalog/frase-fuerte/4-creditos.png'
+    '/catalog/frase-fuerte/0-portada.png',
+    '/catalog/frase-fuerte/1-medida.png',
+    '/catalog/frase-fuerte/2-sugerencias.png',
+    '/catalog/frase-fuerte/3-aviso.png',
+    '/catalog/frase-fuerte/4-creditos.png'
   ],
   "updatedAt" = NOW()
 WHERE "slug" = 'frasefuerte';
