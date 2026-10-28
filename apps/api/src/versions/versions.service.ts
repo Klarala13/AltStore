@@ -13,6 +13,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { StorageProvider, STORAGE_PROVIDER } from "../storage/storage.provider";
 import { CompleteUploadDto, CreateVersionDto } from "./versions.dto";
 import { SCAN_QUEUE, ScanJobData } from "../security/security.constants";
+import { NotificationsService } from "../notifications/notifications.service";
 
 /** APK files start with PK (ZIP) magic bytes: 0x50 0x4B 0x03 0x04 */
 const APK_MAGIC = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
@@ -39,7 +40,8 @@ export class VersionsService {
     private readonly prisma: PrismaService,
     @Inject(STORAGE_PROVIDER) private readonly storage: StorageProvider,
     @InjectQueue(SCAN_QUEUE) private readonly scanQueue: Queue<ScanJobData>,
-    private readonly jwt: JwtService
+    private readonly jwt: JwtService,
+    private readonly notifications: NotificationsService
   ) {}
 
   async getVersionHistory(appSlug: string) {
@@ -152,13 +154,23 @@ export class VersionsService {
       { attempts: 3, backoff: { type: "exponential", delay: 5000 } }
     );
 
+    this.announce(app, version.versionName, object.size);
+
     return { ...version, fileSize: version.fileSize.toString() };
   }
 
   private async assertOwnership(appId: string, developerId: string) {
     const app = await this.prisma.app.findUnique({
       where: { id: appId },
-      select: { id: true, developerId: true, bundleId: true },
+      // name/slug/category salen de aqui para el aviso de app nueva.
+      select: {
+        id: true,
+        developerId: true,
+        bundleId: true,
+        name: true,
+        slug: true,
+        category: true,
+      },
     });
     if (!app) throw new NotFoundException(`App ${appId} not found`);
     if (app.developerId !== developerId) throw new ForbiddenException();
@@ -185,13 +197,7 @@ export class VersionsService {
     dto: CreateVersionDto,
     file: Express.Multer.File
   ) {
-    // --- Ownership check ---
-    const app = await this.prisma.app.findUnique({
-      where: { id: appId },
-      select: { developerId: true, bundleId: true },
-    });
-    if (!app) throw new NotFoundException(`App ${appId} not found`);
-    if (app.developerId !== developerId) throw new ForbiddenException();
+    const app = await this.assertOwnership(appId, developerId);
 
     // --- File validations ---
     this.validateApkFile(file);
@@ -224,10 +230,38 @@ export class VersionsService {
       { attempts: 3, backoff: { type: "exponential", delay: 5000 } }
     );
 
+    this.announce(app, version.versionName, file.size);
+
     return {
       ...version,
       fileSize: version.fileSize.toString(),
     };
+  }
+
+  /**
+   * Avisa por correo de que hay algo que revisar. Se llama desde los dos
+   * caminos de subida, que es el momento en que la app pasa a ser revisable:
+   * antes del APK no hay nada que mirar.
+   *
+   * Sin `await` a proposito. El aviso no debe retrasar la respuesta al que
+   * sube, y el servicio ya se traga sus propios errores; el `catch` de aqui
+   * solo cubre que alguien le quite esa garantia mas adelante.
+   */
+  private announce(
+    app: { name: string; slug: string; bundleId: string; category: string },
+    versionName: string,
+    fileSizeBytes: number
+  ): void {
+    void this.notifications
+      .notifyNewSubmission({
+        appName: app.name,
+        slug: app.slug,
+        bundleId: app.bundleId,
+        category: app.category,
+        versionName,
+        fileSizeBytes,
+      })
+      .catch(() => undefined);
   }
 
   async getVersionStatus(appId: string, versionId: string, developerId: string) {
