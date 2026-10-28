@@ -14,6 +14,8 @@ import { SubmissionsService } from "./submissions.service";
 import { SubmitAppDto } from "./submissions.dto";
 import { VersionsService } from "../versions/versions.service";
 import { CompleteUploadDto, CreateVersionDto } from "../versions/versions.dto";
+import { ImagesService } from "../images/images.service";
+import { CompleteImageUploadDto, CreateImageUploadUrlDto } from "../images/images.dto";
 import { RateLimit, RateLimitGuard } from "../common/guards/rate-limit.guard";
 import { InternalKeyGuard } from "../common/guards/internal-key.guard";
 
@@ -33,7 +35,8 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
 export class SubmissionsController {
   constructor(
     private readonly submissionsService: SubmissionsService,
-    private readonly versionsService: VersionsService
+    private readonly versionsService: VersionsService,
+    private readonly imagesService: ImagesService
   ) {}
 
   @Post()
@@ -71,6 +74,36 @@ export class SubmissionsController {
   ) {
     const developerId = await this.submissionsService.resolveUploadToken(uploadToken, appId);
     return this.versionsService.completeUpload(appId, developerId, dto);
+  }
+
+  /**
+   * Icono y capturas, por el mismo camino de tres pasos que el APK.
+   *
+   * El limite es mas alto porque una ficha completa son hasta siete imagenes
+   * (un icono y seis capturas), y cada una gasta dos llamadas de estas.
+   */
+  @Post(":appId/images/upload-url")
+  @UseGuards(InternalKeyGuard, RateLimitGuard)
+  @RateLimit({ limit: 40, windowMs: ONE_HOUR_MS })
+  async createImageUploadUrl(
+    @Param("appId") appId: string,
+    @Headers("x-upload-token") uploadToken: string | undefined,
+    @Body() dto: CreateImageUploadUrlDto
+  ) {
+    const developerId = await this.submissionsService.resolveUploadToken(uploadToken, appId);
+    return this.imagesService.createUploadUrl(appId, developerId, dto);
+  }
+
+  @Post(":appId/images/complete")
+  @UseGuards(InternalKeyGuard, RateLimitGuard)
+  @RateLimit({ limit: 40, windowMs: ONE_HOUR_MS })
+  async completeImageUpload(
+    @Param("appId") appId: string,
+    @Headers("x-upload-token") uploadToken: string | undefined,
+    @Body() dto: CompleteImageUploadDto
+  ) {
+    const developerId = await this.submissionsService.resolveUploadToken(uploadToken, appId);
+    return this.imagesService.completeUpload(appId, developerId, dto);
   }
 
   @Post(":appId/apk")

@@ -12,8 +12,12 @@ import {
 import { getDefaultPrivacyUrl } from "@/lib/site-url";
 import { FormError } from "@/components/FormError";
 import { ApkUploadError, uploadApk } from "@/lib/upload-apk";
+import { ImagePicker } from "@/components/ImagePicker";
+import { ImageUploadError, MAX_SCREENSHOTS, uploadAppImages } from "@/lib/upload-image";
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
+
+/** Hasta que se suba el icono de verdad, la ficha lleva el de la tienda. */
 const DEFAULT_ICON_URL = "/icon.svg";
 
 interface Submitter {
@@ -29,6 +33,8 @@ export const SubmitAppForm = () => {
   const [app, setApp] = useState<AppDetails>(EMPTY_APP_DETAILS);
   const [submitter, setSubmitter] = useState<Submitter>(EMPTY_SUBMITTER);
   const [file, setFile] = useState<File | null>(null);
+  const [icon, setIcon] = useState<File[]>([]);
+  const [screenshots, setScreenshots] = useState<File[]>([]);
   const [versionName, setVersionName] = useState("1.0.0");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +92,15 @@ export const SubmitAppForm = () => {
         uploadToken: string;
       };
 
+      const target = {
+        basePath: `/api/submissions/${appId}/images`,
+        headers: { "x-upload-token": uploadToken },
+      };
+
+      // Las imagenes van antes que el APK a proposito: pesan poco, asi que si
+      // alguna no vale se sabe en un segundo y no despues de subir 60 MB.
+      await uploadAppImages(target, { icon: icon[0], screenshots });
+
       // El APK necesita una app de la que colgar, asi que solo puede subir una
       // vez existe el registro. Va directo a R2: por nuestro servidor no cabe.
       await uploadApk(
@@ -105,7 +120,8 @@ export const SubmitAppForm = () => {
 
       setDone(true);
     } catch (err) {
-      setError(err instanceof ApkUploadError ? err.message : GENERIC_ERROR);
+      const known = err instanceof ApkUploadError || err instanceof ImageUploadError;
+      setError(known ? err.message : GENERIC_ERROR);
     } finally {
       setLoading(false);
     }
@@ -129,6 +145,28 @@ export const SubmitAppForm = () => {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <AppDetailsFields form={app} onChange={setAppField} disabled={loading} />
+
+        <ImagePicker
+          id="icon"
+          label="App icon"
+          hint="Shown in the catalogue and on the listing. Square works best."
+          kind="icon"
+          files={icon}
+          onChange={setIcon}
+          max={1}
+          disabled={loading}
+        />
+
+        <ImagePicker
+          id="screenshots"
+          label="Screenshots"
+          hint="Shown on the listing page."
+          kind="screenshot"
+          files={screenshots}
+          onChange={setScreenshots}
+          max={MAX_SCREENSHOTS}
+          disabled={loading}
+        />
 
         <div>
           <label htmlFor="apk" className={labelClass}>

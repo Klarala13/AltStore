@@ -14,6 +14,7 @@ import { RatingsModule } from "./ratings/ratings.module";
 import { SubmissionsModule } from "./submissions/submissions.module";
 import { RetentionModule } from "./retention/retention.module";
 import { NotificationsModule } from "./notifications/notifications.module";
+import { ImagesModule } from "./images/images.module";
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { NotificationsModule } from "./notifications/notifications.module";
     SubmissionsModule, // Accountless app submission
     RetentionModule, // Daily DownloadLog sweep (the 90 days /privacy promises)
     NotificationsModule, // Aviso por correo cuando entra una app a revisar
+    ImagesModule, // Icono y capturas de ficha, subidos directos al almacen
   ],
 })
 export class AppModule {}

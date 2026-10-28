@@ -11,8 +11,12 @@ import {
 } from "@/components/AppDetailsFields";
 import { getDefaultPrivacyUrl } from "@/lib/site-url";
 import { FormError } from "@/components/FormError";
+import { ImagePicker } from "@/components/ImagePicker";
+import { ImageUploadError, MAX_SCREENSHOTS, uploadAppImages } from "@/lib/upload-image";
 
 const GENERIC_ERROR = "Something went wrong. Please try again.";
+
+/** Hasta que se suba el icono de verdad, la ficha lleva el de la tienda. */
 const DEFAULT_ICON_URL = "/icon.svg";
 // privacyUrl se manda sin pintarlo en el formulario, asi que su valor por
 // defecto vive en getDefaultPrivacyUrl(). Aqui decia «si no esta, mejor vacio
@@ -22,6 +26,8 @@ const DEFAULT_ICON_URL = "/icon.svg";
 export const NewAppForm = () => {
   const router = useRouter();
   const [form, setForm] = useState<AppDetails>(EMPTY_APP_DETAILS);
+  const [icon, setIcon] = useState<File[]>([]);
+  const [screenshots, setScreenshots] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,10 +66,19 @@ export const NewAppForm = () => {
       }
 
       const created = (await res.json()) as { id: string };
+
+      // Las imagenes cuelgan de la app, asi que solo pueden subir una vez
+      // existe el registro. Si fallan, la app ya esta creada: se avisa y se
+      // queda en el formulario en vez de saltar a la pantalla siguiente.
+      await uploadAppImages(
+        { basePath: `/api/apps/${created.id}/images` },
+        { icon: icon[0], screenshots }
+      );
+
       router.push(`/dashboard/apps/${created.id}/versions/new` as Route);
       router.refresh();
-    } catch {
-      setError(GENERIC_ERROR);
+    } catch (err) {
+      setError(err instanceof ImageUploadError ? err.message : GENERIC_ERROR);
     } finally {
       setLoading(false);
     }
@@ -75,6 +90,28 @@ export const NewAppForm = () => {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <AppDetailsFields form={form} onChange={set} disabled={loading} />
+
+        <ImagePicker
+          id="icon"
+          label="App icon"
+          hint="Shown in the catalogue and on the listing. Square works best."
+          kind="icon"
+          files={icon}
+          onChange={setIcon}
+          max={1}
+          disabled={loading}
+        />
+
+        <ImagePicker
+          id="screenshots"
+          label="Screenshots"
+          hint="Shown on the listing page."
+          kind="screenshot"
+          files={screenshots}
+          onChange={setScreenshots}
+          max={MAX_SCREENSHOTS}
+          disabled={loading}
+        />
 
         <div className="flex items-center gap-3 border-t border-zinc-800 pt-4">
           <button
