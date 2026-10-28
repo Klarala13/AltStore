@@ -1,48 +1,60 @@
--- Pone las imagenes de catalogo de Foco y Frase Fuerte y las publica.
+-- Corrige la ficha de Frase Fuerte, le pone las imagenes y la publica.
 -- Se ejecuta a mano, en el editor SQL de Supabase.
 --
 --   Supabase > tu proyecto > SQL Editor > New query > pegar > Run
 --
--- ANTES DE LANZARLO, dos condiciones:
+-- POR QUE LA VERSION ANTERIOR NO HIZO NADA
 --
---   1. La app tiene que estar subida desde la web. Queda con
---      iconUrl = '/icon.svg', que es el de Appia, porque el formulario no deja
---      elegir imagen todavia.
---   2. El commit 89724b7 tiene que estar desplegado en Vercel. Las imagenes
---      se sirven desde apps/web/public/catalog/, asi que antes del despliegue
---      las URLs de abajo dan 404 y el catalogo se queda sin icono.
---      Compruebalo abriendo esto en el navegador:
---      https://appia-nu.vercel.app/catalog/frase-fuerte/icon.png
+-- Buscaba por bundleId = 'com.appia.frasefuerte' y el valor guardado es '222',
+-- asi que los tres UPDATE tocaron 0 filas. Ahora busca por slug, que esta
+-- comprobado contra produccion: 'frasefuerte'.
 --
--- Es idempotente. Busca por bundleId, que es unico, y los UPDATE de una app
--- que aun no este subida tocan 0 filas sin romper nada: se relanza cuando este.
+-- El bundleId importa y no es cosmetico: identifica la app en Android, es
+-- unico en la tabla y es lo que se usa para la ruta del fichero en el almacen.
+-- Se arregla AHORA, que solo hay una version y nadie se la ha descargado;
+-- dejarlo para luego es como nacio la deuda de com.altstore.* (ver
+-- scripts/fix-old-name-urls.sql).
 --
--- Por que a mano: son datos de produccion, no esquema, y no hay pantalla para
--- subir imagenes ni para aprobar sin pasar por el panel de admin.
+-- Foco NO esta aqui. Subela por el formulario, que ya deja adjuntar icono y
+-- capturas, y despues publicala con el bloque 4 cambiando el slug.
 
 -- ---------------------------------------------------------------------------
--- 1. Estado actual. Mira esto PRIMERO.
+-- 1. Estado actual. Mira esto primero.
 -- ---------------------------------------------------------------------------
--- Si la version sale en SCANNING, el escaneo no ha terminado: espera y
--- relanza. Si sale REJECTED o INFECTED, NO se publica, y hay que mirar
--- SecurityLog antes de tocar nada.
-
 SELECT
+  a."slug",
   a."name",
   a."bundleId",
-  a."status"        AS estado_app,
+  a."status"  AS estado_app,
+  a."iconUrl",
+  array_length(a."screenshots", 1) AS capturas,
   v."versionName",
-  v."status"        AS estado_version,
-  v."scannedAt"
+  v."status"  AS estado_version
 FROM "App" a
 LEFT JOIN "Version" v ON v."appId" = a."id"
-WHERE a."bundleId" IN ('com.appia.foco', 'com.appia.frasefuerte')
-ORDER BY a."name", v."createdAt";
+WHERE a."slug" = 'frasefuerte';
 
 -- ---------------------------------------------------------------------------
--- 2. Imagenes de catalogo
+-- 2. Lo que la ficha dice mal
 -- ---------------------------------------------------------------------------
+-- El texto describia el GENERADOR de contraseñas, que es la idea que se
+-- descarto. La app que esta subida hace lo contrario: tu escribes y ella mide.
+-- Una ficha que promete otra cosa es peor que una ficha sin foto.
+--
+-- Si prefieres otra redaccion, cambia estos dos textos antes de lanzarlo.
 
+UPDATE "App"
+SET
+  "name" = 'Frase Fuerte',
+  "bundleId" = 'com.appia.frasefuerte',
+  "shortDesc" = 'Mide cuánto aguanta tu contraseña y te dice cómo mejorarla.',
+  "description" = 'Escribes tu contraseña y te dice cuántos intentos haría falta para adivinarla, qué trozos son fáciles y por qué, y te propone variaciones enseñándote cuánto gana cada una. Funciona sin conexión: no pide permiso de internet, y lo que escribes no sale del móvil.',
+  "updatedAt" = NOW()
+WHERE "slug" = 'frasefuerte';
+
+-- ---------------------------------------------------------------------------
+-- 3. Imagenes de catalogo
+-- ---------------------------------------------------------------------------
 UPDATE "App"
 SET
   "iconUrl" = 'https://appia-nu.vercel.app/catalog/frase-fuerte/icon.png',
@@ -53,37 +65,23 @@ SET
     'https://appia-nu.vercel.app/catalog/frase-fuerte/4-creditos.png'
   ],
   "updatedAt" = NOW()
-WHERE "bundleId" = 'com.appia.frasefuerte';
-
-UPDATE "App"
-SET
-  "iconUrl" = 'https://appia-nu.vercel.app/catalog/foco/icon.png',
-  "screenshots" = ARRAY[
-    'https://appia-nu.vercel.app/catalog/foco/1-listo.png',
-    'https://appia-nu.vercel.app/catalog/foco/2-corriendo.png',
-    'https://appia-nu.vercel.app/catalog/foco/3-descanso-largo.png',
-    'https://appia-nu.vercel.app/catalog/foco/4-ajustes.png'
-  ],
-  "updatedAt" = NOW()
-WHERE "bundleId" = 'com.appia.foco';
+WHERE "slug" = 'frasefuerte';
 
 -- ---------------------------------------------------------------------------
--- 3. Publicar
+-- 4. Publicar
 -- ---------------------------------------------------------------------------
--- Dos condiciones, y las dos importan:
+-- Las dos condiciones se quedan:
 --
 --   EXISTS (... v."status" = 'APPROVED') — solo publica si el APK paso el
---   escaneo de VirusTotal. Sin esto, una consulta rapida publicaria un fichero
---   que nadie ha mirado. AGENTS.md lo prohibe, y las dos apps semilla ya
---   entraron asi en su dia.
+--   escaneo. Para esta app ya esta comprobado contra produccion: la ficha
+--   devuelve su version, y esa consulta solo devuelve las APPROVED.
 --
---   a."status" = 'PENDING_REVIEW' — solo sube de "pendiente" a "activa". Si
---   algun dia una de estas apps se retira (REMOVED) o se suspende, relanzar
---   esto no la resucita. Es el mismo fallo que tenia el seed.
+--   a."status" = 'PENDING_REVIEW' — solo sube de pendiente a activa, asi que
+--   relanzar esto no resucita una app retirada.
 
 UPDATE "App" a
 SET "status" = 'ACTIVE', "updatedAt" = NOW()
-WHERE a."bundleId" IN ('com.appia.foco', 'com.appia.frasefuerte')
+WHERE a."slug" = 'frasefuerte'
   AND a."status" = 'PENDING_REVIEW'
   AND EXISTS (
     SELECT 1 FROM "Version" v
@@ -91,19 +89,15 @@ WHERE a."bundleId" IN ('com.appia.foco', 'com.appia.frasefuerte')
   );
 
 -- ---------------------------------------------------------------------------
--- 4. Comprobacion
+-- 5. Comprobacion
 -- ---------------------------------------------------------------------------
--- Lo que tiene que salir: estado_app = ACTIVE, capturas = 4, y el icono
--- apuntando a /catalog/. Si estado_app sigue en PENDING_REVIEW, vuelve al
--- paso 1 y mira estado_version: el escaneo manda.
-
+-- Tiene que salir: estado_app = ACTIVE, capturas = 4, bundleId correcto.
 SELECT
+  a."slug",
   a."name",
   a."bundleId",
   a."status" AS estado_app,
   a."iconUrl",
-  array_length(a."screenshots", 1) AS capturas,
-  (SELECT string_agg(v."status"::text, ', ')
-   FROM "Version" v WHERE v."appId" = a."id") AS estados_version
+  array_length(a."screenshots", 1) AS capturas
 FROM "App" a
-WHERE a."bundleId" IN ('com.appia.foco', 'com.appia.frasefuerte');
+WHERE a."slug" = 'frasefuerte';
