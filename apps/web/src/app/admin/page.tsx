@@ -12,6 +12,12 @@ interface AppSummary {
   privacyUrl: string;
   createdAt: string;
   developer: { id: string; name: string; email: string };
+  versions: {
+    id: string;
+    versionName: string;
+    status: "SCANNING" | "CLEAN" | "INFECTED" | "APPROVED" | "REJECTED";
+    scannedAt: string | null;
+  }[];
   _count: { versions: number };
 }
 
@@ -50,7 +56,7 @@ const AdminPage = async () => {
         </p>
       </div>
 
-      <ReviewQueue initialApps={apps} accessToken={accessToken} />
+      <ReviewQueue initialApps={apps} />
     </div>
   );
 };

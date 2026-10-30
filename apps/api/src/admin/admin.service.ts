@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { AppStatus, Severity } from "@appia/db";
 
@@ -28,6 +28,13 @@ export class AdminService {
         where: { status },
         include: {
           developer: { select: { id: true, name: true, email: true } },
+          // El veredicto del escaneo viaja con cada app: sin el, la cola pide
+          // aprobar a ciegas. Son apps pendientes de revision, asi que la lista
+          // de versiones es corta.
+          versions: {
+            select: { id: true, versionName: true, status: true, scannedAt: true },
+            orderBy: { createdAt: "desc" },
+          },
           _count: { select: { versions: true } },
         },
         orderBy: { createdAt: "asc" }, // Oldest first — FIFO review queue
@@ -44,6 +51,8 @@ export class AdminService {
   async updateAppStatus(appId: string, newStatus: AppStatus, adminId: string) {
     const app = await this.prisma.app.findUnique({ where: { id: appId } });
     if (!app) throw new NotFoundException(`App ${appId} not found`);
+
+    if (newStatus === "ACTIVE") await this.assertScanned(appId);
 
     const [updated] = await this.prisma.$transaction([
       this.prisma.app.update({
@@ -63,6 +72,34 @@ export class AdminService {
     ]);
 
     return updated;
+  }
+
+  /**
+   * Publicar exige que al menos una version haya pasado el escaneo.
+   *
+   * El boton de la cola ya se desactiva solo, pero eso es un adorno: la regla
+   * tiene que vivir aqui, que es por donde pasan el panel, el proxy del web y
+   * cualquier llamada directa al API. El SQL de publicacion a mano lleva este
+   * mismo freno (scripts/publish-own-apps.sql); el panel era el camino que lo
+   * saltaba.
+   *
+   * No distingue "aun escaneando" de "salio mal" porque hoy el estado tampoco
+   * lo hace: un escaneo que revienta acaba en REJECTED igual que un APK
+   * infectado (falta SCAN_FAILED). Mientras sea asi, lo unico seguro es
+   * exigir un APPROVED explicito.
+   */
+  private async assertScanned(appId: string): Promise<void> {
+    const approved = await this.prisma.version.count({
+      where: { appId, status: "APPROVED" },
+    });
+    if (approved > 0) return;
+
+    const total = await this.prisma.version.count({ where: { appId } });
+    throw new ConflictException(
+      total === 0
+        ? "Esta app todavia no tiene ninguna version subida."
+        : "Ninguna version ha pasado el escaneo de VirusTotal. No se puede publicar."
+    );
   }
 
   /** Returns paginated security logs, most recent first. */
