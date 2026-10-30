@@ -49,14 +49,41 @@ const NAV_ITEMS: { href: Route; label: string; icon: React.ReactNode }[] = [
   },
 ];
 
+const AccessDenied = ({ email }: { email?: string | null }) => (
+  <div className="mx-auto flex min-h-[calc(100vh-65px)] max-w-md flex-col justify-center px-6 py-16">
+    <h1 className="font-display text-2xl font-semibold text-white">Esta cuenta no revisa apps</h1>
+    <p className="mt-3 text-sm leading-6 text-zinc-400">
+      Has entrado{email ? ` como ${email}` : ""}, pero el panel de revision pide permiso de
+      administrador y esta cuenta no lo tiene.
+    </p>
+    <p className="mt-3 text-sm leading-6 text-zinc-500">
+      Si deberia tenerlo, hay que marcarla en la base de datos y volver a entrar: el permiso
+      viaja dentro de la sesion, asi que la que tienes abierta ahora no se entera del cambio.
+    </p>
+    <div className="mt-8 flex flex-wrap gap-3">
+      <Link href="/dashboard" className="btn-primary">
+        Ir a mis apps
+      </Link>
+      <Link href="/" className="btn-secondary">
+        Volver al inicio
+      </Link>
+    </div>
+  </div>
+);
+
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession(authOptions);
 
   if (!session) redirect("/login?callbackUrl=%2Fadmin");
 
-  // Check isAdmin flag embedded in session token
+  // Sin permiso NO se redirige: se explica. Mandar a la home en silencio hace
+  // que el enlace "Revisar" del correo de aviso parezca roto -- entras, te pide
+  // la contrasena, la pones bien y acabas en la portada sin que nadie te diga
+  // que falta. El permiso se da marcando Developer.isAdmin en la base de datos
+  // (scripts/make-admin.sql) y viaja dentro del JWT, asi que despues de
+  // cambiarlo hay que cerrar sesion y volver a entrar.
   const isAdmin = (session as { isAdmin?: boolean }).isAdmin;
-  if (!isAdmin) redirect("/");
+  if (!isAdmin) return <AccessDenied email={session.user?.email} />;
 
   return (
     <div className="flex min-h-[calc(100vh-65px)]">
